@@ -9,11 +9,11 @@ author: "Egor Marin"
 ---
 
 # Egor Marin
-Machine Learning Scientist @ [ENPICOM B.V.](https://enpicom.com). `@marinegor` at most of the platforms.
+Machine Learning Scientist @ [ENPICOM B.V.](https://enpicom.com); `@marinegor` at most of the platforms.
 
 ## Socials
 
- - `me@marinegor.dev`
+ - [email](mailto:me@marinegor.dev): me@marinegor.dev
  - [github](https://github.com/marinegor)
  - [twitter](https://twitter.com/egor__marin)
  - [linkedin](https://www.linkedin.com/in/marinegor/)
