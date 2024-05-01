@@ -9,7 +9,15 @@ author: "Egor Marin"
 ---
 
 # Egor Marin
-Machine Learning Scientist @ [ENPICOM B.V.](https://enpicom.com)
+Machine Learning Scientist @ [ENPICOM B.V.](https://enpicom.com). `@marinegor` at most of the platforms.
+
+## Socials
+
+ - `me@marinegor.dev`
+ - [github](https://github.com/marinegor)
+ - [twitter](https://twitter.com/egor__marin)
+ - [linkedin](https://www.linkedin.com/in/marinegor/)
+ - [bluesky](https://bsky.app/profile/marinegor.bsky.social)
 
 ## Profile
 
@@ -47,18 +55,23 @@ I have been roughly 8 years in science, working with membrane proteins and their
 
 Have mainly worked at the Moscow Institute of Physics and Technology, and got my PhD from the University of Groningen. Also, I have worked at many synchrotrons and XFELs, and also was a visiting research assistant at the University of Southern California.
 
-### Scientific Journalist
-`2016-2017`
+### Machine Learning Scientist
+`2024-current`
 
- - analyzed publicational activity of MIPT
- - wrote press-releases on published papers
- - communicated with scientists & media.
+Doign machine learning in biotech-oriented SaaS [company](https://enpicom.com).
 
 ### Scientist
 `2017-2023`
 
  - conducted research, managed data, wrote publications, participated in conferences
  - managed students (BSs & MSc diploma), created a course on modern protein crystallography
+
+### Scientific Journalist
+`2016-2017`
+
+ - analyzed publicational activity of MIPT
+ - wrote press-releases on published papers
+ - communicated with scientists & media.
 
 ## Education
 
