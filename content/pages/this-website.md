@@ -1,8 +1,6 @@
 ---
 title: "This website"
 date: 2024-05-01
-aliases:
-    - hugo
 author: "Egor Marin"
 ---
 

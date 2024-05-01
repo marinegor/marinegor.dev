@@ -2,6 +2,8 @@
 title: "Publications"
 description: "Summary of my scientific publications"
 date: 2024-05-01
+aliases:
+    - /publications
 author: "Egor Marin"
 ---
 

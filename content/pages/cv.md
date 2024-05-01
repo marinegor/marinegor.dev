@@ -3,8 +3,8 @@ title: "Curriculum Vitae aka CV aka Resume"
 description: "Short one-page resume"
 date: 2024-05-01
 aliases:
-    - cv
-    - resume
+    - /cv
+    - /resume
 author: "Egor Marin"
 ---
 
