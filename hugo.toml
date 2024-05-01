@@ -33,6 +33,16 @@ name = "Twitter"
 icon = "twitter"
 url = "https://twitter.com/egor__marin/"
 
+[[params.social]]
+name = "Linkedin"
+icon = "linkedin"
+url = "https://www.linkedin.com/in/marinegor/"
+
+[[params.social]]
+name = "Bluesky"
+icon = "bluesky"
+url = "https://bsky.app/profile/marinegor.bsky.social"
+
 # Main menu Items
 
 [[menu.main]]
@@ -50,7 +60,7 @@ name = "About"
 url = "/about"
 weight = 3
 
-# [[menu.main]]
-# name = "Tags"
-# url = "/tags"
-# weight = 4
+[[menu.main]]
+name = "Tags"
+url = "/tags"
+weight = 4

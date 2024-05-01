@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+	<head lang="en"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>marinegor.dev | Home </title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="" />
+	<meta property="og:image" content=""/>
+	<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/index.xml" title="marinegor.dev" />
+	<meta property="og:url" content="http://localhost:1313/">
+  <meta property="og:site_name" content="marinegor.dev">
+  <meta property="og:title" content="marinegor.dev">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="marinegor.dev">
+<meta name="twitter:description" content="">
+<script src="http://localhost:1313/js/feather.min.js"></script>
+	
+	
+        <link href="http://localhost:1313/css/fonts.2c2227b81b1970a03e760aa2e6121cd01f87c88586803cbb282aa224720a765f.css" rel="stylesheet">
+	
+
+	
+	<link rel="stylesheet" type="text/css" media="screen" href="http://localhost:1313/css/main.ac08a4c9714baa859217f92f051deb58df2938ec352b506df655005dcaf98cc0.css" />
+		<link id="darkModeStyle" rel="stylesheet" type="text/css" href="http://localhost:1313/css/dark.726cd11ca6eb7c4f7d48eb420354f814e5c1b94281aaf8fd0511c1319f7f78a4.css" media="(prefers-color-scheme: dark)"  />
+	
+
+	
+	
+		<script type="text/javascript"
+		src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+		</script>
+	
+		
+		<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			tex2jax: {
+				inlineMath: [['$','$'], ['\\(','\\)']],
+				displayMath: [['$$','$$'], ['\[','\]']],
+				processEscapes: true,
+				processEnvironments: true,
+				skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+				TeX: { equationNumbers: { autoNumber: "AMS" },
+						 extensions: ["AMSmath.js", "AMSsymbols.js"] }
+			}
+		});
+		</script>
+	
+
+	
+	
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css">
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+		
+		
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+					renderMathInElement(document.body, {
+							delimiters: [
+									{left: "$$", right: "$$", display: true},
+									{left: "$", right: "$", display: false}
+							]
+					});
+			});
+			</script>
+	
+	
+	
+</head>
+
+	<body>
+		<div class="content">
+			<header>
+	<div class="main">
+		<a href="http://localhost:1313/">marinegor.dev</a>
+	</div>
+	<nav>
+		
+		<a href="/">Home</a>
+		
+		<a href="/posts">All posts</a>
+		
+		<a href="/about">About</a>
+		
+		<a href="/tags">Tags</a>
+		
+		
+	</nav>
+</header>
+
+			
+			<main class="list">
+				<div class="site-description"><p>Minimal and Clean <a href="https://github.com/athul/archie">blog theme for Hugo</a></p></div>
+				
+				
+				
+				<section class="list-item">
+					<h1 class="title"><a href="/posts/gsoc-2023/biweekly-3_parallel_executor/">(not anymore bi)weekly GSOC-3: writing `ParallelExecutor` class</a></h1>
+					<time>Jul 30, 2023</time>
+					<br><div class="description">
+	
+	In the previous blogpost, I briefly explained how decomposition works &ndash; we split all _single_frame() runs into independent groups that get executed in parallel. For this, we have _compute method that executes the frames group, and run method that orchestrates the _compute execution.
+Here, I will explain how the actual implementation went south, and then evolved into something more complex and simple at the same time.
+What was the problem? So, the actual implementation of the run protocol turned out to be more complicated than I thought.&hellip;
+	
+</div>
+					<a class="readmore" href="/posts/gsoc-2023/biweekly-3_parallel_executor/">Read more ⟶</a>
+				</section>
+				
+				<section class="list-item">
+					<h1 class="title"><a href="/posts/gsoc-2023/biweekly-2_splitting/">Biweekly GSOC-2: splitting the work and writing `_setup_bslices`</a></h1>
+					<time>Jun 30, 2023</time>
+					<br><div class="description">
+	
+	In the previous blogpost, I briefly explained how I&rsquo;m planning to decompose the AnalysisBase.run() method, so that its subclasses won&rsquo;t notice the changes in the protocol, but at the same time will be able to perform computations in a parallel manner.
+Here I&rsquo;ll go through the implementation details of some methods &ndash; namely, I&rsquo;ll explain how I went to a certain implementation of _setup_bslices, _compute and run.
+Where are we right now?&hellip;
+	
+</div>
+					<a class="readmore" href="/posts/gsoc-2023/biweekly-2_splitting/">Read more ⟶</a>
+				</section>
+				
+				<section class="list-item">
+					<h1 class="title"><a href="/posts/gsoc-2023/biweekly-1_decomposing/">Biweekly GSOC-1: decomposing `AnalysisBase.run()`</a></h1>
+					<time>Jun 16, 2023</time>
+					<br><div class="description">
+	
+	In the first GSOC-devoted blogpost I explained the idea behind my proposal and the approximate timeline for its execution.
+Here I&rsquo;ll go through the initial implementation stages &ndash; how I decided to decompose the run() method for the AnalysisBase so that I could paralellize the execution, which changes it&rsquo;ll require, and how not to break all the existing code in the process. Let&rsquo;s go!
+AnalysisBase protocol AnalysisBase is a superclass for most of the MDAnalysis objects that perform the actual analysis of trajectories.&hellip;
+	
+</div>
+					<a class="readmore" href="/posts/gsoc-2023/biweekly-1_decomposing/">Read more ⟶</a>
+				</section>
+				
+				
+
+<ul class="pagination">
+	<span class="page-item page-prev">
+	
+    <a href="/" class="page-link" aria-label="Previous"><span aria-hidden="true">← Prev</span></a>
+	
+	</span>
+	<span class="page-item page-next">
+	
+    <a href="/page/3/" class="page-link" aria-label="Next"><span aria-hidden="true">Next →</span></a>
+	
+	</span>
+</ul>
+
+
+			</main>
+			<footer>
+  <div style="display:flex"><a class="soc" href="https://github.com/marinegor" rel="me" title="GitHub"><i data-feather="github"></i></a>
+    <a class="border"></a><a class="soc" href="https://twitter.com/egor__marin/" rel="me" title="Twitter"><i data-feather="twitter"></i></a>
+    <a class="border"></a><a class="soc" href="https://www.linkedin.com/in/marinegor/" rel="me" title="Linkedin"><i data-feather="linkedin"></i></a>
+    <a class="border"></a><a class="soc" href="https://bsky.app/profile/marinegor.bsky.social" rel="me" title="Bluesky"><i data-feather="bluesky"></i></a>
+    <a class="border"></a></div>
+  <div class="footer-info">
+    2024  Egor Marin |  <a
+      href="https://github.com/athul/archie">Archie Theme</a> | Built with <a href="https://gohugo.io">Hugo</a>
+  </div>
+</footer>
+<script>
+  feather.replace()
+</script>
+		</div>
+		
+	</body>
+</html>

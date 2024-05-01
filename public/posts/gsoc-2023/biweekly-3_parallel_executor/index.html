@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html><head lang="en"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>(not anymore bi)weekly GSOC-3: writing `ParallelExecutor` class - marinegor.dev</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="In the previous blogpost, I briefly explained how decomposition works &ndash; we split all _single_frame() runs into independent groups that get executed in parallel. For this, we have _compute method that executes the frames group, and run method that orchestrates the _compute execution.
+Here, I will explain how the actual implementation went south, and then evolved into something more complex and simple at the same time.
+What was the problem? So, the actual implementation of the run protocol turned out to be more complicated than I thought." />
+	<meta property="og:image" content=""/>
+	<meta property="og:url" content="http://localhost:1313/posts/gsoc-2023/biweekly-3_parallel_executor/">
+  <meta property="og:site_name" content="marinegor.dev">
+  <meta property="og:title" content="(not anymore bi)weekly GSOC-3: writing `ParallelExecutor` class">
+  <meta property="og:description" content="In the previous blogpost, I briefly explained how decomposition works – we split all _single_frame() runs into independent groups that get executed in parallel. For this, we have _compute method that executes the frames group, and run method that orchestrates the _compute execution.
+Here, I will explain how the actual implementation went south, and then evolved into something more complex and simple at the same time.
+What was the problem? So, the actual implementation of the run protocol turned out to be more complicated than I thought.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-07-30T00:00:00+00:00">
+    <meta property="article:modified_time" content="2023-07-30T00:00:00+00:00">
+    <meta property="article:tag" content="Gsoc">
+    <meta property="article:tag" content="Coding">
+    <meta property="article:tag" content="Mdanalysis">
+    <meta property="article:tag" content="Multiprocessing">
+    <meta property="article:tag" content="Dask">
+    <meta property="article:tag" content="Clean Code">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="(not anymore bi)weekly GSOC-3: writing `ParallelExecutor` class">
+<meta name="twitter:description" content="In the previous blogpost, I briefly explained how decomposition works &ndash; we split all _single_frame() runs into independent groups that get executed in parallel. For this, we have _compute method that executes the frames group, and run method that orchestrates the _compute execution.
+Here, I will explain how the actual implementation went south, and then evolved into something more complex and simple at the same time.
+What was the problem? So, the actual implementation of the run protocol turned out to be more complicated than I thought.">
+<script src="http://localhost:1313/js/feather.min.js"></script>
+	
+	
+        <link href="http://localhost:1313/css/fonts.2c2227b81b1970a03e760aa2e6121cd01f87c88586803cbb282aa224720a765f.css" rel="stylesheet">
+	
+
+	
+	<link rel="stylesheet" type="text/css" media="screen" href="http://localhost:1313/css/main.ac08a4c9714baa859217f92f051deb58df2938ec352b506df655005dcaf98cc0.css" />
+		<link id="darkModeStyle" rel="stylesheet" type="text/css" href="http://localhost:1313/css/dark.726cd11ca6eb7c4f7d48eb420354f814e5c1b94281aaf8fd0511c1319f7f78a4.css" media="(prefers-color-scheme: dark)"  />
+	
+
+	
+	
+		<script type="text/javascript"
+		src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+		</script>
+	
+		
+		<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			tex2jax: {
+				inlineMath: [['$','$'], ['\\(','\\)']],
+				displayMath: [['$$','$$'], ['\[','\]']],
+				processEscapes: true,
+				processEnvironments: true,
+				skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+				TeX: { equationNumbers: { autoNumber: "AMS" },
+						 extensions: ["AMSmath.js", "AMSsymbols.js"] }
+			}
+		});
+		</script>
+	
+
+	
+	
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css">
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+		
+		
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+					renderMathInElement(document.body, {
+							delimiters: [
+									{left: "$$", right: "$$", display: true},
+									{left: "$", right: "$", display: false}
+							]
+					});
+			});
+			</script>
+	
+	
+	
+</head>
+<body>
+        <div class="content"><header>
+	<div class="main">
+		<a href="http://localhost:1313/">marinegor.dev</a>
+	</div>
+	<nav>
+		
+		<a href="/">Home</a>
+		
+		<a href="/posts">All posts</a>
+		
+		<a href="/about">About</a>
+		
+		<a href="/tags">Tags</a>
+		
+		
+	</nav>
+</header>
+
+<main>
+	<article>
+		<div class="title">
+			<h1 class="title">(not anymore bi)weekly GSOC-3: writing `ParallelExecutor` class</h1>
+			<div class="meta">Posted on Jul 30, 2023</div>
+		</div>
+		
+
+		<section class="body">
+			<p>In the previous <a href="https://marinegor.github.io/posts/2023/06/gsoc-biweekly-2/">blogpost</a>, I briefly explained how decomposition works &ndash; we split all <code>_single_frame()</code> runs into independent groups that get executed in parallel. For this, we have <code>_compute</code> method that executes the frames group, and <code>run</code> method that orchestrates the <code>_compute</code> execution.</p>
+<p>Here, I will explain how the actual implementation went south, and then evolved into something more complex and simple at the same time.</p>
+<h2 id="what-was-the-problem">What was the problem?</h2>
+<p>So, the actual implementation of the <code>run</code> protocol turned out to be more complicated than I thought. When it was finally ready, the code looked horrible &ndash; especially the <code>AnalysisBase.run()</code> method, that had multiple if-else branches that would choose the exact code path depending on scheduler, and also in all  this mess was the logic for the actual <code>run()</code>. Even though it worked (I had most of the subclasses working and passing all the tests), it would be a maintainer nightmare, and also adding new features would be close to impossible.</p>
+<p>The mentor team noted that, and I had to come up with something that is easier to read, maintain, and add features to.</p>
+<h2 id="how-the-code-looked-before-the-change-youre-talking-about">How the code looked before the <strong>change</strong> you&rsquo;re talking about?</h2>
+<p>The code looked roughly like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self, start, stop, step, frames, n_workers, scheduler):
+</span></span><span style="display:flex;"><span>	self<span style="color:#f92672">.</span>_setup_frames(start, stop, step, frames)
+</span></span><span style="display:flex;"><span>	self<span style="color:#f92672">.</span>_prepare()
+</span></span><span style="display:flex;"><span>	self<span style="color:#f92672">.</span>_setup_bslices(start, stop, step, frames, n_workers)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> scheduler <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># we have no worker processes and only one `bslice`</span>
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_compute(bslice_idx<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">elif</span> scheduler <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;multiprocessing&#39;</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">import</span> multiprocessing
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">from</span> dask.delayed <span style="color:#f92672">import</span> delayed
+</span></span><span style="display:flex;"><span>		computations <span style="color:#f92672">=</span> [delayed(self<span style="color:#f92672">.</span>_compute)(bslice_idx) <span style="color:#66d9ef">for</span> bslice_idx <span style="color:#f92672">in</span> range(len(self<span style="color:#f92672">.</span>_bslices))]
+</span></span><span style="display:flex;"><span>		results <span style="color:#f92672">=</span> computations<span style="color:#f92672">.</span>compute()
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_remote_results <span style="color:#f92672">=</span> results
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_parallel_conclude()
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	self<span style="color:#f92672">.</span>_conclude()
+</span></span></code></pre></div><p>And <code>_compute</code> method looked like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_compute</span>(self, bslice_idx):
+</span></span><span style="display:flex;"><span>	bslice <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_bslices[bslice_idx]
+</span></span><span style="display:flex;"><span>	frame_indices, frames <span style="color:#f92672">=</span> bslices[:, <span style="color:#ae81ff">0</span>], bslices[:, <span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>	    <span style="color:#66d9ef">for</span> idx, ts <span style="color:#f92672">in</span> enumerate(trajectory):
+</span></span><span style="display:flex;"><span>        i <span style="color:#f92672">=</span> frame_indices[idx]
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_frame_index <span style="color:#f92672">=</span> i
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_ts <span style="color:#f92672">=</span> ts
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>frames[i] <span style="color:#f92672">=</span> ts<span style="color:#f92672">.</span>frame
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>times[i] <span style="color:#f92672">=</span> ts<span style="color:#f92672">.</span>time
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_single_frame()
+</span></span></code></pre></div><p>As you can see, there is an ugly <code>if-elif-else</code> part of <code>run</code> method, and it&rsquo;s not exactly clear what is happening in each of the branches (and how to test and debug it). However, all these branches are doing exactly the same thing: they apply a function to a list of computations in a parallel fashion.</p>
+<h2 id="what-do-we-do">What do we do?</h2>
+<p>What if we moved this functionality outside of the <code>AnalysisBase</code> class? Upon initialization, user would be able to configure its parallelization options, and then its <code>apply</code> method would execute computations with pre-configured parameters. Something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ParallelExecutor</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> __init__(self, n_workers, scheduler):
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>n_workers <span style="color:#f92672">=</span> n_workers
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>scheduler <span style="color:#f92672">=</span> scheduler
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">apply</span>(self, func, computations) <span style="color:#f92672">-&gt;</span> list:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>scheduler <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;local&#39;</span>:
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> [func(task) <span style="color:#66d9ef">for</span> task <span style="color:#f92672">in</span> computations]
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">elif</span> self<span style="color:#f92672">.</span>scheduler <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;multiprocessing&#39;</span>:
+</span></span><span style="display:flex;"><span>			<span style="color:#f92672">import</span> multiprocessing
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">with</span> multiprocessing<span style="color:#f92672">.</span>Pool(self<span style="color:#f92672">.</span>n_workers) <span style="color:#66d9ef">as</span> pool:
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">return</span> list(pool<span style="color:#f92672">.</span>map(func, computations))
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">elif</span> self<span style="color:#f92672">.</span>scheduler <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;dask&#39;</span>:
+</span></span><span style="display:flex;"><span>			<span style="color:#f92672">import</span> dask
+</span></span><span style="display:flex;"><span>			<span style="color:#f92672">from</span> dask.delayed <span style="color:#f92672">import</span> delayed
+</span></span><span style="display:flex;"><span>			func_d <span style="color:#f92672">=</span> delayed(func)
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> delayed([func_d(task) <span style="color:#66d9ef">for</span> task <span style="color:#f92672">in</span> computations])<span style="color:#f92672">.</span>compute(n_workers<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>n_workers)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">&#39;wrong scheduler&#39;</span>)
+</span></span></code></pre></div><p>The <code>run</code> method would look somewhat like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self, start, stop, step, frames, n_workers, scheduler):
+</span></span><span style="display:flex;"><span>	self<span style="color:#f92672">.</span>_setup_frames(start, stop, step, frames)
+</span></span><span style="display:flex;"><span>	self<span style="color:#f92672">.</span>_prepare()
+</span></span><span style="display:flex;"><span>	bslices <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_setup_bslices(start, stop, step, frames, n_workers)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	executor <span style="color:#f92672">=</span> ParallelExecutor(n_workers, scheduler)
+</span></span><span style="display:flex;"><span>	executor<span style="color:#f92672">.</span>apply(self<span style="color:#f92672">.</span>_compute, bslices)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	self<span style="color:#f92672">.</span>_parallel_conclude()
+</span></span><span style="display:flex;"><span>	self<span style="color:#f92672">.</span>_conclude()
+</span></span></code></pre></div><p>Ok, this looks much simpler! Now we can clearly see what&rsquo;s going on during <code>run</code>, without unnecessary configuration logic.</p>
+<p>Minor thing is that we haven&rsquo;t completely got rid of the ugly <code>if-elif-else</code> part. Major problem is that it&rsquo;s not (that) easily tested &ndash; you have to get inside a function, and then inside a particular condition. As long as we&rsquo;re having conditions such as <code>if str1 == str2</code>, it&rsquo;s not a problem, but we might have something more complicated in the future, and for this reason need to have separate functions for each computation type:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ParallelExecutor</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> __init__(self, n_workers, scheduler, client):
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>n_workers <span style="color:#f92672">=</span> n_workers
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>scheduler <span style="color:#f92672">=</span> scheduler
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_compute_with_local</span>(self, func, computations):
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> [func(task) <span style="color:#66d9ef">for</span> task <span style="color:#f92672">in</span> computations]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_compute_with_dask</span>(self, func, computations):
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">import</span> dask
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">from</span> dask.delayed <span style="color:#f92672">import</span> delayed
+</span></span><span style="display:flex;"><span>		func_d <span style="color:#f92672">=</span> delayed(func)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> delayed([func_d(task) <span style="color:#66d9ef">for</span> task <span style="color:#f92672">in</span> computations])<span style="color:#f92672">.</span>compute(n_workers<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>n_workers)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_compute_with_multiprocessing</span>(self, func, computations):
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">import</span> multiprocessing
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">with</span> multiprocessing<span style="color:#f92672">.</span>Pool(self<span style="color:#f92672">.</span>n_workers) <span style="color:#66d9ef">as</span> pool:
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> list(pool<span style="color:#f92672">.</span>map(func, computations))
+</span></span></code></pre></div><p>How do we now match it? Well, if we don&rsquo;t want our code to smell but still want to map pre-configured options to the desired code path, let&rsquo;s use a general mapping object &ndash; dictionary:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ParallelExecutor</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">apply</span>(self, func, computations):
+</span></span><span style="display:flex;"><span>		computation_options <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>			self<span style="color:#f92672">.</span>_compute_with_local: self<span style="color:#f92672">.</span>scheduler <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;local&#39;</span>,
+</span></span><span style="display:flex;"><span>			self<span style="color:#f92672">.</span>_compute_with_dask: self<span style="color:#f92672">.</span>scheduler <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;dask&#39;</span>,
+</span></span><span style="display:flex;"><span>			self<span style="color:#f92672">.</span>_compute_with_multiprocessing: self<span style="color:#f92672">.</span>scheduler <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;multiprocessing&#39;</span>,
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> applicator, condition <span style="color:#f92672">in</span> computation_options<span style="color:#f92672">.</span>items():
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> condition:
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">return</span> applicator(func, computations)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">&#39;wrong configuration&#39;</span>)
+</span></span></code></pre></div><p>Cool! No code smell, easy testing, easy usage, potential to be used in other parts of the project.</p>
+<h2 id="important-linguistic-changes">Important linguistic changes</h2>
+<p>Two paragraphs on the naming &ndash; if you&rsquo;re reading this posts few months into the future, you might notice that they use different terminology from the one used in the codebase. Here&rsquo;s the reason for it.</p>
+<h3 id="bslices----computation_groups"><code>bslices --&gt; computation_groups</code></h3>
+<p>This project was inspired by <a href="https://github.com/MDAnalysis/pmda">pmda</a> and initially borrowed many things from there &ndash; namely, the <code>bslices</code> term, which means &ldquo;balanced slices&rdquo;. More specifically, it means &ldquo;groups of frames that are then passed to independent worker objects&rdquo;. With this explanation, it&rsquo;s not exactly clear why are they slices and in which way they are balanced, so I decided to rename them into <code>computation_groups</code>, and respective method into <code>AnalysisBase._setup_computation_groups()</code>.</p>
+<h3 id="scheduler----backend"><code>scheduler --&gt; backend</code></h3>
+<p>It&rsquo;s nothing wrong with this term, but it turns out that <code>dask</code> uses the same term during standalone computations execution, or configuration of <code>dask.distributed.Client</code> object. In <code>dask</code>, <code>scheduler</code> can be either <code>synchronous</code>, <code>processes</code> or <code>threads</code>, which is vastly different from the usecases in MDAnalysis. In order to avoid confusion, <code>scheduler</code> is now called <code>backend</code>.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>So, we figured out how to perform parallel computations in a way that a) does not disrupt the flow of the <code>AnalysisBase.run()</code> method; b) allows us to reuse a huge chunk of code for completely different purposes.
+However, we&rsquo;re still not finished on how to complete our re-writing of the <code>run</code> method &ndash; namely, we haven&rsquo;t yet figured out on how to aggregate the results from independent workers.</p>
+<p>To be honest, this (and <code>pytest</code>) have been the reason of this post becoming less-than-bi-weekly, and I hope I&rsquo;ll have a proper answer next time. Stay tuned!</p>
+
+		</section>
+
+		<div class="post-tags">
+			
+			
+			<nav class="nav tags">
+				<ul class="tags">
+					
+					<li><a href="/tags/gsoc">gsoc</a></li>
+					
+					<li><a href="/tags/coding">coding</a></li>
+					
+					<li><a href="/tags/mdanalysis">mdanalysis</a></li>
+					
+					<li><a href="/tags/multiprocessing">multiprocessing</a></li>
+					
+					<li><a href="/tags/dask">dask</a></li>
+					
+					<li><a href="/tags/clean-code">clean code</a></li>
+					
+				</ul>
+			</nav>
+			
+			
+		</div>
+		</article>
+</main>
+<footer>
+  <div style="display:flex"><a class="soc" href="https://github.com/marinegor" rel="me" title="GitHub"><i data-feather="github"></i></a>
+    <a class="border"></a><a class="soc" href="https://twitter.com/egor__marin/" rel="me" title="Twitter"><i data-feather="twitter"></i></a>
+    <a class="border"></a><a class="soc" href="https://www.linkedin.com/in/marinegor/" rel="me" title="Linkedin"><i data-feather="linkedin"></i></a>
+    <a class="border"></a><a class="soc" href="https://bsky.app/profile/marinegor.bsky.social" rel="me" title="Bluesky"><i data-feather="bluesky"></i></a>
+    <a class="border"></a></div>
+  <div class="footer-info">
+    2024  Egor Marin |  <a
+      href="https://github.com/athul/archie">Archie Theme</a> | Built with <a href="https://gohugo.io">Hugo</a>
+  </div>
+</footer>
+<script>
+  feather.replace()
+</script></div>
+    </body>
+</html>

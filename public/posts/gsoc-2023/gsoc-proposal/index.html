@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html><head lang="en"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>GSOC 2023: what will I do? - marinegor.dev</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="This year I applied for the Google Summer of Code program, and luckily was selected as a contributor for MDAnalysis with my proposal for a parallel analysis project, extending the idea suggested by the developers.
+In this post, I&rsquo;ll briefly describe the proposal itself &ndash; motivation, technical outline, and how I expect things will change for the MDAnalysis users after the successful execution of the proposal idea.
+Overview and motivation As you might already know, MDAnalysis is a python library for analysis molecular dynamics (MD) trajectories, which is kinda clear from the start if you look at the library&rsquo;s name." />
+	<meta property="og:image" content=""/>
+	<meta property="og:url" content="http://localhost:1313/posts/gsoc-2023/gsoc-proposal/">
+  <meta property="og:site_name" content="marinegor.dev">
+  <meta property="og:title" content="GSOC 2023: what will I do?">
+  <meta property="og:description" content="This year I applied for the Google Summer of Code program, and luckily was selected as a contributor for MDAnalysis with my proposal for a parallel analysis project, extending the idea suggested by the developers.
+In this post, I’ll briefly describe the proposal itself – motivation, technical outline, and how I expect things will change for the MDAnalysis users after the successful execution of the proposal idea.
+Overview and motivation As you might already know, MDAnalysis is a python library for analysis molecular dynamics (MD) trajectories, which is kinda clear from the start if you look at the library’s name.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-05-29T00:00:00+00:00">
+    <meta property="article:modified_time" content="2023-05-29T00:00:00+00:00">
+    <meta property="article:tag" content="Gsoc">
+    <meta property="article:tag" content="Coding">
+    <meta property="article:tag" content="Mdanalysis">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="GSOC 2023: what will I do?">
+<meta name="twitter:description" content="This year I applied for the Google Summer of Code program, and luckily was selected as a contributor for MDAnalysis with my proposal for a parallel analysis project, extending the idea suggested by the developers.
+In this post, I&rsquo;ll briefly describe the proposal itself &ndash; motivation, technical outline, and how I expect things will change for the MDAnalysis users after the successful execution of the proposal idea.
+Overview and motivation As you might already know, MDAnalysis is a python library for analysis molecular dynamics (MD) trajectories, which is kinda clear from the start if you look at the library&rsquo;s name.">
+<script src="http://localhost:1313/js/feather.min.js"></script>
+	
+	
+        <link href="http://localhost:1313/css/fonts.2c2227b81b1970a03e760aa2e6121cd01f87c88586803cbb282aa224720a765f.css" rel="stylesheet">
+	
+
+	
+	<link rel="stylesheet" type="text/css" media="screen" href="http://localhost:1313/css/main.ac08a4c9714baa859217f92f051deb58df2938ec352b506df655005dcaf98cc0.css" />
+		<link id="darkModeStyle" rel="stylesheet" type="text/css" href="http://localhost:1313/css/dark.726cd11ca6eb7c4f7d48eb420354f814e5c1b94281aaf8fd0511c1319f7f78a4.css" media="(prefers-color-scheme: dark)"  />
+	
+
+	
+	
+		<script type="text/javascript"
+		src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+		</script>
+	
+		
+		<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			tex2jax: {
+				inlineMath: [['$','$'], ['\\(','\\)']],
+				displayMath: [['$$','$$'], ['\[','\]']],
+				processEscapes: true,
+				processEnvironments: true,
+				skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+				TeX: { equationNumbers: { autoNumber: "AMS" },
+						 extensions: ["AMSmath.js", "AMSsymbols.js"] }
+			}
+		});
+		</script>
+	
+
+	
+	
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css">
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+		
+		
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+					renderMathInElement(document.body, {
+							delimiters: [
+									{left: "$$", right: "$$", display: true},
+									{left: "$", right: "$", display: false}
+							]
+					});
+			});
+			</script>
+	
+	
+	
+</head>
+<body>
+        <div class="content"><header>
+	<div class="main">
+		<a href="http://localhost:1313/">marinegor.dev</a>
+	</div>
+	<nav>
+		
+		<a href="/">Home</a>
+		
+		<a href="/posts">All posts</a>
+		
+		<a href="/about">About</a>
+		
+		<a href="/tags">Tags</a>
+		
+		
+	</nav>
+</header>
+
+<main>
+	<article>
+		<div class="title">
+			<h1 class="title">GSOC 2023: what will I do?</h1>
+			<div class="meta">Posted on May 29, 2023</div>
+		</div>
+		
+
+		<section class="body">
+			<p>This year I applied for the Google Summer of Code program, and luckily was selected as a contributor for <a href="https://github.com/MDAnalysis/mdanalysis">MDAnalysis</a> with my proposal for a parallel analysis project, extending the idea suggested by the developers.</p>
+<p>In this post, I&rsquo;ll briefly describe the proposal itself &ndash; motivation, technical outline, and how I expect things will change for the MDAnalysis users after the successful execution of the proposal idea.</p>
+<h1 id="overview-and-motivation">Overview and motivation</h1>
+<p>As you might already know, <a href="https://github.com/MDAnalysis/mdanalysis">MDAnalysis</a> is a python library for analysis molecular dynamics (MD) trajectories, which is kinda clear from the start if you look at the library&rsquo;s name. In turn, molecular dynamics is an <del>art</del> computational technique for simulation of molecular ensembles at various levels of detail. In structural biology, these ensembles can vary from low-level things like simulation including quantum mechanics approximations (QM/MM) to high level simulations of large systems such as a whole cell organelle or a cell itself (coarse-grained simulations).</p>
+<p>Technically, a result of a MD simulation is a <em>trajectory</em>  &ndash; a file containing coordinates of all simulated atoms ($10^4-10^8$ atoms) over the course of a whole simulation ($10^4-10^7$ time-steps). Producing such a file is hard and computationally intensive, and requires lots of GPU resources. Often, it&rsquo;s even harder to get insights from these simulations, and requires lots of hypothesis formulation and evaluation, coupled with a data-intensive analysis of these trajectories, where libraries such as MDAnalysis come in handy.</p>
+<p>However, currently MDAnalysis uses a single process to run an analysis of a trajectory. Despite all the efforts for the code optimization, it is hard to keep up with the size of the MD trajectories. Hence, utilizing a parallel approach for the analysis would be the next thing to do.</p>
+<p>My proposal focuses exactly on this: I am planning to implement a parallel backend for the MDAnalysis library. The backend is planned to be implemented using <a href="https://dask.org"><code>dask</code></a> library, allowing users to seamlessly run their analysis either on powerful local machines or various clusters, such as SLURM. There was a proof-of-concept fork of the MDAnalysis library, <a href="https://github.com/MDAnalysis/pmda">pmda</a>, which implemented this idea for a subset of analysis methods implemented in the MDAnalysis. Basically, proposal idea is to refactor pmda methods into the MDAnalysis.</p>
+<h1 id="technical-details-of-the-project">Technical details of the project</h1>
+<p>A key component of the MDAnalysis library is the <code>AnalysisBase</code> class, from which all objects that allow user to run an analysis of a trajectory are inherited. Namely, it implements a <code>run</code> method, that looks somewhat like that:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self, start<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, stop<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, step<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, frames<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, <span style="color:#f92672">...</span>):	
+</span></span><span style="display:flex;"><span>	self<span style="color:#f92672">.</span>_setup_frames(self<span style="color:#f92672">.</span>_trajectory, start<span style="color:#f92672">=</span>start, stop<span style="color:#f92672">=</span>stop, step<span style="color:#f92672">=</span>step, frames<span style="color:#f92672">=</span>frames)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	self<span style="color:#f92672">.</span>_prepare()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> i, ts <span style="color:#f92672">in</span> enumerate(self<span style="color:#f92672">.</span>_sliced_trajectory, <span style="color:#f92672">...</span>):
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_single_frame()
+</span></span><span style="display:flex;"><span>	self<span style="color:#f92672">.</span>_conclude()
+</span></span></code></pre></div><p>and consists of three steps:</p>
+<ul>
+<li>setting up frames for reading &ndash; may include options to analyze only a part of the trajectory in <code>time</code> coordinate (change time-step, start/stop, etc)</li>
+<li>preparing for the analysis: may include preparation of some arrays storing intermediate data, etc</li>
+<li>running analysis of a single frame</li>
+<li>and concluding the results &ndash; e.g. average some quantity calculated for each frame separately.</li>
+</ul>
+<p>For a setup with multiple worker processes, this protocol will require an additional step of first separating a trajectory into <strong>blocks</strong>. Each block will be processed with a single separate process, and also results from different blocks will potentially be concluded separately:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self, start<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, stop<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, step<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, frames<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, scheduler: Optional[str]<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>):
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> scheduler <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># fallback to the old behavior</span>
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_setup_frames(self<span style="color:#f92672">.</span>_trajectory, start<span style="color:#f92672">=</span>start, stop<span style="color:#f92672">=</span>stop, step<span style="color:#f92672">=</span>step, frames<span style="color:#f92672">=</span>frames)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_prepare()
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> i, ts <span style="color:#f92672">in</span> enumerate(self<span style="color:#f92672">.</span>_sliced_trajectory, <span style="color:#f92672">...</span>):
+</span></span><span style="display:flex;"><span>			<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>			self<span style="color:#f92672">.</span>_single_frame()
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_conclude()
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_configure_scheduler(scheduler<span style="color:#f92672">=</span>scheduler)
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_setup_blocks(start<span style="color:#f92672">=</span>start, stop<span style="color:#f92672">=</span>stop, step<span style="color:#f92672">=</span>step, frames<span style="color:#f92672">=</span>frames) 
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># split trajectory into blocks according to scheduler settings</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		tasks <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> block <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>_blocks:
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e"># create separate tasks </span>
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e"># that would fall back to the old behavior </span>
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e"># and schedule them as dask tasks</span>
+</span></span><span style="display:flex;"><span>			subrun <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>__class__(start<span style="color:#f92672">=</span>block<span style="color:#f92672">.</span>start, stop<span style="color:#f92672">=</span>block<span style="color:#f92672">.</span>stop, step<span style="color:#f92672">=</span>block<span style="color:#f92672">.</span>step, frames<span style="color:#f92672">=</span>block<span style="color:#f92672">.</span>frames, scheduler<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>)
+</span></span><span style="display:flex;"><span>			dask_task <span style="color:#f92672">=</span> dask<span style="color:#f92672">.</span>delayed(subrun<span style="color:#f92672">.</span>run)
+</span></span><span style="display:flex;"><span>			tasks<span style="color:#f92672">.</span>append(dask_task)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># perform dask computation</span>
+</span></span><span style="display:flex;"><span>		tasks <span style="color:#f92672">=</span> dask<span style="color:#f92672">.</span>delayed(tasks)
+</span></span><span style="display:flex;"><span>		res <span style="color:#f92672">=</span> tasks<span style="color:#f92672">.</span>compute(<span style="color:#f92672">**</span>self<span style="color:#f92672">.</span>_scheduler_params)
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_parallel_conclude()
+</span></span></code></pre></div><p>Which requires introducing following methods for the <code>AnalysisBase</code> class:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AnalysisBase</span>(object):
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_configure_scheduler</span>(self, scheduler<span style="color:#f92672">=</span>scheduler, <span style="color:#f92672">**</span>params):
+</span></span><span style="display:flex;"><span>	    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">@property</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_blocks</span>(self):
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_setup_blocks</span>(start<span style="color:#f92672">=</span>start, stop<span style="color:#f92672">=</span>stop, step<span style="color:#f92672">=</span>step, frames<span style="color:#f92672">=</span>frames):
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># will also update `self._blocks` accordingly</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_parallel_conclude</span>(<span style="color:#f92672">...</span>):
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">...</span>
+</span></span></code></pre></div><p>Which is similar to the protocol implemented in <code>pmda</code>. Such a modular design has following advantages:</p>
+<ul>
+<li>it reuses the previously existing code for <code>prepare</code> and <code>conclude</code> methods for the subclasses, and hence will successfully run on sub-trajectories</li>
+<li>it requires developers to introduce only a proper non-default <code>parallel_conclude</code> method for sophisticated results combination</li>
+<li>it allows to raise an exception for subclasses that for some reason don&rsquo;t allow such parallelization (e.g. rely on results from previous frames when computing current one), via re-implementing <code>_configure_scheduler</code> and raising an exception in not-<code>None</code> cases.</li>
+</ul>
+<h1 id="project-steps">Project steps</h1>
+<p>During the proposal preparation, most of the effort was put into the project planning to ensure some profit for the library even of the overall goal is unreachable within the given time-frame.</p>
+<h2 id="0-proof-of-concept-for-the-scheduler-based-protocol">0. Proof-of-concept for the scheduler-based protocol</h2>
+<p>This part includes re-writing protocol in <code>AnalysisBase.run()</code> as introduced above, but using simplest backend possible &ndash; <code>dask</code> running on a local machine with a single job. This way, I can ensure that there are no node communication issues etc, and focus on proper storing of the values in private fields and re-factoring the protocol.</p>
+<ul>
+<li><input disabled="" type="checkbox"> introduce <code>_configure_backend()</code> and <code>_setup_blocks()</code> in a simplest way possible &ndash; single block and one task</li>
+<li><input disabled="" type="checkbox"> add simple <code>_parallel_conclude()</code> method</li>
+<li><input disabled="" type="checkbox"> make sure that results are the same as were before on a <code>develop</code> branch for few test files</li>
+<li><input disabled="" type="checkbox"> add tests for <code>n_jobs=1</code> and test files tested manually</li>
+</ul>
+<p>Here I mostly expect problems with the <code>_setup_blocks()</code> part, that might introduce nasty <code>+- 1</code> errors in the tests. Or might not.</p>
+<h2 id="1-introducing-multiple-jobs-support">1. Introducing multiple jobs support</h2>
+<p>Next step would be to add complexity and expand <code>_configure_backend()</code> to multiple jobs, and ensure it&rsquo;s still working. At this step, I&rsquo;d expect serialization problems, as well as problems with reading only the necessary part of the trajectory from disk. And, similarly to the previous case, I expect some problems with the <code>_setup_blocks()</code>.</p>
+<ul>
+<li><input disabled="" type="checkbox"> add scheduler configuration for multiple cores</li>
+<li><input disabled="" type="checkbox"> re-write tests for multiple cores</li>
+<li><input disabled="" type="checkbox"> ensure the tests run with multiple cores</li>
+</ul>
+<p>Also, this step would be a perfect mid-project checkpoint for several reasons:</p>
+<ul>
+<li>it actually adds value to the library &ndash; if the second part of the project fails, at least the single-node parallelism would be available for users</li>
+<li>it is complex enough to test the protocol&rsquo;s viability</li>
+<li>it allows to see the real progress even on moderate workstations</li>
+</ul>
+<h2 id="2-introducing-cluster-support">2. Introducing cluster support</h2>
+<p>This step would include adding <code>_configure_backend()</code> for an actual cluster including multiple nodes. Likely, this will also include introducing <code>backend: Optional[obj] = None</code> instead of <code>backend: Optional[str] = None</code>, where <code>obj</code> is a <code>dask</code> instance that can be configured prior to the actual run.</p>
+<p>During proposal formulation, I expected most challenged here with writing tests, but thanks to the contributors team, I realized it is actually simpler than I thought, and even made up a simple toy repository <a href="https://github.com/marinegor/dask-gh-actions/"><code>dask-gh-action</code></a> to write dask-based multi-processing tests.</p>
+<ul>
+<li><input disabled="" type="checkbox"> add object-based <code>backend=...</code> keyword and respective configuration</li>
+<li><input disabled="" type="checkbox"> add tests for the different <code>backend</code> options and make sure they run locally</li>
+</ul>
+<h2 id="3-optional-adding-tests-for-all-analysisbase-subclasses">3. Optional: adding tests for all <code>AnalysisBase</code> subclasses</h2>
+<p>It is likely that during step 2 proper <code>pytest</code> fixtures for <code>dask</code>-based execution will be written. Hence, it&rsquo;s worth trying to add these fixtures to existing tests for subclasses of <code>AnalysisBase</code> and see if they run, and mark <code>NotImplemented</code> those that have valid reasons not to run in parallel.</p>
+<ul>
+<li><input disabled="" type="checkbox"> add tests for all <code>AnalysisBase</code> subclasses executed with <code>dask</code></li>
+<li><input disabled="" type="checkbox"> mark parallel execution for those that can&rsquo;t be run trivially as <code>NotImplemented</code> during <code>_configure_scheduler</code></li>
+</ul>
+<h2 id="4-optional-testing-mdanalysis-parallel-execution-on-a-super-large-md-trajectory">4. Optional: testing MDAnalysis parallel execution on a super-large MD trajectory</h2>
+<p>It would be cool to see the results on a large trajectory such as those from ANTON supercomputer listed <a href="https://www.deshawresearch.com/downloads/download_trajectory_sarscov2.cgi/">here</a>, for example <code>DESRES-ANTON-11441075</code> (235 Gb compressed tar). This way we&rsquo;ll actually show that it&rsquo;s possible to analyze things that weren&rsquo;t accessible before with MDAnalysis.</p>
+
+		</section>
+
+		<div class="post-tags">
+			
+			
+			<nav class="nav tags">
+				<ul class="tags">
+					
+					<li><a href="/tags/gsoc">gsoc</a></li>
+					
+					<li><a href="/tags/coding">coding</a></li>
+					
+					<li><a href="/tags/mdanalysis">mdanalysis</a></li>
+					
+				</ul>
+			</nav>
+			
+			
+		</div>
+		</article>
+</main>
+<footer>
+  <div style="display:flex"><a class="soc" href="https://github.com/marinegor" rel="me" title="GitHub"><i data-feather="github"></i></a>
+    <a class="border"></a><a class="soc" href="https://twitter.com/egor__marin/" rel="me" title="Twitter"><i data-feather="twitter"></i></a>
+    <a class="border"></a><a class="soc" href="https://www.linkedin.com/in/marinegor/" rel="me" title="Linkedin"><i data-feather="linkedin"></i></a>
+    <a class="border"></a><a class="soc" href="https://bsky.app/profile/marinegor.bsky.social" rel="me" title="Bluesky"><i data-feather="bluesky"></i></a>
+    <a class="border"></a></div>
+  <div class="footer-info">
+    2024  Egor Marin |  <a
+      href="https://github.com/athul/archie">Archie Theme</a> | Built with <a href="https://gohugo.io">Hugo</a>
+  </div>
+</footer>
+<script>
+  feather.replace()
+</script></div>
+    </body>
+</html>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Clean Code on marinegor.dev</title>
+    <link>http://localhost:1313/tags/clean-code/</link>
+    <description>Recent content in Clean Code on marinegor.dev</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>Egor Marin</copyright>
+    <lastBuildDate>Wed, 23 Aug 2023 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/clean-code/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GSOC-2023: summary</title>
+      <link>http://localhost:1313/posts/gsoc-2023/summary/</link>
+      <pubDate>Wed, 23 Aug 2023 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/gsoc-2023/summary/</guid>
+      <description>As you might know from my previous posts, during the summer of 2023 I&amp;rsquo;ve been working on MDAnalysis&amp;rsquo;s project during Google Summer of Code. Here I&amp;rsquo;ll summarize what I&amp;rsquo;ve done, how others can use it, and what changes will follow that in the MDAnalysis codebase in the near future.&#xA;A short description of the goals of the project. One sentence: introduce parallel execution of analysis runs in MDAnalysis library. Somewhat good introduction I also gave here when writing a proposal for the project.</description>
+    </item>
+    <item>
+      <title>(again bi)weekly GSOC-4: finally about results aggretation</title>
+      <link>http://localhost:1313/posts/gsoc-2023/biweekly-4_results_aggregation/</link>
+      <pubDate>Mon, 14 Aug 2023 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/gsoc-2023/biweekly-4_results_aggregation/</guid>
+      <description>In the last blogpost, I explained how I decided to lift the parallelization class up, and how AnalysisBase.run() method changed after introducing this.&#xA;Here, I will (finally) talk about aggregating results from different worker objects, and how to make the implementation more explicit while not making people who create subclasses write a lot of boilerplate code.&#xA;What are we trying to do? We&amp;rsquo;re not looking on how to aggregate results from independent AnalysisBase.</description>
+    </item>
+    <item>
+      <title>(not anymore bi)weekly GSOC-3: writing `ParallelExecutor` class</title>
+      <link>http://localhost:1313/posts/gsoc-2023/biweekly-3_parallel_executor/</link>
+      <pubDate>Sun, 30 Jul 2023 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/gsoc-2023/biweekly-3_parallel_executor/</guid>
+      <description>In the previous blogpost, I briefly explained how decomposition works &amp;ndash; we split all _single_frame() runs into independent groups that get executed in parallel. For this, we have _compute method that executes the frames group, and run method that orchestrates the _compute execution.&#xA;Here, I will explain how the actual implementation went south, and then evolved into something more complex and simple at the same time.&#xA;What was the problem? So, the actual implementation of the run protocol turned out to be more complicated than I thought.</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html><head lang="en"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>(again bi)weekly GSOC-4: finally about results aggretation - marinegor.dev</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="In the last blogpost, I explained how I decided to lift the parallelization class up, and how AnalysisBase.run() method changed after introducing this.
+Here, I will (finally) talk about aggregating results from different worker objects, and how to make the implementation more explicit while not making people who create subclasses write a lot of boilerplate code.
+What are we trying to do? We&rsquo;re not looking on how to aggregate results from independent AnalysisBase." />
+	<meta property="og:image" content=""/>
+	<meta property="og:url" content="http://localhost:1313/posts/gsoc/2023-07-30-gsoc-5/">
+  <meta property="og:site_name" content="marinegor.dev">
+  <meta property="og:title" content="(again bi)weekly GSOC-4: finally about results aggretation">
+  <meta property="og:description" content="In the last blogpost, I explained how I decided to lift the parallelization class up, and how AnalysisBase.run() method changed after introducing this.
+Here, I will (finally) talk about aggregating results from different worker objects, and how to make the implementation more explicit while not making people who create subclasses write a lot of boilerplate code.
+What are we trying to do? We’re not looking on how to aggregate results from independent AnalysisBase.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-08-14T00:00:00+00:00">
+    <meta property="article:modified_time" content="2023-08-14T00:00:00+00:00">
+    <meta property="article:tag" content="Gsoc">
+    <meta property="article:tag" content="Coding">
+    <meta property="article:tag" content="Mdanalysis">
+    <meta property="article:tag" content="Multiprocessing">
+    <meta property="article:tag" content="Dask">
+    <meta property="article:tag" content="Clean Code">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="(again bi)weekly GSOC-4: finally about results aggretation">
+<meta name="twitter:description" content="In the last blogpost, I explained how I decided to lift the parallelization class up, and how AnalysisBase.run() method changed after introducing this.
+Here, I will (finally) talk about aggregating results from different worker objects, and how to make the implementation more explicit while not making people who create subclasses write a lot of boilerplate code.
+What are we trying to do? We&rsquo;re not looking on how to aggregate results from independent AnalysisBase.">
+<script src="http://localhost:1313/js/feather.min.js"></script>
+	
+	
+        <link href="http://localhost:1313/css/fonts.2c2227b81b1970a03e760aa2e6121cd01f87c88586803cbb282aa224720a765f.css" rel="stylesheet">
+	
+
+	
+	<link rel="stylesheet" type="text/css" media="screen" href="http://localhost:1313/css/main.ac08a4c9714baa859217f92f051deb58df2938ec352b506df655005dcaf98cc0.css" />
+		<link id="darkModeStyle" rel="stylesheet" type="text/css" href="http://localhost:1313/css/dark.726cd11ca6eb7c4f7d48eb420354f814e5c1b94281aaf8fd0511c1319f7f78a4.css" media="(prefers-color-scheme: dark)"  />
+	
+
+	
+	
+		<script type="text/javascript"
+		src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+		</script>
+	
+		
+		<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			tex2jax: {
+				inlineMath: [['$','$'], ['\\(','\\)']],
+				displayMath: [['$$','$$'], ['\[','\]']],
+				processEscapes: true,
+				processEnvironments: true,
+				skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+				TeX: { equationNumbers: { autoNumber: "AMS" },
+						 extensions: ["AMSmath.js", "AMSsymbols.js"] }
+			}
+		});
+		</script>
+	
+
+	
+	
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css">
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+		
+		
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+					renderMathInElement(document.body, {
+							delimiters: [
+									{left: "$$", right: "$$", display: true},
+									{left: "$", right: "$", display: false}
+							]
+					});
+			});
+			</script>
+	
+	
+	
+</head>
+<body>
+        <div class="content"><header>
+	<div class="main">
+		<a href="http://localhost:1313/">marinegor.dev</a>
+	</div>
+	<nav>
+		
+		<a href="/">Home</a>
+		
+		<a href="/posts">All posts</a>
+		
+		<a href="/about">About</a>
+		
+		<a href="/tags">Tags</a>
+		
+		
+	</nav>
+</header>
+
+<main>
+	<article>
+		<div class="title">
+			<h1 class="title">(again bi)weekly GSOC-4: finally about results aggretation</h1>
+			<div class="meta">Posted on Aug 14, 2023</div>
+		</div>
+		
+
+		<section class="body">
+			<p>In the last <a href="https://marinegor.github.io/posts/2023/06/gsoc-biweekly-3/">blogpost</a>, I explained how I decided to lift the parallelization class up, and how <code>AnalysisBase.run()</code> method changed after introducing this.</p>
+<p>Here, I will (finally) talk about aggregating results from different worker objects, and how to make the implementation more explicit while not making people who create subclasses write a lot of boilerplate code.</p>
+<h2 id="what-are-we-trying-to-do">What are we trying to do?</h2>
+<p>We&rsquo;re not looking on how to aggregate results from independent <code>AnalysisBase._compute()</code> methods. Also, we want <code>conclude()</code> methods of subclasses to run as they used to, so after we run our aggregation, <code>results</code> and all other attributes should look exactly as if we&rsquo;d run <code>run(backend='local')</code>.</p>
+<p>Looking at the <code>_compute()</code> method signature, we can see that it returns <code>self</code> (<code>AnalysisBase</code>). Also, the main object we want to return is whatever the type of <code>results</code> is. Usually it is <code>MDAnalysis.analysis.Results</code> object (basically, a fancy <code>dict</code>), although for some old classes it might be <code>np.ndarray</code> or just a <code>list</code>.</p>
+<p>So, we&rsquo;re looking for something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">aggregate</span>(remote_objects: list[AnalysisBase]) <span style="color:#f92672">-&gt;</span> Results:
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span></code></pre></div><p>Note that we have an ordered sequence of remote results, and can rely on this fact when aggregating the result without the need to match frame indices with respective results.</p>
+<h2 id="first-ideas">First ideas</h2>
+<p>First thought that came at least to me looked like this: let&rsquo;s take first object of <code>remote_objects</code> as a template, and based on how it looks like (=its type), try to do aggregation for it. Something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">merge</span>(remote_objects: list[AnalysisBase]) <span style="color:#f92672">-&gt;</span> Results:
+</span></span><span style="display:flex;"><span>	template: Results <span style="color:#f92672">|</span> list <span style="color:#f92672">|</span> np<span style="color:#f92672">.</span>ndarray <span style="color:#f92672">=</span> remote_objects[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>results
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> isinstance(template, list):
+</span></span><span style="display:flex;"><span>		remote_results <span style="color:#f92672">=</span> [obj<span style="color:#f92672">.</span>results <span style="color:#66d9ef">for</span> obj <span style="color:#f92672">in</span> remote_objects]
+</span></span><span style="display:flex;"><span>		flat_results <span style="color:#f92672">=</span> flatten_arrays(objects_to_flatten)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">elif</span> isinstance(template, np<span style="color:#f92672">.</span>ndarray):
+</span></span><span style="display:flex;"><span>		remote_results <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([obj<span style="color:#f92672">.</span>results <span style="color:#66d9ef">for</span> obj <span style="color:#f92672">in</span> remote_objects])
+</span></span><span style="display:flex;"><span>		flat_results <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>hstack(remote_results)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">elif</span> isinstance(template, Results):
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">&#39;unknown results type&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">flatten_arrays</span>(arrs: list[list]) <span style="color:#f92672">-&gt;</span> list:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> [obj <span style="color:#66d9ef">for</span> sublist <span style="color:#f92672">in</span> arrs <span style="color:#66d9ef">for</span> obj <span style="color:#f92672">in</span> sublist]
+</span></span></code></pre></div><p>A little bit more complicated if <code>isinstance(remote_results, Results)</code>. Since <code>Results</code> is basically a dictionary, we have to go over its keys and do proper aggregation for each of them:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">...</span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">elif</span> isinstance(template, Results):
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> key, obj_of_type <span style="color:#f92672">in</span> template<span style="color:#f92672">.</span>items():
+</span></span><span style="display:flex;"><span>		results_of_key <span style="color:#f92672">=</span> [obj<span style="color:#f92672">.</span>results[key] <span style="color:#66d9ef">for</span> obj <span style="color:#f92672">in</span> remote_objects]
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> isinstance(obj_of_type, list):
+</span></span><span style="display:flex;"><span>			flat_results <span style="color:#f92672">=</span> flatten_arrays(results_of_key)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">elif</span> isinstance(obj_of_type, np<span style="color:#f92672">.</span>ndarray):
+</span></span><span style="display:flex;"><span>			flat_results <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>hstack(np<span style="color:#f92672">.</span>array(results_of_key))
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">elif</span> isinstance(obj_of_type, float):
+</span></span><span style="display:flex;"><span>			<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">&#34;couldn&#39;t find aggregation function&#34;</span>)
+</span></span></code></pre></div><h2 id="why-first-ideas-are-bad">Why first ideas are bad</h2>
+<p>The code above is probably already ugly for an experienced eye &ndash; for instance, we&rsquo;re repeating ourselves quite a few times and have many nested <code>if-elif-else</code> parts that look super ugly. However, there&rsquo;s a more important flaw here from the library point &ndash; if a subclass wants to have a custom aggregation function for its attribute, there is now way to conveniently reuse the base class method. Also, sometimes we can have different aggregation functions even if the objects have the same type &ndash; some <code>ndarray</code>-s have to be averaged, some simply summed, etc. The only other thing we have to distinguish results from each other is the attribute name, so we must base our aggregation on them.</p>
+<p>To sum up, we actually don&rsquo;t want to do any type matching (and ugly <code>if-elif-else</code> branches), but instead want to:</p>
+<ul>
+<li>rely on the attribute name, not type</li>
+<li>provide a reusable library of basic aggregation functions</li>
+<li>allow users to easily create their own aggregation functions without copying our boilerplate</li>
+</ul>
+<h2 id="good-ideas-another-new-class">Good ideas: another new class</h2>
+<p>So we want to aggregate results based on attribute name, and also store somewhere a list of pre-determined functions that do this. We probably would be fine with a complicated function that stores everything, but since we want to also store different aggregation functions somewhere, let&rsquo;s create a simple class which <code>staticmethod</code>s would be different aggregation functions, and one useful method would be our <code>merge</code> from above:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ResultsGroup</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">merge</span>(self, remote_objects: list[AnalysisBase]) <span style="color:#f92672">-&gt;</span> Results:
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">@staticmethod</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">flatten_arrays</span>(arrs: list[list]) <span style="color:#f92672">-&gt;</span> list:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> [obj <span style="color:#66d9ef">for</span> sublist <span style="color:#f92672">in</span> arrs <span style="color:#66d9ef">for</span> obj <span style="color:#f92672">in</span> sublist]
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">@staticmethod</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">ndarray_sum</span>(arrs: list[np<span style="color:#f92672">.</span>ndarray]) <span style="color:#f92672">-&gt;</span> np<span style="color:#f92672">.</span>ndarray:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> np<span style="color:#f92672">.</span>array(arrs)<span style="color:#f92672">.</span>sum(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">@staticmethod</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">ndarray_stack</span>(arrs: list[np<span style="color:#f92672">.</span>ndarray]) <span style="color:#f92672">-&gt;</span> np<span style="color:#f92672">.</span>ndarray:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> np<span style="color:#f92672">.</span>hstack(arrs)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">@staticmethod</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">ndarray_mean</span>(arrs: list[np<span style="color:#f92672">.</span>ndarray]) <span style="color:#f92672">-&gt;</span> np<span style="color:#f92672">.</span>ndarray:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> np<span style="color:#f92672">.</span>array(arrs)<span style="color:#f92672">.</span>mean(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span></code></pre></div><p>But how do we initialize the class? Well, we want to be able to call our <code>merge</code> method right after we initialize it, so all the information on how to match attribute name with respective aggregation function should be given upon initialization. Hence, <code>__init__</code> should look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ResultsGroup</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> __init__(self, lookup: dict[str, Callable]):
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_lookup <span style="color:#f92672">=</span> lookup
+</span></span></code></pre></div><h3 id="sidenote-results-are-cool">Sidenote: <code>Results</code> are cool!</h3>
+<p>Before we get into the final look of <code>merge</code>, let&rsquo;s remember that <code>Results</code> is actually a very cool class. Namely, it allows us to track which attributes we added to the object without changing the attribute access interface. In other words, we can make our results a <code>Results</code> object from the very beginning (namely, in <code>_prepare</code> method call), and then whatever got assigned, will be accessible in <code>results.keys()</code>! We&rsquo;ll simply add line <code>self.results = Results()</code> in <code>AnalysisBase._prepare</code>.</p>
+<h3 id="keep-writing-merge">Keep writing <code>merge()</code></h3>
+<p>Given the coolness of the <code>Results</code>, now we can rely on the fact that we know for sure which attributes got assigned, and easily iterate through them. Also, since all <code>remote_objects</code> have the same <code>results</code> outline, we can pick the first one as an example, and then be sure that the rest have the same outline:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ResultsGroup</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> __init__(self, lookup: dict[str, Callable]):
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_lookup <span style="color:#f92672">=</span> lookup
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">merge</span>(self, remote_objects: list[AnalysisBase]) <span style="color:#f92672">-&gt;</span> Results:
+</span></span><span style="display:flex;"><span>		rv <span style="color:#f92672">=</span> Results()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> key <span style="color:#f92672">in</span> remote_objects[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>keys():
+</span></span><span style="display:flex;"><span>            agg_function <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_lookup<span style="color:#f92672">.</span>get(key, <span style="color:#66d9ef">None</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> agg_function <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;No aggregation function for </span><span style="color:#e6db74">{</span>key<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>            results_of_t <span style="color:#f92672">=</span> [obj[key] <span style="color:#66d9ef">for</span> obj <span style="color:#f92672">in</span> objects]
+</span></span><span style="display:flex;"><span>            rv[key] <span style="color:#f92672">=</span> agg_function(results_of_t)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> rv
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># and @staticmethod s with aggregation functions</span>
+</span></span></code></pre></div><h2 id="how-will-analysisbaserun-look-like">How will <code>AnalysisBase.run()</code> look like?</h2>
+<p>Before, we had our aggregation function in <code>_parallel_conclude</code> method:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AnalysisBase</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self, start, stop, step, frames, n_workers, scheduler):
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_setup_frames(start, stop, step, frames)
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_prepare()
+</span></span><span style="display:flex;"><span>		computation_groups <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_setup_computation_groups(start, stop, step, frames, n_workers)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		executor <span style="color:#f92672">=</span> ParallelExecutor(n_workers, scheduler)
+</span></span><span style="display:flex;"><span>		executor<span style="color:#f92672">.</span>apply(self<span style="color:#f92672">.</span>_compute, computation_groups)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># THIS ONE</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># --------</span>
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_parallel_conclude()
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># --------</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_conclude()
+</span></span></code></pre></div><p>now, we can do everything more explicitly:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AnalysisBase</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self, start, stop, step, frames, n_workers, scheduler):
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_setup_frames(start, stop, step, frames)
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_prepare()
+</span></span><span style="display:flex;"><span>		computation_groups <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_setup_computation_groups(start, stop, step, frames, n_workers)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		executor <span style="color:#f92672">=</span> ParallelExecutor(n_workers, scheduler)
+</span></span><span style="display:flex;"><span>		remote_objects <span style="color:#f92672">=</span> executor<span style="color:#f92672">.</span>apply(self<span style="color:#f92672">.</span>_compute, computation_groups)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		aggregator <span style="color:#f92672">=</span> <span style="color:#f92672">...</span> <span style="color:#75715e"># will think about it later</span>
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>results <span style="color:#f92672">=</span> aggregator<span style="color:#f92672">.</span>merge(remote_objects)
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_conclude()
+</span></span></code></pre></div><p>Obviously, in order to get an appropriate <code>ResultsGroup</code> aggregator, we should call some method of <code>self</code>. Well, let&rsquo;s call it exactly like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AnalysisBase</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self, start, stop, step, frames, n_workers, scheduler):
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		aggregator <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_get_aggregator()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_get_aggregator</span>(self) <span style="color:#f92672">-&gt;</span> ResultsGroup:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> ResultsGroup(lookup<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>)
+</span></span></code></pre></div><p>Now, we&rsquo;re running into a backwards compatibility issue &ndash; now we must have a meaningful <code>ResultsGroup</code> aggregator even if we&rsquo;re using only <code>backend='local'</code>, without any parallelization. In this case, however, our <code>remote_objects</code> is a list with 1 element, and we can simply return it in <code>merge</code> method:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ResultsGroup</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> __init__(self, lookup: dict[str, Callable]):
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_lookup <span style="color:#f92672">=</span> lookup
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">merge</span>(self, remote_objects: list[AnalysisBase]) <span style="color:#f92672">-&gt;</span> Results:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> len(remote_objects) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>			rv <span style="color:#f92672">=</span> remote_objects[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>			rv <span style="color:#f92672">=</span> Results()
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">for</span> key <span style="color:#f92672">in</span> remote_objects[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>keys():
+</span></span><span style="display:flex;"><span>  	          agg_function <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_lookup<span style="color:#f92672">.</span>get(key, <span style="color:#66d9ef">None</span>)
+</span></span><span style="display:flex;"><span>  	          <span style="color:#66d9ef">if</span> agg_function <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>  	              <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;No aggregation function for </span><span style="color:#e6db74">{</span>key<span style="color:#e6db74">=}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>  	          results_of_t <span style="color:#f92672">=</span> [obj[key] <span style="color:#66d9ef">for</span> obj <span style="color:#f92672">in</span> objects]
+</span></span><span style="display:flex;"><span>  	          rv[key] <span style="color:#f92672">=</span> agg_function(results_of_t)
+</span></span><span style="display:flex;"><span>  	    <span style="color:#66d9ef">return</span> rv
+</span></span></code></pre></div><p>note that we won&rsquo;t even screw the function signature up and return the <code>Results</code> type still, since we&rsquo;ve added <code>self.results = Results()</code> in <code>_prepare()</code>.</p>
+<p>The last touch is that not everything is stored in <code>results</code> &ndash; in <code>_prepare</code> method, attributes <code>frames</code> and <code>times</code> are also assigned, so we&rsquo;ll have to merge them manually:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AnalysisBase</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self, start, stop, step, frames, n_workers, scheduler):
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_setup_frames(start, stop, step, frames)
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_prepare()
+</span></span><span style="display:flex;"><span>		computation_groups <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_setup_computation_groups(start, stop, step, frames, n_workers)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		executor <span style="color:#f92672">=</span> ParallelExecutor(n_workers, scheduler)
+</span></span><span style="display:flex;"><span>		remote_objects <span style="color:#f92672">=</span> executor<span style="color:#f92672">.</span>apply(self<span style="color:#f92672">.</span>_compute, computation_groups)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># manually merge `frames` and `times`</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>frames <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([obj<span style="color:#f92672">.</span>frames <span style="color:#66d9ef">for</span> obj <span style="color:#f92672">in</span> remote_objects])<span style="color:#f92672">.</span>sum(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>times <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([obj<span style="color:#f92672">.</span>times <span style="color:#66d9ef">for</span> obj <span style="color:#f92672">in</span> remote_objects])<span style="color:#f92672">.</span>sum(axis<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># apply ResultsGroup.merge()</span>
+</span></span><span style="display:flex;"><span>		aggregator <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_get_aggregator()
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>results <span style="color:#f92672">=</span> aggregator<span style="color:#f92672">.</span>merge(remote_objects)
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_conclude()
+</span></span></code></pre></div><p>And that&rsquo;s it, a final look of <code>AnalysisBase.run()</code>!</p>
+<h2 id="how-do-i-modify-subclasses-then">How do I modify subclasses then?</h2>
+<p>For instance, let&rsquo;s modify a <code>MDAnalysis.analysis.rms.RMSD</code> class so that it would work with our parallel backend. It has a huge <code>_prepare</code> method, but the only attribute that actually gets prepared is <code>self.results.rmsd</code> &ndash; it&rsquo;s initialized with zeros of a proper shape:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>self<span style="color:#f92672">.</span>results<span style="color:#f92672">.</span>rmsd <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros((self<span style="color:#f92672">.</span>n_frames,
+</span></span><span style="display:flex;"><span>							 <span style="color:#ae81ff">3</span> <span style="color:#f92672">+</span> len(self<span style="color:#f92672">.</span>_groupselections_atoms)))
+</span></span></code></pre></div><p>hence, in all but one remote objects value of <code>self.results.rmsd</code> will be zero, and we can simply add all results together to get a final result!</p>
+<p>Let&rsquo;s do that, and also add <code>available_backends</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RMSD</span>(AnalysisBase):
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">@classmethod</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">@property</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">available_backends</span>(cls):
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> (<span style="color:#e6db74">&#39;local&#39;</span>, <span style="color:#e6db74">&#39;multiprocessing&#39;</span>, <span style="color:#e6db74">&#39;dask&#39;</span>, <span style="color:#e6db74">&#39;dask.distributed&#39;</span>)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_get_aggregator</span>(self):
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> ResultsGroup(lookup<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;rmsd&#39;</span>: ResultsGroup<span style="color:#f92672">.</span>ndarray_sum})
+</span></span></code></pre></div><p>and that&rsquo;s it! And the function we&rsquo;ve specified here in <code>lookup</code> has a super simple signature &ndash; <code>Callable[list[T], T]</code>, and all the built-in functions have literally a single line of code in them.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this post, we&rsquo;ve finally finished writing our <code>AnalysisBase.run()</code> protocol via adding a <code>ResultsGroup</code> class. It accepts a <code>dict[str, Callable[list[T], T]]</code> lookup argument, which maps attribute name to a proper aggregation function. Its <code>merge</code> method does exactly one job &ndash; flattens the results of all <code>objects</code> that got passed into it.</p>
+<p>Altogether, our <code>AnalysisBase.run()</code> has changed by addition of the following methods: <code>_compute()</code>, <code>_setup_computation_groups()</code>, <code>_get_aggregator()</code> and <code>available_backends()</code>. We&rsquo;ve added <code>ParallelExecutor</code> and <code>ResultsGroup</code> classes that abstract away parallel execution and results aggregation, respectively. And finally, we added <code>multiprocessing</code> and <code>dask</code> backends that are supposed to speed up the analysis!</p>
+
+		</section>
+
+		<div class="post-tags">
+			
+			
+			<nav class="nav tags">
+				<ul class="tags">
+					
+					<li><a href="/tags/gsoc">gsoc</a></li>
+					
+					<li><a href="/tags/coding">coding</a></li>
+					
+					<li><a href="/tags/mdanalysis">mdanalysis</a></li>
+					
+					<li><a href="/tags/multiprocessing">multiprocessing</a></li>
+					
+					<li><a href="/tags/dask">dask</a></li>
+					
+					<li><a href="/tags/clean-code">clean code</a></li>
+					
+				</ul>
+			</nav>
+			
+			
+		</div>
+		</article>
+</main>
+<footer>
+  <div style="display:flex"><a class="soc" href="https://github.com/marinegor" rel="me" title="GitHub"><i data-feather="github"></i></a>
+    <a class="border"></a><a class="soc" href="https://twitter.com/egor__marin/" rel="me" title="Twitter"><i data-feather="twitter"></i></a>
+    <a class="border"></a><a class="soc" href="https://www.linkedin.com/in/marinegor/" rel="me" title="Linkedin"><i data-feather="linkedin"></i></a>
+    <a class="border"></a><a class="soc" href="https://bsky.app/profile/marinegor.bsky.social" rel="me" title="Bluesky"><i data-feather="bluesky"></i></a>
+    <a class="border"></a></div>
+  <div class="footer-info">
+    2024  Egor Marin |  <a
+      href="https://github.com/athul/archie">Archie Theme</a> | Built with <a href="https://gohugo.io">Hugo</a>
+  </div>
+</footer>
+<script>
+  feather.replace()
+</script></div>
+    </body>
+</html>

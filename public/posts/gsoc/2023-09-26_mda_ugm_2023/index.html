@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html><head lang="en"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>MDAnalysis UGM 2023: MDAnalysis Parallelization @ GSOC - marinegor.dev</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Parallelization of MDAnalysis Egor Marin, Google Summer of Code contributor
+marinegor@fastmail.com
+Motivation T(insight) = T(simulation) &#43; T(analysis) pmda: 30⭐️, 21🍴 (forks) all MDAnalysis instances are parallelizable (courtesy @yuxuanzhuang) Goals Change AnalysisBase in a way that&hellip;
+Introduces multiple job support local &ndash; using multiprocessing? non-local &ndash; using dask? Does not break existing code (subclasses, dependencies, etc) Allows customization add your own execution backend write your own parallelizable classes Sneak peak: results &gt;&gt;&gt; from MDAnalysis." />
+	<meta property="og:image" content=""/>
+	<meta property="og:url" content="http://localhost:1313/posts/gsoc/2023-09-26_mda_ugm_2023/">
+  <meta property="og:site_name" content="marinegor.dev">
+  <meta property="og:title" content="MDAnalysis UGM 2023: MDAnalysis Parallelization @ GSOC">
+  <meta property="og:description" content="Parallelization of MDAnalysis Egor Marin, Google Summer of Code contributor
+marinegor@fastmail.com
+Motivation T(insight) = T(simulation) &#43; T(analysis) pmda: 30⭐️, 21🍴 (forks) all MDAnalysis instances are parallelizable (courtesy @yuxuanzhuang) Goals Change AnalysisBase in a way that…
+Introduces multiple job support local – using multiprocessing? non-local – using dask? Does not break existing code (subclasses, dependencies, etc) Allows customization add your own execution backend write your own parallelizable classes Sneak peak: results &gt;&gt;&gt; from MDAnalysis.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-09-27T00:00:00+00:00">
+    <meta property="article:modified_time" content="2023-09-27T00:00:00+00:00">
+    <meta property="article:tag" content="Gsoc">
+    <meta property="article:tag" content="Mdanalysis">
+    <meta property="article:tag" content="Presentations">
+    <meta property="article:tag" content="Projects">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="MDAnalysis UGM 2023: MDAnalysis Parallelization @ GSOC">
+<meta name="twitter:description" content="Parallelization of MDAnalysis Egor Marin, Google Summer of Code contributor
+marinegor@fastmail.com
+Motivation T(insight) = T(simulation) &#43; T(analysis) pmda: 30⭐️, 21🍴 (forks) all MDAnalysis instances are parallelizable (courtesy @yuxuanzhuang) Goals Change AnalysisBase in a way that&hellip;
+Introduces multiple job support local &ndash; using multiprocessing? non-local &ndash; using dask? Does not break existing code (subclasses, dependencies, etc) Allows customization add your own execution backend write your own parallelizable classes Sneak peak: results &gt;&gt;&gt; from MDAnalysis.">
+<script src="http://localhost:1313/js/feather.min.js"></script>
+	
+	
+        <link href="http://localhost:1313/css/fonts.2c2227b81b1970a03e760aa2e6121cd01f87c88586803cbb282aa224720a765f.css" rel="stylesheet">
+	
+
+	
+	<link rel="stylesheet" type="text/css" media="screen" href="http://localhost:1313/css/main.ac08a4c9714baa859217f92f051deb58df2938ec352b506df655005dcaf98cc0.css" />
+		<link id="darkModeStyle" rel="stylesheet" type="text/css" href="http://localhost:1313/css/dark.726cd11ca6eb7c4f7d48eb420354f814e5c1b94281aaf8fd0511c1319f7f78a4.css" media="(prefers-color-scheme: dark)"  />
+	
+
+	
+	
+		<script type="text/javascript"
+		src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+		</script>
+	
+		
+		<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			tex2jax: {
+				inlineMath: [['$','$'], ['\\(','\\)']],
+				displayMath: [['$$','$$'], ['\[','\]']],
+				processEscapes: true,
+				processEnvironments: true,
+				skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+				TeX: { equationNumbers: { autoNumber: "AMS" },
+						 extensions: ["AMSmath.js", "AMSsymbols.js"] }
+			}
+		});
+		</script>
+	
+
+	
+	
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css">
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+		
+		
+		<script>
+			document.addEventListener("DOMContentLoaded", function() {
+					renderMathInElement(document.body, {
+							delimiters: [
+									{left: "$$", right: "$$", display: true},
+									{left: "$", right: "$", display: false}
+							]
+					});
+			});
+			</script>
+	
+	
+	
+</head>
+<body>
+        <div class="content"><header>
+	<div class="main">
+		<a href="http://localhost:1313/">marinegor.dev</a>
+	</div>
+	<nav>
+		
+		<a href="/">Home</a>
+		
+		<a href="/posts">All posts</a>
+		
+		<a href="/about">About</a>
+		
+		<a href="/tags">Tags</a>
+		
+		
+	</nav>
+</header>
+
+<main>
+	<article>
+		<div class="title">
+			<h1 class="title">MDAnalysis UGM 2023: MDAnalysis Parallelization @ GSOC</h1>
+			<div class="meta">Posted on Sep 27, 2023</div>
+		</div>
+		
+
+		<section class="body">
+			<h1 id="parallelization-of-mdanalysis"><strong>Parallelization of MDAnalysis</strong></h1>
+<p>Egor Marin, Google Summer of Code contributor</p>
+<p><a href="mailto:marinegor@fastmail.com">marinegor@fastmail.com</a></p>
+<p><img src="../images/2023-09-26_MDA_UGM_qrcode.png" alt=""></p>
+<hr>
+<h1 id="motivation">Motivation</h1>
+<ul>
+<li><code>T(insight) = T(simulation) + T(analysis)</code></li>
+<li><code>pmda</code>: 30⭐️, 21🍴 (forks)</li>
+<li>all MDAnalysis instances are parallelizable (courtesy @yuxuanzhuang)</li>
+</ul>
+<hr>
+<h1 id="goals">Goals</h1>
+<p>Change <code>AnalysisBase</code> in a way that&hellip;</p>
+<ol>
+<li>Introduces multiple job support
+<ul>
+<li>local &ndash; using multiprocessing?</li>
+<li>non-local &ndash; using dask?</li>
+</ul>
+</li>
+<li>Does not break existing code (subclasses, dependencies, etc)</li>
+<li>Allows customization
+<ul>
+<li>add your own execution backend</li>
+<li>write your own parallelizable classes</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h1 id="sneak-peak-results">Sneak peak: results</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#f92672">from</span> MDAnalysis.analysis.rms <span style="color:#f92672">import</span> RMSD
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> u, ref <span style="color:#f92672">=</span> <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#f92672">%</span> time long_run <span style="color:#f92672">=</span> RMSD(u, ref)
+</span></span><span style="display:flex;"><span>Wall time: <span style="color:#ae81ff">4</span> min
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#f92672">%</span> time long_run <span style="color:#f92672">=</span> RMSD(u, ref, backend<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;multiprocessing&#39;</span>, n_workers<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span>)
+</span></span><span style="display:flex;"><span>Wall time: <span style="color:#ae81ff">50</span> sec
+</span></span></code></pre></div><hr>
+<h1 id="sneak-peak-results-1">Sneak peak: results</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#f92672">from</span> MDAnalysis.analysis.rdf <span style="color:#f92672">import</span> InterRDF
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> s1, s2 <span style="color:#f92672">=</span> <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#f92672">%</span> time long_run <span style="color:#f92672">=</span> InterRDF(s1, s2)
+</span></span><span style="display:flex;"><span>Wall time: <span style="color:#ae81ff">1</span> h
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#f92672">%</span> time long_run <span style="color:#f92672">=</span> InterRDF(s1, s2, backend<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;multiprocessing&#39;</span>, n_workers<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span>)
+</span></span><span style="display:flex;"><span>Wall time: <span style="color:#ae81ff">8</span> min  
+</span></span></code></pre></div><hr>
+<h2 id="implementation">Implementation</h2>
+<p>General <code>AnalysisBase.run()</code> protocol:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self, 
+</span></span><span style="display:flex;"><span>        start<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, 
+</span></span><span style="display:flex;"><span>        stop<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, 
+</span></span><span style="display:flex;"><span>        step<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, 
+</span></span><span style="display:flex;"><span>        frames<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, <span style="color:#f92672">...</span>):	
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># prepare frames -- check boundaries, setup reader</span>
+</span></span><span style="display:flex;"><span>  self<span style="color:#f92672">.</span>_setup_frames(self<span style="color:#f92672">.</span>_trajectory, start<span style="color:#f92672">=</span>start, stop<span style="color:#f92672">=</span>stop, step<span style="color:#f92672">=</span>step, frames<span style="color:#f92672">=</span>frames)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># initialize attributes with intermediate results</span>
+</span></span><span style="display:flex;"><span>  self<span style="color:#f92672">.</span>_prepare()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># go through trajectory </span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> i, ts <span style="color:#f92672">in</span> enumerate(self<span style="color:#f92672">.</span>_sliced_trajectory, <span style="color:#f92672">...</span>):
+</span></span><span style="display:flex;"><span>    self<span style="color:#f92672">.</span>_single_frame()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># convert intermediate results into final ones</span>
+</span></span><span style="display:flex;"><span>  self<span style="color:#f92672">.</span>_conclude()
+</span></span></code></pre></div><hr>
+<h2 id="implementation-1">Implementation</h2>
+<p>split-apply-combine:</p>
+<ul>
+<li>split all frames into groups</li>
+<li>process each group independently</li>
+<li>combine results</li>
+</ul>
+<hr>
+<h2 id="implementation-2">Implementation</h2>
+<p>Additional methods of <code>AnalysisBase</code>:</p>
+<ul>
+<li>&ldquo;split&rdquo;: <code>_setup_computation_groups()</code></li>
+<li>&ldquo;apply&rdquo;: <code>_compute</code></li>
+<li>&ldquo;combine&rdquo;: <code>_get_aggregator</code> &amp; <code>ResultsGroup.merge()</code></li>
+<li>housekeeping: <code>_configure_backend</code></li>
+</ul>
+<hr>
+<h2 id="implementation-3">Implementation</h2>
+<hr>
+<p><img src="../images/2023-09-26_MDA_UGM_scheme.png" alt="bg fit"></p>
+<hr>
+<h2 id="implementation-4">Implementation</h2>
+<p>Additional classes: <code>ResultsGroup</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ResultsGroup</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">def</span> __init__(self, lookup: dict[str, Callable]): <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">merge</span>(self, objects: Sequence[Results], 
+</span></span><span style="display:flex;"><span>            require_all_aggregators: bool <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>) <span style="color:#f92672">-&gt;</span> Results:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span></code></pre></div><hr>
+<h2 id="implementation-5">Implementation</h2>
+<p>Additional classes: <code>ResultsGroup</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;</span> <span style="color:#f92672">from</span> MDAnalysis.analysis.parallel <span style="color:#f92672">import</span> ResultsGroup, Results
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;</span> group <span style="color:#f92672">=</span> ResultsGroup(lookup<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;mass&#39;</span>: <span style="color:#66d9ef">lambda</span> values: np<span style="color:#f92672">.</span>mean(values)}
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;</span> obj1 <span style="color:#f92672">=</span> Results(mass<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;</span> obj2 <span style="color:#f92672">=</span> Results(mass<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;</span> group<span style="color:#f92672">.</span>merge([obj1, obj2])
+</span></span><span style="display:flex;"><span>{<span style="color:#e6db74">&#39;mass&#39;</span>: <span style="color:#ae81ff">2.0</span>}
+</span></span></code></pre></div><hr>
+<h2 id="implementation-6">Implementation</h2>
+<p>Additional classes: <code>ResultsGroup</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># skip attributes you don&#39;t want to aggregate</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> lookup <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;mass&#39;</span>: ResultsGroup<span style="color:#f92672">.</span>float_mean, <span style="color:#e6db74">&#39;trajectory&#39;</span>: Trajectory}
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> group <span style="color:#f92672">=</span> ResultsGroup(lookup)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> objects <span style="color:#f92672">=</span> [Results(mass<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, trajectory<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>), Results(mass<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, trajectory<span style="color:#f92672">=</span>Trajectory(<span style="color:#f92672">...</span>))]
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> group<span style="color:#f92672">.</span>merge(objects, require_all_aggregators<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>{<span style="color:#e6db74">&#39;mass&#39;</span>: <span style="color:#ae81ff">2.0</span>}
+</span></span></code></pre></div><hr>
+<h2 id="implementation-7">Implementation</h2>
+<p>Additional classes: <code>BackendBase</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> MDAnalysis.parallel <span style="color:#f92672">import</span> BackendBase
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CustomBackend</span>(BackendBase):
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">def</span> __init__(self, some_resource):
+</span></span><span style="display:flex;"><span>    self<span style="color:#f92672">.</span>some_resource <span style="color:#f92672">=</span> some_resource
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">apply</span>(self, 
+</span></span><span style="display:flex;"><span>            func: Callable[T, R], 
+</span></span><span style="display:flex;"><span>            computations: list[T]) <span style="color:#f92672">-&gt;</span> list[R]:
+</span></span><span style="display:flex;"><span>    results <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>      self<span style="color:#f92672">.</span>some_resource<span style="color:#f92672">.</span>do_compute(func, task) 
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">for</span> task <span style="color:#f92672">in</span> computations]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> results
+</span></span></code></pre></div><hr>
+<h2 id="implementation-8">Implementation</h2>
+<p>Additional classes: <code>BackendBase</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> backend_instance <span style="color:#f92672">=</span> CustomBackend(some_resource<span style="color:#f92672">=...</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> my_run <span style="color:#f92672">=</span> RMSD(u, ref)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> my_run<span style="color:#f92672">.</span>run(backend<span style="color:#f92672">=</span>backend_instance, unsafe<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span></code></pre></div><hr>
+<h2 id="implementation-9">Implementation</h2>
+<p>Conditions for the <code>backend=...</code></p>
+<ul>
+<li><code>Subclass.is_parallelizable() == True</code></li>
+<li><code>backend: str|BackendBase</code>
+<ul>
+<li>if <code>str</code>, one of built-in backends (<code>multiprocessing</code>/<code>dask</code>)</li>
+<li>if <code>BackendBase</code> subclass, explicitly say <code>unsafe=True</code></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="add-to-your-subclass">Add to your subclass</h2>
+<p>Example: <code>RMSD</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> MDAnalysis.analysis.parallel <span style="color:#f92672">import</span> ResultsGroup
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RMSD</span>(AnalysisBase):
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@classmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@property</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">available_backends</span>(cls):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> (<span style="color:#e6db74">&#39;serial&#39;</span>, <span style="color:#e6db74">&#39;multiprocessing&#39;</span>, <span style="color:#e6db74">&#39;dask&#39;</span>,)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@classmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@property</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">is_parallelizable</span>(self):
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_get_aggregator</span>(self):
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> ResultsGroup(lookup<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;rmsd&#39;</span>: ResultsGroup<span style="color:#f92672">.</span>ndarray_vstack})
+</span></span></code></pre></div><hr>
+<h2 id="how-fast">How fast</h2>
+<ul>
+<li>full-atom <code>xtc</code> (&ldquo;lysozyme in water&rdquo;)</li>
+<li>two different drives, <code>hdparm</code>:
+<ul>
+<li>HDD: 180 MB/sec</li>
+<li>SSD: 460 MB/sec</li>
+</ul>
+</li>
+<li>i9-9900K CPU @ 3.60GHz, 8 cores/socket</li>
+</ul>
+<hr>
+<h2 id="how-fast-1">How fast</h2>
+<hr>
+<p><img src="../images/2023-09-26_MDA_UGM_time.png" alt="bg fit"></p>
+<hr>
+<p><img src="../images/2023-09-26_MDA_UGM_speedup.png" alt="bg fit"></p>
+<hr>
+<p><img src="../images/2023-09-26_MDA_UGM_efficiency.png" alt="bg fit"></p>
+<hr>
+<h2 id="when-should-i-use-it">When should I use it</h2>
+<p>Definitive answer: benchmark it yourself!</p>
+<ul>
+<li><code>%%time</code> in jupyter notebook</li>
+<li><code>step=MANY</code> or <code>start=0, stop=10_000</code> to achieve ~1-2 minute runtime with serial scheduler</li>
+</ul>
+<hr>
+<p><img src="../images/2023-09-26_MDA_UGM_when-to-use.png" alt="bg fit"></p>
+<hr>
+<h2 id="when-should-i-use-it-1">When should I use it</h2>
+<ul>
+<li><code>YourClass.is_parallelizable()</code> for your class</li>
+<li><code>_single_frame()</code> slower than reading from disk</li>
+</ul>
+<hr>
+<h1 id="future-features">Future features</h1>
+<ul>
+<li>🔜 add to all subclasses
+<ul>
+<li>have separate issues for complicated ones?</li>
+</ul>
+</li>
+<li>🔜 add tutorials
+<ul>
+<li>how to use parallel backends</li>
+<li>how to implement your own backend subclasses</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="future-features-1">Future features</h1>
+<ul>
+<li>🤔 add distributed support
+<ul>
+<li>rebrand <code>pmda</code> into MDAKit</li>
+<li>focus on parallel filesystems, etc</li>
+</ul>
+</li>
+<li>🤔 add shareable memory trajectories
+<ul>
+<li>pre-load trajectory &amp; analyze it</li>
+<li>efficient for practically all subclasses</li>
+</ul>
+</li>
+<li>🤔 add <code>AnalysisCollection</code> (ht @PicoCentauri)
+<ul>
+<li>one frame read exactly once</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="acknowledgements">Acknowledgements</h1>
+<ul>
+<li>Google Summer of Code 2023 program</li>
+</ul>
+<p><img src="../images/2023-09-26_MDA_UGM_gsoc.png" alt="fit"></p>
+<hr>
+<h1 id="acknowledgements-1">Acknowledgements</h1>
+<ul>
+<li>Mentors:
+<ul>
+<li>Yuxuan Zhuang @yuxuanzhuang</li>
+<li>Oliver Beckstein @orbeckst</li>
+<li>Rocco Meli @RMeli</li>
+</ul>
+</li>
+<li>💫 Paul Smith @p-j-smith</li>
+<li>all contributors🫶</li>
+</ul>
+
+		</section>
+
+		<div class="post-tags">
+			
+			
+			<nav class="nav tags">
+				<ul class="tags">
+					
+					<li><a href="/tags/gsoc">gsoc</a></li>
+					
+					<li><a href="/tags/mdanalysis">mdanalysis</a></li>
+					
+					<li><a href="/tags/presentations">presentations</a></li>
+					
+					<li><a href="/tags/projects">projects</a></li>
+					
+				</ul>
+			</nav>
+			
+			
+		</div>
+		</article>
+</main>
+<footer>
+  <div style="display:flex"><a class="soc" href="https://github.com/marinegor" rel="me" title="GitHub"><i data-feather="github"></i></a>
+    <a class="border"></a><a class="soc" href="https://twitter.com/egor__marin/" rel="me" title="Twitter"><i data-feather="twitter"></i></a>
+    <a class="border"></a><a class="soc" href="https://www.linkedin.com/in/marinegor/" rel="me" title="Linkedin"><i data-feather="linkedin"></i></a>
+    <a class="border"></a><a class="soc" href="https://bsky.app/profile/marinegor.bsky.social" rel="me" title="Bluesky"><i data-feather="bluesky"></i></a>
+    <a class="border"></a></div>
+  <div class="footer-info">
+    2024  Egor Marin |  <a
+      href="https://github.com/athul/archie">Archie Theme</a> | Built with <a href="https://gohugo.io">Hugo</a>
+  </div>
+</footer>
+<script>
+  feather.replace()
+</script></div>
+    </body>
+</html>

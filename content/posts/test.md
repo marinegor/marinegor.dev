@@ -1,9 +1,8 @@
 +++
-title = "About me"
-description = "Code notes, science notes, never ending strive for perfection"
-date = "1995-07-05"
-aliases = ["about-me","about",]
+title = "Home"
+description = "Home page"
 author = "Egor Marin"
+draft = true
 +++
 
 Hi everyone, I'm Egor. This little blog is a dedicated place for 

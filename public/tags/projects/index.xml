@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on marinegor.dev</title>
+    <link>http://localhost:1313/tags/projects/</link>
+    <description>Recent content in Projects on marinegor.dev</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <copyright>Egor Marin</copyright>
+    <lastBuildDate>Wed, 27 Sep 2023 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/projects/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MDAnalysis UGM 2023: MDAnalysis Parallelization @ GSOC</title>
+      <link>http://localhost:1313/posts/gsoc-2023/mda_ugm_2023/</link>
+      <pubDate>Wed, 27 Sep 2023 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/gsoc-2023/mda_ugm_2023/</guid>
+      <description>Parallelization of MDAnalysis Egor Marin, Google Summer of Code contributor&#xA;marinegor@fastmail.com&#xA;Motivation T(insight) = T(simulation) + T(analysis) pmda: 30⭐️, 21🍴 (forks) all MDAnalysis instances are parallelizable (courtesy @yuxuanzhuang) Goals Change AnalysisBase in a way that&amp;hellip;&#xA;Introduces multiple job support local &amp;ndash; using multiprocessing? non-local &amp;ndash; using dask? Does not break existing code (subclasses, dependencies, etc) Allows customization add your own execution backend write your own parallelizable classes Sneak peak: results &amp;gt;&amp;gt;&amp;gt; from MDAnalysis.</description>
+    </item>
+    <item>
+      <title>GSOC-2023: summary</title>
+      <link>http://localhost:1313/posts/gsoc-2023/summary/</link>
+      <pubDate>Wed, 23 Aug 2023 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/gsoc-2023/summary/</guid>
+      <description>As you might know from my previous posts, during the summer of 2023 I&amp;rsquo;ve been working on MDAnalysis&amp;rsquo;s project during Google Summer of Code. Here I&amp;rsquo;ll summarize what I&amp;rsquo;ve done, how others can use it, and what changes will follow that in the MDAnalysis codebase in the near future.&#xA;A short description of the goals of the project. One sentence: introduce parallel execution of analysis runs in MDAnalysis library. Somewhat good introduction I also gave here when writing a proposal for the project.</description>
+    </item>
+  </channel>
+</rss>
