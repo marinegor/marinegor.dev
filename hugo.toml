@@ -9,15 +9,12 @@ pygmentsstyle = "monokai"
 pygmentscodefences = true
 pygmentscodefencesguesssyntax = true
 
-
-# disqusShortname = "yourDisqusShortname"
-
 paginate=3 # articles per page
 
 [params]
 	mode="auto" # color-mode → light,dark,toggle or auto
 	useCDN=false # don't use CDNs for fonts and icons, instead serve them locally.
-	subtitle = "Minimal and Clean [blog theme for Hugo](https://github.com/athul/archie)"
+	subtitle = 'Website with code snippets, informal project descriptions, and some ranting when I get older'
 	mathjax = true # enable MathJax support
 	katex = true # enable KaTeX support
 
@@ -40,27 +37,47 @@ url = "https://www.linkedin.com/in/marinegor/"
 
 [[params.social]]
 name = "Bluesky"
-icon = "bluesky"
+icon = "sun"
 url = "https://bsky.app/profile/marinegor.bsky.social"
+
+[[params.social]]
+name = "Google Scholar"
+icon = "book-open"
+url = "https://scholar.google.com/citations?user=FJbv9XcAAAAJ"
 
 # Main menu Items
 
-[[menu.main]]
-name = "Home"
-url = "/"
-weight = 1
+# [[menu.main]]
+# name = "Home"
+# url = "/"
+# weight = 1
 
 [[menu.main]]
 name = "All posts"
 url = "/posts"
-weight = 2
+weight = 1
 
 [[menu.main]]
-name = "About"
-url = "/about"
+name = "Publications"
+url = "/pages/publications"
+weight = 2
+
+# [[menu.main]]
+# name = "Pages"
+# url = "/pages"
+# weight = 3
+
+[[menu.main]]
+name = "CV"
+url = "/pages/cv"
 weight = 3
 
 [[menu.main]]
 name = "Tags"
 url = "/tags"
 weight = 4
+
+[[menu.main]]
+name = "All pages"
+url = "/pages"
+weight = 5
