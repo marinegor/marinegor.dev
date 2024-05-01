@@ -13,7 +13,6 @@ The content below is one-to-one a content of my MDAnalysis User Meeting in Septe
 
 
 ---
-
 # **Parallelization of MDAnalysis**
 
 Egor Marin, Google Summer of Code contributor
