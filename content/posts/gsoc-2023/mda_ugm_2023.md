@@ -7,7 +7,6 @@ tags:
   - gsoc
   - mdanalysis
   - presentations
-  - projects
 
 # presentation keywords
 theme: uncover
@@ -32,7 +31,7 @@ Egor Marin, Google Summer of Code contributor
 
 marinegor@fastmail.com
 
-![](images/2023-09-26_MDA_UGM_qrcode.png)
+<!-- ![](images/2023-09-26_MDA_UGM_qrcode.png) -->
 
 ---
 # Motivation
@@ -130,7 +129,7 @@ Additional methods of `AnalysisBase`:
 ## Implementation
 
 ---
-![](images/2023-09-26_MDA_UGM_scheme.png)
+![mda-ugm-scheme](/posts/gsoc-2023/images/2023-09-26_MDA_UGM_scheme.png)
 
 ---
 ## Implementation
@@ -247,13 +246,13 @@ class RMSD(AnalysisBase):
 ## How fast
 
 ---
-![](images/2023-09-26_MDA_UGM_time.png)
+![](/posts/gsoc-2023/images/2023-09-26_MDA_UGM_time.png)
 
 ---
-![](images/2023-09-26_MDA_UGM_speedup.png)
+![](/posts/gsoc-2023/images/2023-09-26_MDA_UGM_speedup.png)
 
 ---
-![](images/2023-09-26_MDA_UGM_efficiency.png)
+![](/posts/gsoc-2023/images/2023-09-26_MDA_UGM_efficiency.png)
 
 ---
 ## When should I use it
@@ -264,7 +263,7 @@ Definitive answer: benchmark it yourself!
  - `step=MANY` or `start=0, stop=10_000` to achieve ~1-2 minute runtime with serial scheduler
 
 ---
-![](images/2023-09-26_MDA_UGM_when-to-use.png)
+![](/posts/gsoc-2023/images/2023-09-26_MDA_UGM_when-to-use.png)
 
 ---
 ## When should I use it
@@ -298,7 +297,7 @@ Definitive answer: benchmark it yourself!
 
 - Google Summer of Code 2023 program 
 
-![](./images/2023-09-26_MDA_UGM_gsoc.png)
+![](/posts/gsoc-2023/images/2023-09-26_MDA_UGM_gsoc.png)
 
 ---
 # Acknowledgements

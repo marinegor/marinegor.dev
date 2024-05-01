@@ -6,7 +6,6 @@ tags:
   - gsoc
   - coding
   - mdanalysis
-  - clean code
   - projects
 ---
 
