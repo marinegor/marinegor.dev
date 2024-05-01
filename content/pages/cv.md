@@ -18,6 +18,8 @@ Machine Learning Scientist @ [ENPICOM B.V.](https://enpicom.com); `@marinegor` a
  - [twitter](https://twitter.com/egor__marin)
  - [linkedin](https://www.linkedin.com/in/marinegor/)
  - [bluesky](https://bsky.app/profile/marinegor.bsky.social)
+ - [google scholar](https://scholar.google.com/citations?user=FJbv9XcAAAAJ)
+ - [ORCID](https://orcid.org/0000-0003-2369-1732)
 
 ## Profile
 
