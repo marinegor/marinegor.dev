@@ -7,22 +7,11 @@ tags:
   - gsoc
   - mdanalysis
   - presentations
+---
 
-# presentation keywords
-theme: uncover
-_class: invert
-paginate: true
+The content below is one-to-one a content of my MDAnalysis User Meeting in September 2023.
 
 
-# TODO:
-# - improve graphs
-#     - bigger labels
-#     - probably leave only 'multiprocessing'?
-#     - try fit in one row
-#     - add "bigger -- better" / "smaller -- better"
-# - add "apply-split-combine" figure
-# - add GSOC logo
-# - add full names (Yuxuan, Oliver, Paul, Rocco)
 ---
 
 # **Parallelization of MDAnalysis**
