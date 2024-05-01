@@ -13,7 +13,7 @@ Machine Learning Scientist @ [ENPICOM B.V.](https://enpicom.com); `@marinegor` a
 
 ## Socials
 
- - [email](mailto:me@marinegor.dev): me@marinegor.dev
+ - email: me@marinegor.dev
  - [github](https://github.com/marinegor)
  - [twitter](https://twitter.com/egor__marin)
  - [linkedin](https://www.linkedin.com/in/marinegor/)
