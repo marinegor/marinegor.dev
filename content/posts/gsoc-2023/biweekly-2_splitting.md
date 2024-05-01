@@ -1,6 +1,7 @@
 ---
 title: 'Biweekly GSOC-2: splitting the work and writing `_setup_bslices`'
 date: 2023-06-30
+description: 'Second biweekly GSOC blogpost'
 # permalink: /posts/2023/06/gsoc-biweekly-2/
 tags:
   - gsoc

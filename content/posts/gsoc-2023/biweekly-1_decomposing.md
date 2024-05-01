@@ -1,6 +1,7 @@
 ---
 title: 'Biweekly GSOC-1: decomposing `AnalysisBase.run()`'
 date: 2023-06-16
+description: 'First biweekly GSOC blogpost'
 # permalink: /posts/2023/06/gsoc-biweekly-1/
 tags:
   - gsoc

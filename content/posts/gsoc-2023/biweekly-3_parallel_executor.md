@@ -1,6 +1,7 @@
 ---
 title: '(not anymore bi)weekly GSOC-3: writing `ParallelExecutor` class'
 date: 2023-07-30
+description: 'Third biweekly GSOC blogpost'
 # permalink: /posts/2023/06/gsoc-biweekly-3/
 tags:
   - gsoc

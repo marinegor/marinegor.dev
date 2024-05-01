@@ -1,6 +1,7 @@
 ---
 # website keywords
 title: 'MDAnalysis UGM 2023: MDAnalysis Parallelization @ GSOC'
+description: 'Presentation given at the MDAnalysis User Meeting in 2023'
 date: 2023-09-27
 permalink: /posts/mda-ugm-2023
 tags:

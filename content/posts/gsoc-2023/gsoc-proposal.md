@@ -1,6 +1,7 @@
 ---
 title: 'GSOC 2023: what will I do?'
 date: 2023-05-29
+description: 'A project proposal, written for GSOC-2023 at MDAnalysis'
 # permalink: /posts/2023/05/gsoc-proposal/
 tags:
   - gsoc

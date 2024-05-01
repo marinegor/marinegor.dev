@@ -1,6 +1,7 @@
 ---
 title: '(again bi)weekly GSOC-4: finally about results aggretation'
 date: 2023-08-14
+description: 'Fourh biweekly GSOC blogpost'
 # permalink: /posts/2023/06/gsoc-biweekly-4/
 tags:
   - gsoc

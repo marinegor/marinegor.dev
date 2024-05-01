@@ -1,6 +1,7 @@
 ---
 title: 'GSOC-2023: summary'
 date: 2023-08-23
+description: 'Summary of the GSOC work on MDAnalysis parallelization'
 # permalink: /posts/2023/06/gsoc-summary
 tags:
   - gsoc
