@@ -12,6 +12,20 @@ However, if you want some personal insights about selected papers (in reverse ch
 
 # 2024
 
+## [Split-and-combine parallelization for MDAnalysis `AnalysisBase` subclasses](https://github.com/MDAnalysis/mdanalysis/pull/4162)
+
+You can find all about this project by [`gsoc` tag](https://marinegor.dev/tags/gsoc/), but basically, you can now do `ArbitraryAnalysisSubclass.run(backend='multiprocessing')`, and it'll
+run automatically in multiple processes.
+
+You can read more about parallelization on [docs](https://docs.mdanalysis.org/dev/documentation_pages/analysis/parallelization.html), especially some limitations of the current approach.
+
+
+## [Secondary structure analysis with DSSP for MDAnalysis](https://github.com/MDAnalysis/mdanalysis/pull/4304)
+
+A fun project emerged during MDAnalysis 2023 UGM hackathon. Basically, it adds a built-in secondary structure analysis, with no dependencies. The algorithm is based on [Kabsch et al](https://onlinelibrary.wiley.com/doi/10.1002/bip.360221211), and implementation is borrowed from [pyDSSP](https://github.com/ShintaroMinami/PyDSSP/tree/master/pydssp). I slightly modified the implementation, making it depend only on `numpy` (previously it depended on `einops` package).
+
+For details, see [documentation](https://docs.mdanalysis.org/dev/documentation_pages/analysis/dssp.html).
+
 ## [A subgroup of light-driven sodium pumps with an additional Schiff base counterion](https://doi.org/10.1038/s41467-024-47469-0)
 
 A project led by super talented [Kirill Kovalev](https://twitter.com/kirkovalev94). Whereas it's always a pleasure to work with Kirill, it's also a great study that combines multiple techniques, both functional and structural, to study a novel rhodopsin. For me personally, it's a first paper that confirms I can do cryoEM data processing🥶
