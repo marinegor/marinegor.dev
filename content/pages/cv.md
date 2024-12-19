@@ -60,7 +60,7 @@ Have mainly worked at the Moscow Institute of Physics and Technology, and got my
 ### Machine Learning Scientist
 `2024-current`
 
-Doign machine learning in biotech-oriented SaaS [company](https://enpicom.com).
+Doing machine learning in biotech-oriented SaaS [company](https://enpicom.com).
 
 ### Scientist
 `2017-2023`
