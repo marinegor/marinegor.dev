@@ -9,7 +9,7 @@ author: "Egor Marin"
 ---
 
 # Egor Marin
-Machine Learning Scientist @ [ENPICOM B.V.](https://enpicom.com); `@marinegor` at most of the platforms.
+Machine Learning Scientist @ [ENPICOM B.V.](https://enpicom.com), working with protein language models, bioinformatics, diffusion -- you name it; `@marinegor` at most of the platforms.
 
 ## Socials
 
@@ -23,9 +23,33 @@ Machine Learning Scientist @ [ENPICOM B.V.](https://enpicom.com); `@marinegor` a
 
 ## Profile
 
-I have formal education in applied mathematics and physics, supplied with 1 year of full-time extracurricular education in computer science, and 7 years of computational lab experience.
+I have formal education in applied mathematics and physics (BSc + MSc), one year of full-time extracurricular education in computer science, PhD in biophysics and structural biology, and 8 years of computational lab experience. 
 
-I enjoy writing code, and want to write code that gets to run many times, and hence should be written wisely. And I can communicate with people.
+I enjoy writing code, and want to write code that gets to run many times, and hence should be written wisely. I know a lot about (computational) biology, mostly on molecular level. And I can communicate with people.
+
+## Career
+I have been roughly 8 years in science, working with membrane proteins and their structure-function relationships: GPCRs, (microbal) rhodopsins, membrane transporters.
+
+Have mainly worked at the Moscow Institute of Physics and Technology, and got my PhD from the University of Groningen. Also, I have worked at many synchrotrons and XFELs, and also was a visiting research assistant at the University of Southern California.
+
+### Machine Learning Scientist
+`2024-current`
+
+Doing machine learning in biotech-oriented SaaS [company](https://enpicom.com).
+
+### Scientist
+`2017-2023`
+
+ - conducted research, managed data, wrote publications, participated in conferences
+ - managed students (BSs & MSc diploma), created a course on modern protein crystallography
+
+### Scientific Journalist
+`2016-2017`
+
+ - analyzed publicational activity of MIPT
+ - wrote press-releases on published papers
+ - communicated with scientists & media.
+
 
 ### Software skills & activities
 
@@ -51,29 +75,6 @@ I enjoy writing code, and want to write code that gets to run many times, and he
 
 💊 **structure-based drug discovery**: performed large-scale virtual screening campaign, created robust accelerated virtual screening [approach](https://pubs.acs.org/doi/10.1021/acs.jcim.3c01661), communicated with CROs, oversaw functional tests.
 
-
-## Career
-I have been roughly 8 years in science, working with membrane proteins and their structure-function relationships: GPCRs, (microbal) rhodopsins, membrane transporters.
-
-Have mainly worked at the Moscow Institute of Physics and Technology, and got my PhD from the University of Groningen. Also, I have worked at many synchrotrons and XFELs, and also was a visiting research assistant at the University of Southern California.
-
-### Machine Learning Scientist
-`2024-current`
-
-Doing machine learning in biotech-oriented SaaS [company](https://enpicom.com).
-
-### Scientist
-`2017-2023`
-
- - conducted research, managed data, wrote publications, participated in conferences
- - managed students (BSs & MSc diploma), created a course on modern protein crystallography
-
-### Scientific Journalist
-`2016-2017`
-
- - analyzed publicational activity of MIPT
- - wrote press-releases on published papers
- - communicated with scientists & media.
 
 ## Education
 
