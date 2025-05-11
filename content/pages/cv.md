@@ -51,8 +51,7 @@ Doing machine learning in biotech-oriented SaaS [company](https://enpicom.com).
  - wrote press-releases on published papers
  - communicated with scientists & media.
 
-
-### Software skills & activities
+## Software skills & activities
 
 **Bag of words**: python, numpy/sklearn/pytorch/lightning, polars🫶, huggingface🤗, uv/ruff❤️‍🔥, pytest, docker/compose, bash, mlflow, Ubuntu/nixos, HPC, SLURM.
 
@@ -73,7 +72,7 @@ Doing machine learning in biotech-oriented SaaS [company](https://enpicom.com).
 🦀 Wrote a python(pyo3)+Rust(pest) parser for crystallographic data, contributed to [polars-distance](https://github.com/ion-elgreco/polars-distance)
 
 
-### Science skills & acitivities
+## Science skills & acitivities
 
 **Bag of words**: structural biology, crystallography, cryoEM, cheminformatics, computer vision, data science, molecular docking, drug discovery, protein structure, GPCRs, membrane proteins, structure-based drug discovery, antibodies, protein language models, discrete diffusion, flow matching, ~~Alpha~~Openfold
 
@@ -85,47 +84,19 @@ Doing machine learning in biotech-oriented SaaS [company](https://enpicom.com).
 
 👾 **deep learning**: know about protein language models and their properties, ~~Alpha~~Openfold-like models and their applications, wrote toy discrete diffusion models, adapted open-source discrete diffusion models for other domains.
 
-<<<<<<< HEAD
-=======
-## Career
-I have been roughly 8 years in science, working with membrane proteins and their structure-function relationships: GPCRs, (microbal) rhodopsins, membrane transporters. Don't work in academia anymore, while still doing some research.
-
-Have mainly worked at the Moscow Institute of Physics and Technology, and got my PhD from the University of Groningen. Also, I have worked at many synchrotrons and XFELs, and also was a visiting research assistant at the University of Southern California.
-
-### Machine Learning Scientist
-`2024-current`
-
-Doing machine learning in biotech-oriented SaaS [company](https://enpicom.com).
-
-### Scientist
-`2017-2023`
-
- - conducted research, managed data, wrote publications, participated in conferences
- - managed students (BSs & MSc diploma), created a course on modern protein crystallography
-
-### Scientific Journalist
-`2016-2017`
-
- - analyzed publicational activity of MIPT
- - wrote press-releases on published papers
- - communicated with scientists & media.
-
->>>>>>> origin/main
 ## Education
 
-
 **Moscow Institute of Physics and Technology, `2013-2017`**
-BSc in applied mathematics and physics, summa cum laude
+BSc in applied mathematics and physics, magna cum laude
 
 **Moscow Institute of Physics and Technology, `2017-2019`**
-MSc in applied mathematics and physics, with specialization in biophysics and structural biology
+MSc in applied mathematics and physics, summa cum laude, with specialization in biophysics and structural biology
 
 **Computer Science Center, `2020-2022`**
 Full-time extracurricular education in computer science: Python, C++, Algorithms and Data Structures, Data Science, Intro to Linux Systems, Rust
-
 
 **University of Groningen, `2019-2023`**
 PhD, diploma on "On the methods of studying protein-ligand interaction dynamics"
 
 
-Last updated: February 2025.
+Last updated: May 2025.
