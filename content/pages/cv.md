@@ -11,6 +11,8 @@ author: "Egor Marin"
 # Egor Marin
 Machine Learning Scientist @ [ENPICOM B.V.](https://enpicom.com), working with protein language models, bioinformatics, diffusion -- you name it; `@marinegor` at most of the platforms.
 
+{{< table_of_contents >}}
+
 ## Profile
 
 I have formal education in applied mathematics and physics (BSc + MSc), one year of full-time extracurricular education in computer science, PhD in biophysics and structural biology, and 8 years of computational lab experience.
