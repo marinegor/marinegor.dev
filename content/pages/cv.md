@@ -11,7 +11,7 @@ author: "Egor Marin"
 # Egor Marin
 Machine Learning Scientist @ [ENPICOM B.V.](https://enpicom.com), working with protein language models, bioinformatics, diffusion -- you name it; `@marinegor` at most of the platforms.
 
-PDF version of this CV is [here](/static/cv.pdf)
+PDF version of this CV is [here](/cv.pdf)
 
 {{< table_of_contents >}}
 
