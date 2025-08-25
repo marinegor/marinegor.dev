@@ -5,7 +5,6 @@
 # - neovim (and my dotfiles for neovim)
 #
 # Also, I want to add a user `marinegor` with sudo privileges.
-#
 
 TARGET_OS := if os() == "linux" { "Linux" } else if os() == "macos" { "macOS" } else if os() == "windows" { "Windows" } else { "Unknown OS" }
 
@@ -14,26 +13,26 @@ user:
   sudo usermod -aG sudo marinegor
 
 install-git:
-    if {{TARGET_OS}} == "Linux"; then sudo apt-get install -y git gh git-lfs; fi
+    if [ {{TARGET_OS}} == "Linux" ]; then sudo apt-get install -y git gh git-lfs; fi
 remove-git:
-    if {{TARGET_OS}} == "Linux"; then sudo apt-get remove -y git gh git-lfs; fi
+    if [ {{TARGET_OS}} == "Linux" ]; then sudo apt-get remove -y git gh git-lfs; fi
 
 install-apts:
-    if {{TARGET_OS}} == "Linux"; then sudo apt-get install -y curl wget build-essential; fi
+    if [ {{TARGET_OS}} == "Linux" ]; then sudo apt-get install -y curl wget build-essential; fi
 remove-apts:
-    if {{TARGET_OS}} == "Linux"; then sudo apt-get remove -y curl wget build-essential; fi
+    if [ {{TARGET_OS}} == "Linux" ]; then sudo apt-get remove -y curl wget build-essential; fi
 
 install-uv:
     if ! command -v uv &> /dev/null; then curl -LsSf https://astral.sh/uv/install.sh | sh; fi
 remove-uv:
-    uv cache clean
-    rm -r "$(uv python dir)"
-    rm -r "$(uv tool dir)"
+    which uv && uv cache clean
+    which uv && rm -fr "$(uv python dir)"
+    which uv && rm -fr "$(uv tool dir)"
 
 install-pixi:
     if ! command -v pixi &> /dev/null; then curl -fsSL https://pixi.sh/install.sh | sh; fi
 remove-pixi:
-    pixi clean cache
+    which pixi && pixi clean cache -y
     rm -r ~/.pixi
 
 install-bun:
@@ -42,21 +41,19 @@ remove-bun:
     rm -rf ~/.bun
 
 install-uv-tools:
-    uv tool install pre-commit
-    uv tool install ruff
-    uv tool install basedpyright
-    uv tool install gpustat
-    uv tool install ty
-    uv tool install pre-commit
-    uv tool install go-task-bin
+    uv tool install --reinstall pre-commit
+    uv tool install --reinstall ruff
+    uv tool install --reinstall basedpyright
+    uv tool install --reinstall gpustat
+    uv tool install --reinstall ty
+    uv tool install --reinstall go-task-bin
 remove-uv-tools:
-    uv tool remove pre-commit
-    uv tool remove ruff
-    uv tool remove basedpyright
-    uv tool remove gpustat
-    uv tool remove ty
-    uv tool remove pre-commit
-    uv tool remove go-task-bin
+    uv tool uninstall pre-commit
+    uv tool uninstall ruff
+    uv tool uninstall basedpyright
+    uv tool uninstall gpustat
+    uv tool uninstall ty
+    uv tool uninstall go-task-bin
 
 install-cargo-tools:
     cargo install just
@@ -67,16 +64,17 @@ install-cargo-tools:
     cargo install --locked --bin jj jj-cli
     cargo install starship --locked
     cargo install ripgrep
+    cargo install zoxide --locked
 remove-cargo-tools:
     cargo uninstall just
     cargo uninstall du-dust
     cargo uninstall fd-find
     cargo uninstall exa
     cargo uninstall btm
-    cargo uninstall jj
     cargo uninstall jj-cli
     cargo uninstall starship
     cargo uninstall ripgrep
+    cargo uninstall zoxide
 
 install-fzf:
     if ! command -v fzf &> /dev/null; then git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install --all; fi
@@ -84,7 +82,7 @@ remove-fzf:
     rm -rf ~/.fzf ~/.fzf.bash ~/.fzf.zsh
 
 install-ohmyzsh:
-    if ! command -v omz &> /dev/null; then sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; fi
+    if ! [ -d ~/.oh-my-zsh ]; then sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; fi
 remove-ohmyzsh:
     which $(uninstall_oh_my_zsh) && uninstall_oh_my_zsh -y
 
