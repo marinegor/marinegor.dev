@@ -41,12 +41,12 @@ remove-bun:
     rm -rf ~/.bun
 
 install-uv-tools:
-    uv tool install --reinstall pre-commit
-    uv tool install --reinstall ruff
-    uv tool install --reinstall basedpyright
-    uv tool install --reinstall gpustat
-    uv tool install --reinstall ty
-    uv tool install --reinstall go-task-bin
+    uv tool install --force pre-commit
+    uv tool install --force ruff
+    uv tool install --force basedpyright
+    uv tool install --force gpustat
+    uv tool install --force ty
+    uv tool install --force go-task-bin
 remove-uv-tools:
     uv tool uninstall pre-commit
     uv tool uninstall ruff
