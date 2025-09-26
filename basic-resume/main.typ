@@ -28,18 +28,18 @@
 )
 
 /*
-* Lines that start with == are formatted into section headings
-* You can use the specific formatting functions if needed
-* The following formatting functions are listed below
-* #edu(dates: "", degree: "", gpa: "", institution: "", location: "", consistent: false)
-* #work(company: "", dates: "", location: "", title: "")
-* #project(dates: "", name: "", role: "", url: "")
-* certificates(name: "", issuer: "", url: "", date: "")
-* #extracurriculars(activity: "", dates: "")
-* There are also the following generic functions that don't apply any formatting
-* #generic-two-by-two(top-left: "", top-right: "", bottom-left: "", bottom-right: "")
-* #generic-one-by-two(left: "", right: "")
-*/
+ * Lines that start with == are formatted into section headings
+ * You can use the specific formatting functions if needed
+ * The following formatting functions are listed below
+ * #edu(dates: "", degree: "", gpa: "", institution: "", location: "", consistent: false)
+ * #work(company: "", dates: "", location: "", title: "")
+ * #project(dates: "", name: "", role: "", url: "")
+ * certificates(name: "", issuer: "", url: "", date: "")
+ * #extracurriculars(activity: "", dates: "")
+ * There are also the following generic functions that don't apply any formatting
+ * #generic-two-by-two(top-left: "", top-right: "", bottom-left: "", bottom-right: "")
+ * #generic-one-by-two(left: "", right: "")
+ */
 
 == Work Experience
 
@@ -89,66 +89,6 @@
 - wrote press-releases on published papers
 - communicated with scientists & media.
 
-
-== Education
-
-#edu(
-  institution: "University of Groningen",
-  location: "Groningen, Netherlands",
-  dates: dates-helper(start-date: "2019", end-date: "2023"),
-  degree: "PhD",
-  consistent: true
-)
-- thesis 'On the methods of studying protein-ligand interaction dynamics'"
-- methods: cryoEM, X-ray crystallography, protein biochemistry, protein biophysics
-- publications in JACS, Crystal Growth & Design, Journal of Cheminformatics & Modelling
-
-#edu(
-  institution: "Computer Science Center",
-    location: "St. Petersburg, Russia",
-    dates: dates-helper(start-date: "2020", end-date: "2022"),
-    degree: "Full-time extracurricular educational program in computer science",
-    consistent: true
-)
-- relevant coursework: Python, C++, Algorithms and data structures, Data science, Intro to Linux systems, Rust
-
-#edu(
-  institution: "Moscow Institute of Physics and Technology",
-    location: "Moscow, Russia",
-    dates: dates-helper(start-date: "2017", end-date: "2019"),
-    degree: "MSc in applied mathematics and physics",
-    consistent: true
-)
-- managed bachelor and master students, created a course on modern protein crystallography
-- publications in Science, Nature Communications, Science Advances, Scientific Data
-- graduated #text(style: "italic")[summa cum laude]
-
-#edu(
-  institution: "Moscow Institute of Physics and Technology",
-    location: "Moscow, Russia",
-    dates: dates-helper(start-date: "2017", end-date: "2019"),
-    degree: "BSc in applied mathematics and physics",
-    consistent: true
-)
-- graduated #text(style: "italic")[magna cum laude]
-- related coursework: Calculus I-IV, Linear Algebra I-II, Complex Analysis, Differential Equations I-II, Analytical Mechanics I-II, Thermodynamics.
-
-
-== Publications
-
-#project(
-  name: "Hyperschedule",
-  // Role is optional
-  role: "Maintainer",
-  // Dates is optional
-  dates: dates-helper(start-date: "Nov 2023", end-date: "Present"),
-  // URL is also optional
-  url: "hyperschedule.io",
-)
-- Maintain open-source scheduler used by 7000+ users at the Claremont Consortium with TypeScript, React and MongoDB
-  - Manage PR reviews, bug fixes, and coordinate with college for releasing scheduling data and over \$1500 of yearly funding
-- Ensure 99.99% uptime during peak loads of 1M daily requests during course registration through redundant servers
-
 == Skills
 - *Programming Languages*: Python, bash, Rust, C++, Typescript
 - *Python*: uv/ruff/ty❤️‍🔥, pytest, hypothesis, pydantic, dask
@@ -157,6 +97,202 @@
 - *ML in biology*: protein language models, diffusion/discrete diffusion/flow matching, Alphafold/Openfold/Boltz
 - *Technologies*: AWS, Docker, SLURM, Modal, Airflow, Github actions
 - *Cheminformatics*: RDKit, polaris, molecular docking, structural bioinformatics (MDAnalysis/mdtraj/biotite)
+
+== Publications
+
+#project(
+  role: "CryoRhodopsins: a comprehensive characterization of a new clade of microbial rhodopsins from cold environments",
+  name: "Science Advances",
+  dates: "7 July 2025"
+)
+- Prepared samples for cryoEM (nanodisc reconstitution), processed cryoEM data and organized data collection.
+
+#project(
+  role: "Structural basis for no retinal binding in flotillin-associated rhodopsins",
+  name: "biorxiv",
+  dates: "29 April 2025"
+)
+- Prepared samples for cryoEM (nanodisc reconstitution), processed cryoEM data and organized data collection.
+
+#project(
+  role: "A subgroup of light-driven sodium pumps with an additional Schiff base counterion",
+  name: "Nature Communications",
+  dates: "4 October 2024"
+)
+- Reconstituted protein into nanodiscs and processed cryo-EM data.
+
+#project(
+  role: "Regression-Based Active Learning for Accessible Acceleration of Ultra-Large Library Docking",
+  name: "Journal of Chemical Information and Modeling",
+  dates: "29 December 2023"
+)
+- Proposed the project, supervised the study and wrote manuscript, performed ML benchmarks.
+
+#project(
+  role: "Custom Design of a Humidifier Chamber for In Meso Crystallization",
+  name: "Crystal Growth & Design",
+  dates: "12 December 2023"
+)
+- Purified and crystallized protein, performed in meso crystallization, processed data, refined the structure, analyzed cryo-EM data, wrote the manuscript.
+
+#project(
+  role: "Mirror proteorhodopsins",
+  name: "Nature Comm. Chemistry",
+  dates: "2 May 2023"
+)
+- Collected crystallographic data and solved the structure.
+
+#project(
+  role: "Structural insights into thrombolytic activity of destabilase from medicinal leech",
+  name: "Scientific Reports",
+  dates: "24 April 2023"
+)
+- Crystallized the protein, collected data, solved the structures, performed molecular dynamics simulations and analyzed the results.
+
+#project(
+  role: "Structural insights into the effects of glycerol on ligand binding to cytochrome P450",
+  name: "Acta Crystallographica Section D",
+  dates: "12 August 2022"
+)
+- Collected data at PAL XFEL, processed SFX data, refined model, performed Alphafold simulations, molecular docking & VLS benchmarks of available S1P models.
+
+#project(
+  role: "Structural basis for receptor selectivity and inverse agonism in S1P5 receptors",
+  name: "Nature Communications",
+  dates: "12 August 2022"
+)
+- Collected data at PAL XFEL, processed SFX data, refined model, performed Alphafold simulations, molecular docking & VLS benchmarks of available S1P models.
+
+#project(
+  role: "A new twist of rubredoxin function in M. tuberculosis",
+  name: "Bioorganic Chemistry",
+  dates: "1 April 2021"
+)
+- Collected crystallography data, supervised model refinement, discussed draft.
+
+#project(
+  role: "Metabolic fate of human immunoactive sterols in Mycobacterium tuberculosis",
+  name: "Journal of Molecular Biology",
+  dates: "19 February 2021"
+)
+- Collected crystallography data, supervised model refinement, discussed draft.
+
+#project(
+  role: "Structural Aspects of Photopharmacology: Insight into the Binding of Photoswitchable and Photocaged Inhibitors to the Glutamate Transporter Homologue",
+  name: "Journal of American Chemical Society",
+  dates: "15 January 2021"
+)
+- Did molecular docking of photo-switchable compounds in crystallographic structure and compared docking results with functional data.
+
+#project(
+  role: "Structure-Based Virtual Screening of Ultra-Large Library Yields Potent Antagonists for a Lipid GPCR",
+  name: "Biomolecules",
+  dates: "3 December 2020"
+)
+- Prepared small-molecule libraries for docking, did large-scale docking and analyzed the results, wrote manuscript.
+
+#project(
+  role: "Hydroxylation of antitubercular drug candidate, SQ109, by mycobacterial cytochrome P450",
+  name: "International Journal of Molecular Sciences",
+  dates: "16 October 2020"
+)
+- Collected crystallography data, supervised model refinement, discussed draft.
+
+#project(
+  role: "Small-wedge synchrotron and serial XFEL datasets for cysteinyl leukotriene GPCRs",
+  name: "Scientific Data",
+  dates: "12 November 2020"
+)
+- Organized, annotated and deposited raw data, developed robust re-processing algorithms, wrote manuscript.
+
+#project(
+  role: "Molecular mechanism of light-driven sodium pumping",
+  name: "Nature Communications",
+  dates: "1 May 2020"
+)
+- Processed serial synchrotron crystallography data using CrystFEL, deposited raw data.
+
+#project(
+  role: "Structural basis of ligand selectivity and disease mutations in cysteinyl leukotriene receptors",
+  name: "Nature Communications",
+  dates: "6 December 2019"
+)
+- Collected small-wedge serial synchrotron crystallography data, processed them, refined, deposited and analyzed structures.
+
+#project(
+  role: "Structure-based mechanism of cysteinyl leukotriene receptor inhibition by antiasthmatic drugs",
+  name: "Science Advances",
+  dates: "1 October 2019"
+)
+- Collected synchrotron crystallography data, processed XFEL and synchrotron data, refined, deposited and analyzed structures.
+
+#project(
+  role: "An outlook on using serial femtosecond crystallography in drug discovery",
+  name: "Expert Opinion on Drug Discovery",
+  dates: "11 June 2019"
+)
+- Wrote sections about SFX data processing & phasing.
+
+#project(
+  role: "Structural insights into ion conduction by channelrhodopsin 2",
+  name: "Science",
+  dates: "24 November 2017"
+)
+- Data collection and processing for both WT and mutant proteins.
+
+// #project(
+  // role: "Element-specific density profiles in interacting biomembrane models",
+  // name: "Journal of Physics D: Applied Physics",
+  // dates: "9 February 2017"
+// )
+
+
+
+== Education
+
+#edu(
+  institution: "University of Groningen",
+  location: "Groningen, Netherlands",
+  dates: dates-helper(start-date: "2019", end-date: "2023"),
+  degree: "PhD",
+  consistent: true,
+)
+- thesis 'On the methods of studying protein-ligand interaction dynamics'"
+- methods: cryoEM, X-ray crystallography, protein biochemistry, protein biophysics
+- publications in JACS, Crystal Growth & Design, Journal of Cheminformatics & Modelling
+
+#edu(
+  institution: "Computer Science Center",
+  location: "St. Petersburg, Russia",
+  dates: dates-helper(start-date: "2020", end-date: "2022"),
+  degree: "Full-time extracurricular educational program in computer science",
+  consistent: true,
+)
+- relevant coursework: Python, C++, Algorithms and data structures, Data science, Intro to Linux systems, Rust
+
+#edu(
+  institution: "Moscow Institute of Physics and Technology",
+  location: "Moscow, Russia",
+  dates: dates-helper(start-date: "2017", end-date: "2019"),
+  degree: "MSc in applied mathematics and physics",
+  consistent: true,
+)
+- managed bachelor and master students, created a course on modern protein crystallography
+- publications in Science, Nature Communications, Science Advances, Scientific Data
+- graduated #text(style: "italic")[summa cum laude]
+
+#edu(
+  institution: "Moscow Institute of Physics and Technology",
+  location: "Moscow, Russia",
+  dates: dates-helper(start-date: "2017", end-date: "2019"),
+  degree: "BSc in applied mathematics and physics",
+  consistent: true,
+)
+- graduated #text(style: "italic")[magna cum laude]
+- related coursework: Calculus I-IV, Linear Algebra I-II, Complex Analysis, Differential Equations I-II, Analytical Mechanics I-II, Thermodynamics.
+
+
+
 
 == Extracurricular Activities
 
