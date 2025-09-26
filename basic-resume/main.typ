@@ -103,147 +103,147 @@
 #project(
   role: "CryoRhodopsins: a comprehensive characterization of a new clade of microbial rhodopsins from cold environments",
   name: "Science Advances",
-  dates: "7 July 2025"
+  dates: "7 July 2025",
 )
 - Prepared samples for cryoEM (nanodisc reconstitution), processed cryoEM data and organized data collection.
 
 // #project(
-  // role: "Structural basis for no retinal binding in flotillin-associated rhodopsins",
-  // name: "biorxiv",
-  // dates: "29 April 2025"
+// role: "Structural basis for no retinal binding in flotillin-associated rhodopsins",
+// name: "biorxiv",
+// dates: "29 April 2025"
 // )
 // - Prepared samples for cryoEM (nanodisc reconstitution), processed cryoEM data and organized data collection.
 
 // #project(
-  // role: "A subgroup of light-driven sodium pumps with an additional Schiff base counterion",
-  // name: "Nature Communications",
-  // dates: "4 October 2024"
+// role: "A subgroup of light-driven sodium pumps with an additional Schiff base counterion",
+// name: "Nature Communications",
+// dates: "4 October 2024"
 // )
 // - Reconstituted protein into nanodiscs and processed cryo-EM data.
 
 #project(
   role: "Regression-Based Active Learning for Accessible Acceleration of Ultra-Large Library Docking",
   name: "Journal of Chemical Information and Modeling",
-  dates: "29 December 2023"
+  dates: "29 December 2023",
 )
 - Proposed the project, supervised the study and wrote manuscript, performed ML benchmarks.
 
 #project(
   role: "Custom Design of a Humidifier Chamber for In Meso Crystallization",
   name: "Crystal Growth & Design",
-  dates: "12 December 2023"
+  dates: "12 December 2023",
 )
 - Purified and crystallized protein, performed in meso crystallization, processed data, refined the structure, analyzed cryo-EM data, wrote the manuscript.
 
 // #project(
-  // role: "Mirror proteorhodopsins",
-  // name: "Nature Comm. Chemistry",
-  // dates: "2 May 2023"
+// role: "Mirror proteorhodopsins",
+// name: "Nature Comm. Chemistry",
+// dates: "2 May 2023"
 // )
 // - Collected crystallographic data and solved the structure.
 
 #project(
   role: "Structural insights into thrombolytic activity of destabilase from medicinal leech",
   name: "Scientific Reports",
-  dates: "24 April 2023"
+  dates: "24 April 2023",
 )
 - Crystallized the protein, collected data, solved the structures, performed molecular dynamics simulations and analyzed the results.
 
 // #project(
-  // role: "Structural insights into the effects of glycerol on ligand binding to cytochrome P450",
-  // name: "Acta Crystallographica Section D",
-  // dates: "12 August 2022"
+// role: "Structural insights into the effects of glycerol on ligand binding to cytochrome P450",
+// name: "Acta Crystallographica Section D",
+// dates: "12 August 2022"
 // )
 // - Collected data at PAL XFEL, processed SFX data, refined model, performed Alphafold simulations, molecular docking & VLS benchmarks of available S1P models.
 
 #project(
   role: "Structural basis for receptor selectivity and inverse agonism in S1P5 receptors",
   name: "Nature Communications",
-  dates: "12 August 2022"
+  dates: "12 August 2022",
 )
 - Collected data at PAL XFEL, processed SFX data, refined model, performed Alphafold simulations, molecular docking & VLS benchmarks of available S1P models.
 
 // #project(
-  // role: "A new twist of rubredoxin function in M. tuberculosis",
-  // name: "Bioorganic Chemistry",
-  // dates: "1 April 2021"
+// role: "A new twist of rubredoxin function in M. tuberculosis",
+// name: "Bioorganic Chemistry",
+// dates: "1 April 2021"
 // )
 // - Collected crystallography data, supervised model refinement, wrote manuscript
 
 #project(
   role: "Metabolic fate of human immunoactive sterols in Mycobacterium tuberculosis",
   name: "Journal of Molecular Biology",
-  dates: "19 February 2021"
+  dates: "19 February 2021",
 )
 - Collected crystallography data, supervised model refinement, wrote manuscript
 
 #project(
   role: "Structural Aspects of Photopharmacology: Insight into the Binding of Photoswitchable and Photocaged Inhibitors to the Glutamate Transporter Homologue",
   name: "Journal of American Chemical Society",
-  dates: "15 January 2021"
+  dates: "15 January 2021",
 )
 - Did molecular docking of photo-switchable compounds in crystallographic structure and compared docking results with functional data.
 
 #project(
   role: "Structure-Based Virtual Screening of Ultra-Large Library Yields Potent Antagonists for a Lipid GPCR",
   name: "Biomolecules",
-  dates: "3 December 2020"
+  dates: "3 December 2020",
 )
 - Prepared small-molecule libraries for docking, did large-scale docking and analyzed the results, wrote manuscript.
 
 // #project(
-  // role: "Hydroxylation of antitubercular drug candidate, SQ109, by mycobacterial cytochrome P450",
-  // name: "International Journal of Molecular Sciences",
-  // dates: "16 October 2020"
+// role: "Hydroxylation of antitubercular drug candidate, SQ109, by mycobacterial cytochrome P450",
+// name: "International Journal of Molecular Sciences",
+// dates: "16 October 2020"
 // )
 // - Collected crystallography data, supervised model refinement, discussed draft.
 
 #project(
   role: "Small-wedge synchrotron and serial XFEL datasets for cysteinyl leukotriene GPCRs",
   name: "Scientific Data",
-  dates: "12 November 2020"
+  dates: "12 November 2020",
 )
 - Organized, annotated and deposited raw data, developed robust re-processing algorithms, wrote manuscript.
 
 #project(
   role: "Molecular mechanism of light-driven sodium pumping",
   name: "Nature Communications",
-  dates: "1 May 2020"
+  dates: "1 May 2020",
 )
 - Processed serial synchrotron crystallography data using CrystFEL, deposited raw data.
 
 #project(
   role: "Structural basis of ligand selectivity and disease mutations in cysteinyl leukotriene receptors",
   name: "Nature Communications",
-  dates: "6 December 2019"
+  dates: "6 December 2019",
 )
 - Collected small-wedge serial synchrotron crystallography data, processed them, refined, deposited and analyzed structures.
 
 #project(
   role: "Structure-based mechanism of cysteinyl leukotriene receptor inhibition by antiasthmatic drugs",
   name: "Science Advances",
-  dates: "1 October 2019"
+  dates: "1 October 2019",
 )
 - Collected synchrotron crystallography data, processed XFEL and synchrotron data, refined, deposited and analyzed structures.
 
 #project(
   role: "An outlook on using serial femtosecond crystallography in drug discovery",
   name: "Expert Opinion on Drug Discovery",
-  dates: "11 June 2019"
+  dates: "11 June 2019",
 )
 - Wrote sections about SFX data processing & phasing.
 
 #project(
   role: "Structural insights into ion conduction by channelrhodopsin 2",
   name: "Science",
-  dates: "24 November 2017"
+  dates: "24 November 2017",
 )
 - Data collection and processing for both WT and mutant proteins.
 
 // #project(
-  // role: "Element-specific density profiles in interacting biomembrane models",
-  // name: "Journal of Physics D: Applied Physics",
-  // dates: "9 February 2017"
+// role: "Element-specific density profiles in interacting biomembrane models",
+// name: "Journal of Physics D: Applied Physics",
+// dates: "9 February 2017"
 // )
 
 
