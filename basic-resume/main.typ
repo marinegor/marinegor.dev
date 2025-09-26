@@ -300,21 +300,30 @@
   activity: "Open-source contributions",
   dates: dates-helper(start-date: "Jan 2021", end-date: "Present"),
 )
-- Founder of Les Amateurs (#link("https://amateurs.team")[amateurs.team]), currently ranked \#4 US, \#33 global on CTFTime (2023: \#4 US, \#42 global)
+- #link("https://github.com/rs-station/reciprocalspaceship")[reciprocalspaceship]: wrote parser for serial crystallography data into binary dataframe-like class
+- #link("https://github.com/marinegor/ntfy_cryosparc/")[ntfy-cryosparc]: wrote web-server to parse CryoSPARC (tm) notifications and notify appropriate users
+- #link("https://github.com/ion-elgreco/polars-distance/")[polars-distance]: minor contribution to polars plugin for distance calculation
 
 #extracurriculars(
   activity: "MDAnalysis Core Developer",
-  dates: dates-helper(start-date: "Jan 2021", end-date: "Present"),
+  dates: dates-helper(start-date: "February 2025", end-date: "Present"),
 )
-- Founder of Les Amateurs (#link("https://amateurs.team")[amateurs.team]), currently ranked \#4 US, \#33 global on CTFTime (2023: \#4 US, \#42 global)
+- #link("https://www.mdanalysis.org/pages/team/")[MDAnalysis Core Developer]
+  - wrote a #link("https://github.com/MDAnalysis/mdanalysis/pull/4162")[parallel backend] for all analysis classes (dask/multiprocessing)
+  - added a #link("https://github.com/MDAnalysis/mdanalysis/pull/4304")[DSSP module] for native secondary structure assignment
+  - currently working on an #link("https://github.com/MDAnalysis/mdanalysis/pull/4712")[MMCIF parser] based on `gemmi`
 
 #extracurriculars(
   activity: "Self-hosting",
   dates: dates-helper(start-date: "Jan 2021", end-date: "Present"),
 )
+- self-hosting bunch of open-source docker containers under Tailscale VPN
 
 #extracurriculars(
   activity: "Data Science Competitions",
-  // dates: dates-helper(start-date: "Jan 2021", end-date: "Present"),
+  dates: dates-helper(start-date: "2018", end-date: "Present"),
 )
-- Founder of Les Amateurs (#link("https://amateurs.team")[amateurs.team]), currently ranked \#4 US, \#33 global on CTFTime (2023: \#4 US, \#42 global)
+- top-10% in Kaggle "Predict Molecular Properties" (public notebooks + gradient boosting on self-written rotationally invariant features)
+- top-1 in first round of "Learning How To Smell" at AIcrowd
+- top-10% in Takeda competition at Signate
+- 5th place in Tochka Bank graph ML competition
