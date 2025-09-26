@@ -298,7 +298,7 @@
   dates: dates-helper(start-date: "Jan 2021", end-date: "Present"),
 )
 - #link("https://github.com/rs-station/reciprocalspaceship")[reciprocalspaceship]: wrote parser for serial crystallography data into binary dataframe-like class
-- #link("https://github.com/marinegor/ntfy_cryosparc/")[ntfy-cryosparc]: wrote web-server to parse CryoSPARC (tm) notifications and notify appropriate users
+- #link("https://github.com/marinegor/ntfy_cryosparc/")[ntfy-cryosparc]: wrote web-server to parse CryoSPARC notifications and notify appropriate users
 - #link("https://github.com/ion-elgreco/polars-distance/")[polars-distance]: minor contribution to polars plugin for distance calculation
 
 #extracurriculars(
