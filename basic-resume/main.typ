@@ -20,7 +20,7 @@
   linkedin: linkedin,
   // phone: phone,
   personal-site: personal-site,
-  accent-color: "#26428b",
+  accent-color: "#e9602a",
   font: "New Computer Modern",
   paper: "us-letter",
   author-position: left,
@@ -290,9 +290,6 @@
 )
 - graduated #text(style: "italic")[magna cum laude]
 - related coursework: Calculus I-IV, Linear Algebra I-II, Complex Analysis, Differential Equations I-II, Analytical Mechanics I-II, Thermodynamics.
-
-
-
 
 == Extracurricular Activities
 
