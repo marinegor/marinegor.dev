@@ -107,19 +107,19 @@
 )
 - Prepared samples for cryoEM (nanodisc reconstitution), processed cryoEM data and organized data collection.
 
-#project(
-  role: "Structural basis for no retinal binding in flotillin-associated rhodopsins",
-  name: "biorxiv",
-  dates: "29 April 2025"
-)
-- Prepared samples for cryoEM (nanodisc reconstitution), processed cryoEM data and organized data collection.
+// #project(
+  // role: "Structural basis for no retinal binding in flotillin-associated rhodopsins",
+  // name: "biorxiv",
+  // dates: "29 April 2025"
+// )
+// - Prepared samples for cryoEM (nanodisc reconstitution), processed cryoEM data and organized data collection.
 
-#project(
-  role: "A subgroup of light-driven sodium pumps with an additional Schiff base counterion",
-  name: "Nature Communications",
-  dates: "4 October 2024"
-)
-- Reconstituted protein into nanodiscs and processed cryo-EM data.
+// #project(
+  // role: "A subgroup of light-driven sodium pumps with an additional Schiff base counterion",
+  // name: "Nature Communications",
+  // dates: "4 October 2024"
+// )
+// - Reconstituted protein into nanodiscs and processed cryo-EM data.
 
 #project(
   role: "Regression-Based Active Learning for Accessible Acceleration of Ultra-Large Library Docking",
@@ -135,12 +135,12 @@
 )
 - Purified and crystallized protein, performed in meso crystallization, processed data, refined the structure, analyzed cryo-EM data, wrote the manuscript.
 
-#project(
-  role: "Mirror proteorhodopsins",
-  name: "Nature Comm. Chemistry",
-  dates: "2 May 2023"
-)
-- Collected crystallographic data and solved the structure.
+// #project(
+  // role: "Mirror proteorhodopsins",
+  // name: "Nature Comm. Chemistry",
+  // dates: "2 May 2023"
+// )
+// - Collected crystallographic data and solved the structure.
 
 #project(
   role: "Structural insights into thrombolytic activity of destabilase from medicinal leech",
@@ -149,12 +149,12 @@
 )
 - Crystallized the protein, collected data, solved the structures, performed molecular dynamics simulations and analyzed the results.
 
-#project(
-  role: "Structural insights into the effects of glycerol on ligand binding to cytochrome P450",
-  name: "Acta Crystallographica Section D",
-  dates: "12 August 2022"
-)
-- Collected data at PAL XFEL, processed SFX data, refined model, performed Alphafold simulations, molecular docking & VLS benchmarks of available S1P models.
+// #project(
+  // role: "Structural insights into the effects of glycerol on ligand binding to cytochrome P450",
+  // name: "Acta Crystallographica Section D",
+  // dates: "12 August 2022"
+// )
+// - Collected data at PAL XFEL, processed SFX data, refined model, performed Alphafold simulations, molecular docking & VLS benchmarks of available S1P models.
 
 #project(
   role: "Structural basis for receptor selectivity and inverse agonism in S1P5 receptors",
@@ -163,19 +163,19 @@
 )
 - Collected data at PAL XFEL, processed SFX data, refined model, performed Alphafold simulations, molecular docking & VLS benchmarks of available S1P models.
 
-#project(
-  role: "A new twist of rubredoxin function in M. tuberculosis",
-  name: "Bioorganic Chemistry",
-  dates: "1 April 2021"
-)
-- Collected crystallography data, supervised model refinement, discussed draft.
+// #project(
+  // role: "A new twist of rubredoxin function in M. tuberculosis",
+  // name: "Bioorganic Chemistry",
+  // dates: "1 April 2021"
+// )
+// - Collected crystallography data, supervised model refinement, wrote manuscript
 
 #project(
   role: "Metabolic fate of human immunoactive sterols in Mycobacterium tuberculosis",
   name: "Journal of Molecular Biology",
   dates: "19 February 2021"
 )
-- Collected crystallography data, supervised model refinement, discussed draft.
+- Collected crystallography data, supervised model refinement, wrote manuscript
 
 #project(
   role: "Structural Aspects of Photopharmacology: Insight into the Binding of Photoswitchable and Photocaged Inhibitors to the Glutamate Transporter Homologue",
@@ -191,12 +191,12 @@
 )
 - Prepared small-molecule libraries for docking, did large-scale docking and analyzed the results, wrote manuscript.
 
-#project(
-  role: "Hydroxylation of antitubercular drug candidate, SQ109, by mycobacterial cytochrome P450",
-  name: "International Journal of Molecular Sciences",
-  dates: "16 October 2020"
-)
-- Collected crystallography data, supervised model refinement, discussed draft.
+// #project(
+  // role: "Hydroxylation of antitubercular drug candidate, SQ109, by mycobacterial cytochrome P450",
+  // name: "International Journal of Molecular Sciences",
+  // dates: "16 October 2020"
+// )
+// - Collected crystallography data, supervised model refinement, discussed draft.
 
 #project(
   role: "Small-wedge synchrotron and serial XFEL datasets for cysteinyl leukotriene GPCRs",
