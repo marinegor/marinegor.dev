@@ -84,7 +84,7 @@
   title: "Scientific Journalist",
   location: "Moscow, Russia",
   company: "Moscow Institute of Physics and Technology",
-  dates: dates-helper(start-date: "Jun 2022", end-date: "Aug 2022"),
+  dates: dates-helper(start-date: "Jun 2016", end-date: "Aug 2017"),
 )
 - wrote press-releases on published papers
 - communicated with scientists & media.
