@@ -58,7 +58,7 @@
   company: "MDAnalysis via Google Summer of Code",
   dates: dates-helper(start-date: "May 2023", end-date: "September 2023"),
 )
-- wrote backward-compatible parallelization for molecular dynamics trajectory analysis
+- designed and wrote backward-compatible parallelization (dask / multiprocessing) for molecular dynamics trajectory analysis
 
 #work(
   title: "PhD Researcher",
@@ -96,6 +96,7 @@
 - *Visualization*: altair, marimo, matplotlib/seaborn/jupyter
 - *Deep Learning*: pytorch, lightning, jax, mlflow
 - *ML in biology*: protein language models, diffusion/discrete diffusion/flow matching, Alphafold/Openfold/Boltz
+- *Structural biology*: cryoEM data processing and structure refinement, X-ray crystallography data collection, processing and refinement
 - *Technologies*: AWS, Docker, SLURM, Modal, Airflow, Github actions
 - *Cheminformatics*: RDKit, polaris, molecular docking, structural bioinformatics (MDAnalysis/mdtraj/biotite)
 
