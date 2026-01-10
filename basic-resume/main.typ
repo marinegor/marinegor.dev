@@ -46,8 +46,8 @@
 Scientist with strong computational and biophysical background and tendency towards writing reusable code. I have eight years of experience as a structural biology/bioinformatics scientist,
 with h-index of 13 and experience ranging from data processing in serial crystallography and cryoEM to wet-lab sample preparation and virtual ligand screening.
 
-As a structural biologist, have 400+ hours of crystallography beamtime, 20+ Tb of processed crystallography data and 80 processed projects in CryoSPARC instance
-that I also set up and managed for 15 users on multiple workstations and a SLURM cluster. As of January 2026, have 38 deposited PDB structures across 16 different publications.
+As a structural biologist, have 400+ hours of crystallography beamtime, 20+ Tb of processed crystallography data and #text(weight: "bold")[80 processed projects in CryoSPARC] instance
+that I also set up and managed for 15 users on multiple workstations and a SLURM cluster. As of January 2026, have #text(weight: "bold")[38 deposited PDB structures] across 16 different publications.
 Notably, for faster processing of the projects wrote a #link("https://github.com/marinegor/ntfy_cryosparc/")[web-server] for personalised CryoSPARC notifications.
 
 I also have good knowledge of Linux systems, supported by 4 years of management of various workstations and servers for more than 30 users.
@@ -77,11 +77,11 @@ Now employed as Machine Learning Scientist, working on full-cycle predictive and
 - publications in Nature Communications and Science Advances
 
 #project(
-  dates: dates-helper(start-date: "Aug 2023", end-date: "May 2027"),
+  dates: dates-helper(start-date: "May 2023", end-date: "Sep 2023"),
   name: "Implementation of parallel analysis in MDAnalysis",
   role: "Software developer",
 )
-- implemented backward-compatible parallelization for the most popular molecular dynamics analysis package
+- implemented backward-compatible parallelization for the most popular molecular dynamics analysis package; continue contributing as a core developer
 
 
 == Work Experience
@@ -121,13 +121,13 @@ Now employed as Machine Learning Scientist, working on full-cycle predictive and
 )
 - last-mile protein crystallography service: crystal harvesting, data management, synchrotron and XFEL data collection
 - refined, analysed and deposited protein structures to PDB (38 structures as of September 2025)
-- coordinated data analysis and manuscript preparation
+// - coordinated data analysis and manuscript preparation
 
 // #work(
-  // title: "Scientific Journalist",
-  // location: "Moscow, Russia",
-  // company: "Moscow Institute of Physics and Technology",
-  // dates: dates-helper(start-date: "Jun 2016", end-date: "Aug 2017"),
+// title: "Scientific Journalist",
+// location: "Moscow, Russia",
+// company: "Moscow Institute of Physics and Technology",
+// dates: dates-helper(start-date: "Jun 2016", end-date: "Aug 2017"),
 // )
 // - wrote press-releases on published papers
 // - communicated with scientists & media.
@@ -147,147 +147,156 @@ Now employed as Machine Learning Scientist, working on full-cycle predictive and
 
 For full list, see #link("https://scholar.google.com/citations?user=FJbv9XcAAAAJ")[google scholar].
 
-#project(
-  role: "CryoRhodopsins: a comprehensive characterization of a new clade of microbial rhodopsins from cold environments",
-  name: "Science Advances",
-  dates: "July 2025"
+#edu(
+  degree: "CryoRhodopsins: a comprehensive characterization of a new clade of microbial rhodopsins from cold environments",
+  institution: "Science Advances",
+  dates: "July 2025",
+  consistent: true,
 )
 // - #text(style: "italic")[Science Advances], July 2025
 // - prepared samples for cryoEM (nanodisc reconstitution), processed cryoEM data and organized data collection
 
-#project(
-  role: "Structural basis for no retinal binding in flotillin-associated rhodopsins",
-  name: "biorxiv",
-  dates: "29 April 2025"
+#edu(
+  degree: "Structural basis for no retinal binding in flotillin-associated rhodopsins",
+  institution: "Pre-print on biorxiv",
+  dates: "29 April 2025",
+  consistent: true,
 )
 // - Prepared samples for cryoEM (nanodisc reconstitution), processed cryoEM data and organized data collection.
 
-#project(
-  role: "A subgroup of light-driven sodium pumps with an additional Schiff base counterion",
-  name: "Nature Communications",
-  dates: "4 October 2024"
+#edu(
+  degree: "A subgroup of light-driven sodium pumps with an additional Schiff base counterion",
+  institution: "Nature Communications",
+  dates: "4 October 2024",
+  consistent: true,
 )
 // - Reconstituted protein into nanodiscs and processed cryo-EM data.
 
-#project(
-  role: "Regression-Based Active Learning for Accessible Acceleration of Ultra-Large Library Docking",
-  name: "Journal of Chemical Information and Modeling",
+#edu(
+  degree: "Regression-Based Active Learning for Accessible Acceleration of Ultra-Large Library Docking",
+  institution: "Journal of Chemical Information and Modeling",
   dates: "December 2023",
+  consistent: true,
 )
 // - #text(style: "italic")[Journal of Chemical Information and Modeling], December 2023
 // - proposed the project, supervised the study and wrote manuscript, performed ML benchmarks
 
-// #project(
-// role: "Custom Design of a Humidifier Chamber for In Meso Crystallization",
+// #edu(
+// institution: "Custom Design of a Humidifier Chamber for In Meso Crystallization",
 // )
 // - #text(style: "italic")[Crystal Growth & Design], December 2023
 // - purified and crystallized protein, performed in meso crystallization, processed data, refined the structure, analyzed cryo-EM data, wrote the manuscript
 
-#project(
-  role: "Mirror proteorhodopsins",
-  name: "Nature Communications Chemistry",
-  dates: "2 May 2023"
+#edu(
+  degree: "Mirror proteorhodopsins",
+  institution: "Nature Communications Chemistry",
+  dates: "2 May 2023",
+  consistent: true,
 )
 // - Collected crystallographic data and solved the structure.
 
-// #project(
-// role: "Structural insights into thrombolytic activity of destabilase from medicinal leech",
+// #edu(
+// institution: "Structural insights into thrombolytic activity of destabilase from medicinal leech",
 // )
 // - #text(style: "italic")[Scientific Reports], April 2023
 // - Crystallized the protein, collected data, solved the structures, performed molecular dynamics simulations and analyzed the results.
 
-// #project(
-// role: "Structural insights into the effects of glycerol on ligand binding to cytochrome P450",
-// name: "Acta Crystallographica Section D",
+// #edu(
+// institution: "Structural insights into the effects of glycerol on ligand binding to cytochrome P450",
+// degree: "Acta Crystallographica Section D",
 // dates: "12 August 2022"
 // )
 // - Collected data at PAL XFEL, processed SFX data, refined model, performed Alphafold simulations, molecular docking & VLS benchmarks of available S1P models.
 
-#project(
-  role: "Structural basis for receptor selectivity and inverse agonism in S1P5 receptors",
-  name: "Nature Communications",
-  dates: "August 2022"
+#edu(
+  degree: "Structural basis for receptor selectivity and inverse agonism in S1P5 receptors",
+  institution: "Nature Communications",
+  dates: "August 2022",
+  consistent: true,
 )
 // - #text(style: "italic")[Nature Communications], August 2022
 // - collected data at PAL XFEL, processed SFX data, refined model, performed Alphafold simulations, molecular docking & VLS benchmarks of available S1P models
 
-// #project(
-// role: "A new twist of rubredoxin function in M. tuberculosis",
-// name: "Bioorganic Chemistry",
+// #edu(
+// institution: "A new twist of rubredoxin function in M. tuberculosis",
+// degree: "Bioorganic Chemistry",
 // dates: "1 April 2021"
 // )
 // - Collected crystallography data, supervised model refinement, wrote manuscript
 
-// #project(
-// role: "Metabolic fate of human immunoactive sterols in Mycobacterium tuberculosis",
+// #edu(
+// institution: "Metabolic fate of human immunoactive sterols in Mycobacterium tuberculosis",
 // )
 // - #text(style: "italic")[Journal of Molecular Biology], February 2021
 // - collected crystallography data, supervised model refinement, wrote manuscript
 
-// #project(
-  // role: "Structural Aspects of Photopharmacology: Insight into the Binding of Photoswitchable and Photocaged Inhibitors to the Glutamate Transporter Homologue",
+// #edu(
+// institution: "Structural Aspects of Photopharmacology: Insight into the Binding of Photoswitchable and Photocaged Inhibitors to the Glutamate Transporter Homologue",
 // )
 // - #text(style: "italic")[Journal of American Chemical Society], January 2021
 // - performed molecular docking of photo-switchable compounds in crystallographic structure and compared docking results with functional data
 
-#project(
-  role: "Structure-Based Virtual Screening of Ultra-Large Library Yields Potent Antagonists for a Lipid GPCR",
-  name: "Biomolecules",
-  dates: "December 2020"
+#edu(
+  degree: "Structure-Based Virtual Screening of Ultra-Large Library Yields Potent Antagonists for a Lipid GPCR",
+  institution: "Biomolecules",
+  dates: "December 2020",
+  consistent: true,
 )
 // - #text(style: "italic")[Biomolecules], December 2020
 // - prepared small-molecule libraries for docking, did large-scale docking and analyzed the results, wrote manuscript
 
-// #project(
-// role: "Hydroxylation of antitubercular drug candidate, SQ109, by mycobacterial cytochrome P450",
-// name: "International Journal of Molecular Sciences",
+// #edu(
+// institution: "Hydroxylation of antitubercular drug candidate, SQ109, by mycobacterial cytochrome P450",
+// degree: "International Journal of Molecular Sciences",
 // dates: "16 October 2020"
 // )
 // - Collected crystallography data, supervised model refinement, discussed draft.
 
-// #project(
-// role: "Small-wedge synchrotron and serial XFEL datasets for cysteinyl leukotriene GPCRs",
+// #edu(
+// institution: "Small-wedge synchrotron and serial XFEL datasets for cysteinyl leukotriene GPCRs",
 // )
 // - #text(style: "italic")[Scientific Data], November 2020
 // - organized, annotated and deposited raw data, developed robust re-processing algorithms, wrote manuscript
 //
-// #project(
-// role: "Molecular mechanism of light-driven sodium pumping",
+// #edu(
+// institution: "Molecular mechanism of light-driven sodium pumping",
 // )
 // - #text(style: "italic")[Nature Communications], May 2020
 // - processed serial synchrotron crystallography data using CrystFEL, deposited raw data
 
-#project(
-  role: "Structural basis of ligand selectivity and disease mutations in cysteinyl leukotriene receptors",
-  name: "Nature Communications",
-  dates: "December 2019"
+#edu(
+  institution: "Structural basis of ligand selectivity and disease mutations in cysteinyl leukotriene receptors",
+  degree: "Nature Communications",
+  dates: "December 2019",
+  consistent: true,
 )
 // - #text(style: "italic")[Nature Communications], December 2019
 // - collected small-wedge serial synchrotron crystallography data, refined, deposited, and analyzed structures, wrote the manuscript
 
-#project(
-  role: "Structure-based mechanism of cysteinyl leukotriene receptor inhibition by antiasthmatic drugs",
-  name: "Science Advances",
-  dates: "October 2019"
+#edu(
+  degree: "Structure-based mechanism of cysteinyl leukotriene receptor inhibition by antiasthmatic drugs",
+  institution: "Science Advances",
+  dates: "October 2019",
+  consistent: true,
 )
 // - #text(style: "italic")[Science Advances], October 2019
 // - collected synchrotron crystallography data, processed XFEL and synchrotron data, refined, deposited and analyzed structures, wrote the manuscript
 
-// #project(
-// role: "An outlook on using serial femtosecond crystallography in drug discovery",
+// #edu(
+// institution: "An outlook on using serial femtosecond crystallography in drug discovery",
 // )
 // - #text(style: "italic")[Expert Opinion on Drug Discovery], June 2019
 // - wrote sections about SFX data processing and phasing
 
-// #project(
-// role: "Structural insights into ion conduction by channelrhodopsin 2",
+// #edu(
+// institution: "Structural insights into ion conduction by channelrhodopsin 2",
 // )
 // - #text(style: "italic")[Science], November 2017
 // - processed serial crystallography data for both WT and mutant proteins
 
-// #project(
-// role: "Element-specific density profiles in interacting biomembrane models",
-// name: "Journal of Physics D: Applied Physics",
+// #edu(
+// institution: "Element-specific density profiles in interacting biomembrane models",
+// degree: "Journal of Physics D: Applied Physics",
 // dates: "9 February 2017"
 // )
 
@@ -327,11 +336,11 @@ For full list, see #link("https://scholar.google.com/citations?user=FJbv9XcAAAAJ
 - related coursework: Calculus I-IV, Linear Algebra I-II, Complex Analysis, Differential Equations I-II, Analytical Mechanics I-II, Thermodynamics.
 
 // #edu(
-  // institution: "Computer Science Center",
-  // location: "St. Petersburg, Russia",
-  // dates: dates-helper(start-date: "2020", end-date: "2022"),
-  // degree: "Online educational program in computer science",
-  // consistent: true,
+// institution: "Computer Science Center",
+// location: "St. Petersburg, Russia",
+// dates: dates-helper(start-date: "2020", end-date: "2022"),
+// degree: "Online educational program in computer science",
+// consistent: true,
 // )
 // - relevant coursework: Python, C++, Algorithms and data structures, Data science, Intro to Linux systems, Rust
 
@@ -356,10 +365,10 @@ For full list, see #link("https://scholar.google.com/citations?user=FJbv9XcAAAAJ
   - currently working on fast unified #link("https://github.com/MDAnalysis/mdanalysis/pull/4712")[MMCIF parser] based on `gemmi`
 
 #extracurriculars(
-activity: "Self-hosting",
-dates: dates-helper(start-date: "Jan 2021", end-date: "Present"),
+  activity: "Self-hosting",
+  dates: dates-helper(start-date: "Jan 2021", end-date: "Present"),
 )
- - self-hosting multiple applications (vikunja, llama.cpp wrappers, openwebui) for family use under a Tailscale VPN
+- self-hosting multiple applications (vikunja, llama.cpp wrappers, openwebui) for family use under a Tailscale VPN
 
 #extracurriculars(
   activity: "Data Science Competitions",
