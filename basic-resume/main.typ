@@ -41,6 +41,16 @@
  * #generic-one-by-two(left: "", right: "")
  */
 
+ == Cover paragraph
+
+ Machine learning scientist coming from biophysics / computational biology background.
+ Have
+  lots experience with cheminformatics and small-molecule property prediction models,
+  a paper in active learning for ultra-large virtual ligand screening,
+  and a position as a core developer in MDAnalysis (most popular open-source package for molecular dynamics analysis).
+
+Technology-wise, love (typed) python and recently Rust, jax data model, and toml over yaml for configs.
+
 == Work Experience
 
 #work(
@@ -49,7 +59,7 @@
   company: "ENPICOM B.V.",
   dates: dates-helper(start-date: "May 2024", end-date: "Present"),
 )
-- full-cycle ML model development: from literature survey and data collection to reproducible training and deployment
+- full-cycle ML model development: from literature survey and data collection and cleaning to reproducible training and deployment
 - working with both generative and predictive models for various tasks in the antibody development field
 
 #work(
@@ -92,21 +102,23 @@
 == Skills
 - *Programming Languages*: Python, bash, Rust, C++, Typescript
 - *Python*: uv/ruff/ty❤️‍🔥, pytest, hypothesis, pydantic, dask
-- *Data Science*: polars🫶, huggingface🤗, pandas, numpy, sklearn, skrub
+- *Data Science*: polars🫶, huggingface🤗, pandas/numpy/sklearn/skrub
 - *Visualization*: altair, marimo, matplotlib/seaborn/jupyter
 - *Deep Learning*: pytorch, lightning, jax, mlflow
-- *ML in biology*: protein language models, diffusion/discrete diffusion/flow matching, Alphafold/Openfold/Boltz
+- *ML in biology*: protein language models, diffusion/discrete diffusion/flow matching, continuous diffusion models (Alphafold/Openfold/Boltz)
 - *Structural biology*: cryoEM data processing and structure refinement, X-ray crystallography data collection, processing and refinement
-- *Technologies*: AWS, Docker, SLURM, Modal, Airflow, Github actions
 - *Cheminformatics*: RDKit, polaris, molecular docking, structural bioinformatics (MDAnalysis/mdtraj/biotite)
+- *Technologies*: AWS, Docker, k8s/SLURM, Modal, Airflow, Github actions
 
-== Publications
+== Selected publications
 
-#project(
-  name: "CryoRhodopsins: a comprehensive characterization of a new clade of microbial rhodopsins from cold environments",
-)
-- #text(style: "italic")[Science Advances], July 2025
-- prepared samples for cryoEM (nanodisc reconstitution), processed cryoEM data and organized data collection
+For full list, see #link("https://scholar.google.com/citations?user=FJbv9XcAAAAJ")[google scholar].
+
+// #project(
+  // name: "CryoRhodopsins: a comprehensive characterization of a new clade of microbial rhodopsins from cold environments",
+// )
+// - #text(style: "italic")[Science Advances], July 2025
+// - prepared samples for cryoEM (nanodisc reconstitution), processed cryoEM data and organized data collection
 
 // #project(
 // role: "Structural basis for no retinal binding in flotillin-associated rhodopsins",
@@ -128,11 +140,11 @@
 - #text(style: "italic")[Journal of Chemical Information and Modeling], December 2023
 - proposed the project, supervised the study and wrote manuscript, performed ML benchmarks
 
-#project(
-  role: "Custom Design of a Humidifier Chamber for In Meso Crystallization",
-)
-- #text(style: "italic")[Crystal Growth & Design], December 2023
-- purified and crystallized protein, performed in meso crystallization, processed data, refined the structure, analyzed cryo-EM data, wrote the manuscript
+// #project(
+  // role: "Custom Design of a Humidifier Chamber for In Meso Crystallization",
+// )
+// - #text(style: "italic")[Crystal Growth & Design], December 2023
+// - purified and crystallized protein, performed in meso crystallization, processed data, refined the structure, analyzed cryo-EM data, wrote the manuscript
 
 // #project(
 // role: "Mirror proteorhodopsins",
@@ -141,11 +153,11 @@
 // )
 // - Collected crystallographic data and solved the structure.
 
-#project(
-  role: "Structural insights into thrombolytic activity of destabilase from medicinal leech",
-)
-- #text(style: "italic")[Scientific Reports], April 2023
-- Crystallized the protein, collected data, solved the structures, performed molecular dynamics simulations and analyzed the results.
+// #project(
+  // role: "Structural insights into thrombolytic activity of destabilase from medicinal leech",
+// )
+// - #text(style: "italic")[Scientific Reports], April 2023
+// - Crystallized the protein, collected data, solved the structures, performed molecular dynamics simulations and analyzed the results.
 
 // #project(
 // role: "Structural insights into the effects of glycerol on ligand binding to cytochrome P450",
@@ -167,11 +179,11 @@
 // )
 // - Collected crystallography data, supervised model refinement, wrote manuscript
 
-#project(
-  role: "Metabolic fate of human immunoactive sterols in Mycobacterium tuberculosis",
-)
-- #text(style: "italic")[Journal of Molecular Biology], February 2021
-- collected crystallography data, supervised model refinement, wrote manuscript
+// #project(
+  // role: "Metabolic fate of human immunoactive sterols in Mycobacterium tuberculosis",
+// )
+// - #text(style: "italic")[Journal of Molecular Biology], February 2021
+// - collected crystallography data, supervised model refinement, wrote manuscript
 
 #project(
   role: "Structural Aspects of Photopharmacology: Insight into the Binding of Photoswitchable and Photocaged Inhibitors to the Glutamate Transporter Homologue",
@@ -192,41 +204,41 @@
 // )
 // - Collected crystallography data, supervised model refinement, discussed draft.
 
-#project(
-  role: "Small-wedge synchrotron and serial XFEL datasets for cysteinyl leukotriene GPCRs",
-)
-- #text(style: "italic")[Scientific Data], November 2020
-- organized, annotated and deposited raw data, developed robust re-processing algorithms, wrote manuscript
+// #project(
+  // role: "Small-wedge synchrotron and serial XFEL datasets for cysteinyl leukotriene GPCRs",
+// )
+// - #text(style: "italic")[Scientific Data], November 2020
+// - organized, annotated and deposited raw data, developed robust re-processing algorithms, wrote manuscript
+//
+// #project(
+  // role: "Molecular mechanism of light-driven sodium pumping",
+// )
+// - #text(style: "italic")[Nature Communications], May 2020
+// - processed serial synchrotron crystallography data using CrystFEL, deposited raw data
 
-#project(
-  role: "Molecular mechanism of light-driven sodium pumping",
-)
-- #text(style: "italic")[Nature Communications], May 2020
-- processed serial synchrotron crystallography data using CrystFEL, deposited raw data
+// #project(
+  // role: "Structural basis of ligand selectivity and disease mutations in cysteinyl leukotriene receptors",
+// )
+// - #text(style: "italic")[Nature Communications], December 2019
+// - collected small-wedge serial synchrotron crystallography data, refined, deposited, and analyzed structures, wrote the manuscript
+//
+// #project(
+  // role: "Structure-based mechanism of cysteinyl leukotriene receptor inhibition by antiasthmatic drugs",
+// )
+// - #text(style: "italic")[Science Advances], October 2019
+// - collected synchrotron crystallography data, processed XFEL and synchrotron data, refined, deposited and analyzed structures, wrote the manuscript
 
-#project(
-  role: "Structural basis of ligand selectivity and disease mutations in cysteinyl leukotriene receptors",
-)
-- #text(style: "italic")[Nature Communications], December 2019
-- collected small-wedge serial synchrotron crystallography data, refined, deposited, and analyzed structures, wrote the manuscript
+// #project(
+  // role: "An outlook on using serial femtosecond crystallography in drug discovery",
+// )
+// - #text(style: "italic")[Expert Opinion on Drug Discovery], June 2019
+// - wrote sections about SFX data processing and phasing
 
-#project(
-  role: "Structure-based mechanism of cysteinyl leukotriene receptor inhibition by antiasthmatic drugs",
-)
-- #text(style: "italic")[Science Advances], October 2019
-- collected synchrotron crystallography data, processed XFEL and synchrotron data, refined, deposited and analyzed structures, wrote the manuscript
-
-#project(
-  role: "An outlook on using serial femtosecond crystallography in drug discovery",
-)
-- #text(style: "italic")[Expert Opinion on Drug Discovery], June 2019
-- wrote sections about SFX data processing and phasing
-
-#project(
-  role: "Structural insights into ion conduction by channelrhodopsin 2",
-)
-- #text(style: "italic")[Science], November 2017
-- performed data processing for both WT and mutant proteins
+// #project(
+  // role: "Structural insights into ion conduction by channelrhodopsin 2",
+// )
+// - #text(style: "italic")[Science], November 2017
+// - processed serial crystallography data for both WT and mutant proteins
 
 // #project(
 // role: "Element-specific density profiles in interacting biomembrane models",
@@ -245,7 +257,7 @@
   consistent: true,
 )
 - thesis 'On the methods of studying protein-ligand interaction dynamics'"
-- methods: cryoEM, X-ray crystallography, protein biochemistry, protein biophysics
+- methods: cryoEM, X-ray crystallography, molecular dynamics, protein biochemistry, protein biophysics
 - publications in JACS, Crystal Growth & Design, Journal of Cheminformatics & Modelling
 
 #edu(
@@ -264,8 +276,7 @@
   degree: "MSc in applied mathematics and physics",
   consistent: true,
 )
-- managed bachelor and master students, created a course on modern protein crystallography
-- publications in Science, Nature Communications, Science Advances, Scientific Data
+// - managed bachelor and master students, lectured a course on modern protein crystallography
 - graduated #text(style: "italic")[summa cum laude]
 
 #edu(
@@ -284,9 +295,10 @@
   activity: "Open-source contributions",
   dates: dates-helper(start-date: "Jan 2021", end-date: "Present"),
 )
-- #link("https://github.com/rs-station/reciprocalspaceship")[reciprocalspaceship]: wrote parser for serial crystallography data into binary dataframe-like class
-- #link("https://github.com/marinegor/ntfy_cryosparc/")[ntfy-cryosparc]: wrote web-server to parse CryoSPARC notifications and notify appropriate users
+- #link("https://github.com/pola-rs/polars/")[polars]: contributed to polars (issue #link("https://github.com/pola-rs/polars/issues/25383")[\#25383]: extending `replace_many` with `leftmost` option.
 - #link("https://github.com/ion-elgreco/polars-distance/")[polars-distance]: minor contribution to polars plugin for distance calculation
+- #link("https://github.com/rs-station/reciprocalspaceship")[reciprocalspaceship]: wrote parser for serial crystallography data into binary dataframe-like class
+// - #link("https://github.com/marinegor/ntfy_cryosparc/")[ntfy-cryosparc]: wrote web-server to parse CryoSPARC notifications and notify appropriate users
 
 #extracurriculars(
   activity: "MDAnalysis Core Developer",
@@ -295,13 +307,13 @@
 - #link("https://www.mdanalysis.org/pages/team/")[MDAnalysis Core Developer]
   - wrote a #link("https://github.com/MDAnalysis/mdanalysis/pull/4162")[parallel backend] for all analysis classes (dask/multiprocessing)
   - added a #link("https://github.com/MDAnalysis/mdanalysis/pull/4304")[DSSP module] for native secondary structure assignment
-  - currently working on an #link("https://github.com/MDAnalysis/mdanalysis/pull/4712")[MMCIF parser] based on `gemmi`
+  - currently working on fast unified #link("https://github.com/MDAnalysis/mdanalysis/pull/4712")[MMCIF parser] based on `gemmi`
 
-#extracurriculars(
-  activity: "Self-hosting",
-  dates: dates-helper(start-date: "Jan 2021", end-date: "Present"),
-)
-- self-hosting bunch of open-source docker containers under Tailscale VPN
+// #extracurriculars(
+  // activity: "Self-hosting",
+  // dates: dates-helper(start-date: "Jan 2021", end-date: "Present"),
+// )
+// - self-hosting bunch of open-source docker applications under Tailscale VPN
 
 #extracurriculars(
   activity: "Data Science Competitions",
