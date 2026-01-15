@@ -1,7 +1,7 @@
 #import "@preview/basic-resume:0.2.8": *
 
 // Put your personal information here, replacing mine
-#let name = "Egor Marin"
+#let name = "Egor Marin, Machine Learning Scientist (Drug Discovery & Computational Biology)"
 #let location = "Groningen, Netherlands"
 #let email = "me@marinegor.dev"
 #let github = "github.com/marinegor"
@@ -41,50 +41,40 @@
  * #generic-one-by-two(left: "", right: "")
  */
 
-== Cover paragraph
+== Summary
 
-Scientist with strong computational and biophysical background and tendency towards writing reusable code. I have eight years of experience as a structural biology/bioinformatics scientist,
-with h-index of 13 and experience ranging from data processing in serial crystallography and cryoEM to wet-lab sample preparation and virtual ligand screening.
+ - ML Scientist with a PhD in Structural Biology and 8+ years of research experience
+ - specialized in building generative and predictive models (diffusion/PLMs with pytorch & jax) for antibody drug discovery and structural biology
+ - managed complete research data lifecycles, from cryo-EM/crystallography data processing (20TB+) to deploying ML-driven analysis tools
+ - Core Developer for MDAnalysis, contributing major features like a parallel processing backend (dask/multiprocessing)
 
-As a structural biologist, have 400+ hours of crystallography beamtime, 20+ Tb of processed crystallography data and #text(weight: "bold")[80 processed projects in CryoSPARC] instance
-that I also set up and managed for 15 users on multiple workstations and a SLURM cluster. As of January 2026, have #text(weight: "bold")[38 deposited PDB structures] across 16 different publications.
-Notably, for faster processing of the projects wrote a #link("https://github.com/marinegor/ntfy_cryosparc/")[web-server] for personalised CryoSPARC notifications.
-
-I also have good knowledge of Linux systems, supported by 4 years of management of various workstations and servers for more than 30 users.
-I regularly contribute to structural biology and data science open-source (projects such as polars, MDAnalysis, reciprocalspaceship).
-
-Now employed as Machine Learning Scientist, working on full-cycle predictive and generative model development for an antibody drug-discovery platform startup.
-
-// Technology-wise, love (typed) python and recently Rust, jax data model, and toml over yaml for configs.
-
-
-== Selected Projects
-
-#project(
-  dates: dates-helper(start-date: "Sep 2017", end-date: "Sep 2020"),
-  name: "Structure-function relationship of cysteinyl leukotriene receptors",
-  role: "Scientist",
-)
-- did last-mile crystallography service from membrane protein crystals to refined PDB structures and wrote manuscripts collaborating with multiple research groups
-- publications in Nature Communications, Science Advances and Biomolecules
-
-#project(
-  dates: dates-helper(start-date: "Sep 2020", end-date: "Sep 2023"),
-  name: "Structural characterisation of microbal rhodopsins",
-  role: "Structural biologist",
-)
-- reconstituted membrane proteins in nanodiscs and processed cryoEM data subsequently
-- publications in Nature Communications and Science Advances
-
-#project(
-  dates: dates-helper(start-date: "May 2023", end-date: "Sep 2023"),
-  name: "Implementation of parallel analysis in MDAnalysis",
-  role: "Software developer",
-)
-- implemented backward-compatible parallelization for the most popular molecular dynamics analysis package; continue contributing as a core developer
+// == Selected Projects
+//
+// #project(
+  // dates: dates-helper(start-date: "Sep 2017", end-date: "Sep 2020"),
+  // name: "Structure-function relationship of cysteinyl leukotriene receptors",
+  // role: "Scientist",
+// )
+// - did last-mile crystallography service from membrane protein crystals to refined PDB structures and wrote manuscripts collaborating with multiple research groups
+// - publications in Nature Communications, Science Advances and Biomolecules
+//
+// #project(
+  // dates: dates-helper(start-date: "Sep 2020", end-date: "Sep 2023"),
+  // name: "Structural characterisation of microbal rhodopsins",
+  // role: "Structural biologist",
+// )
+// - reconstituted membrane proteins in nanodiscs and processed cryoEM data subsequently
+// - publications in Nature Communications and Science Advances
+//
+// #project(
+  // dates: dates-helper(start-date: "May 2023", end-date: "Sep 2023"),
+  // name: "Implementation of parallel analysis in MDAnalysis",
+  // role: "Software developer",
+// )
+// - implemented backward-compatible parallelization for the most popular molecular dynamics analysis package; continue contributing as a core developer
 
 
-== Work Experience
+== Experience
 
 #work(
   title: "Machine Learning Scientist",
@@ -92,8 +82,8 @@ Now employed as Machine Learning Scientist, working on full-cycle predictive and
   company: "ENPICOM B.V.",
   dates: dates-helper(start-date: "May 2024", end-date: "Present"),
 )
-- full-cycle ML model development: from literature survey and data collection and cleaning to reproducible training and deployment
-- working with both generative and predictive models for various tasks in the antibody development field
+- develop and deploy generative and predictive models for antibody drug discovery using pytorch/lightning and custom discrete diffusion pipelines
+- own the end-to-end ML lifecycle, from sourcing and cleaning biochemical data to building reproducible training pipelines with MLflow for experiment tracking
 
 #work(
   title: "Open-source software engineer",
@@ -101,7 +91,7 @@ Now employed as Machine Learning Scientist, working on full-cycle predictive and
   company: "MDAnalysis via Google Summer of Code",
   dates: dates-helper(start-date: "May 2023", end-date: "September 2023"),
 )
-- designed and wrote backward-compatible parallelization (dask / multiprocessing) for molecular dynamics trajectory analysis
+- designed and wrote backward-compatible parallelization with dask or multiprocessing for the core analysis library
 
 #work(
   title: "PhD Researcher",
@@ -109,9 +99,10 @@ Now employed as Machine Learning Scientist, working on full-cycle predictive and
   company: "University of Groningen",
   dates: dates-helper(start-date: "June 2021", end-date: "Dec 2023"),
 )
-- full-cycle membrane protein biochemistry: protein expression, purification, nanodisc reconstitution or crystallization
-- processed cryoEM data (~80 CryoSPARC projects), set up cryoEM data processing & management infrastructure
-- supervised a project as a corresponding author: #link("https://pubs.acs.org/doi/10.1021/acs.jcim.3c01661")["Regression-Based Active Learning for Accessible Acceleration of Ultra-Large Library Docking"]
+- led a research project as a corresponding author, applying regression-based active learning to accelerate ultra-large library docking, resulting in a publication in J. Chem. Inf. Model
+- designed, deployed, and managed a high-throughput data processing infrastructure (CryoSPARC) for 15+ users, processing over 80 cryo-EM projects and 20TB of data
+- developed a custom web server (ntfy-cryosparc) to provide personalized notifications, improving workflow efficiency for the research group
+- solved 38+ protein structures using cryo-EM and X-ray crystallography, leading to publications in journals including Nature Communications and Science Advances
 
 #work(
   title: "Junior Research Associate",
@@ -119,8 +110,10 @@ Now employed as Machine Learning Scientist, working on full-cycle predictive and
   company: "Moscow Institute of Physics and Technology",
   dates: dates-helper(start-date: "March 2017", end-date: "September 2021"),
 )
-- last-mile protein crystallography service: crystal harvesting, data management, synchrotron and XFEL data collection
-- refined, analysed and deposited protein structures to PDB (38 structures as of September 2025)
+- managed the end-to-end protein crystallography pipeline for multiple research groups, from sample preparation to synchrotron and XFEL data collection
+- processed, refined, and analyzed crystallographic data, successfully determining and depositing 38 protein structures to the PDB
+- contributed structural data and analysis that formed the basis for 16 peer-reviewed publications
+
 // - coordinated data analysis and manuscript preparation
 
 // #work(
@@ -133,15 +126,20 @@ Now employed as Machine Learning Scientist, working on full-cycle predictive and
 // - communicated with scientists & media.
 
 == Skills
-- *Programming Languages*: Python, bash, Rust, C++, Typescript
-- *Python*: uv/ruff/ty, pytest, hypothesis, pydantic, dask
-- *Data Science*: polars, huggingface, pandas/numpy/sklearn/skrub
-- *Visualization*: altair, marimo, matplotlib/seaborn/jupyter
-- *Deep Learning*: pytorch, lightning, jax, mlflow
-- *ML in biology*: protein language models, diffusion/discrete diffusion/flow matching, continuous diffusion models (Alphafold/Openfold/Boltz)
-- *Structural biology*: cryoEM data processing and structure refinement, X-ray crystallography data collection, processing and refinement
-- *Cheminformatics*: RDKit, polaris, molecular docking, structural bioinformatics (MDAnalysis/mdtraj/biotite)
-- *Technologies*: AWS, Docker, k8s/SLURM, Modal, Airflow, Github actions
+
+#text(weight: "bold")[Technology:]  python | rust | pytorch | jax | huggingface | polars | sklearn | mlflow | rdkit | docker | AWS | k8s | SLURM
+
+#text(weight: "bold")[Domain:] cryoEM | X-ray crystallography | biophysics | drug discovery | cheminformatics | antibodies
+
+// - *Programming Languages*: Python, bash, Rust, C++, Typescript
+// - *Python*: uv/ruff/ty, pytest, hypothesis, pydantic, dask
+// - *Data Science*: polars, huggingface, pandas/numpy/sklearn/skrub
+// - *Visualization*: altair, marimo, matplotlib/seaborn/jupyter
+// - *Deep Learning*: pytorch, lightning, jax, mlflow
+// - *ML in biology*: protein language models, diffusion/discrete diffusion/flow matching, continuous diffusion models (Alphafold/Openfold/Boltz)
+// - *Structural biology*: cryoEM data processing and structure refinement, X-ray crystallography data collection, processing and refinement
+// - *Cheminformatics*: RDKit, polaris, molecular docking, structural bioinformatics (MDAnalysis/mdtraj/biotite)
+// - *Technologies*: AWS, Docker, k8s/SLURM, Modal, Airflow, Github actions
 
 == Selected publications
 
@@ -344,7 +342,7 @@ For full list, see #link("https://scholar.google.com/citations?user=FJbv9XcAAAAJ
 // )
 // - relevant coursework: Python, C++, Algorithms and data structures, Data science, Intro to Linux systems, Rust
 
-== Extracurricular Activities
+== Open Source Contributions & Projects
 
 #extracurriculars(
   activity: "Open-source contributions",
@@ -368,13 +366,13 @@ For full list, see #link("https://scholar.google.com/citations?user=FJbv9XcAAAAJ
   activity: "Self-hosting",
   dates: dates-helper(start-date: "Jan 2021", end-date: "Present"),
 )
-- self-hosting multiple applications (vikunja, llama.cpp wrappers, openwebui) for family use under a Tailscale VPN
+- self-hosting multiple applications (paperless, llama.cpp, openwebui) for family use under a Tailscale VPN
 
 #extracurriculars(
   activity: "Data Science Competitions",
   dates: dates-helper(start-date: "2018", end-date: "Present"),
 )
 - top-10% in Kaggle "Predict Molecular Properties" (public notebooks + gradient boosting on self-written rotationally invariant features)
-- top-1 in first round of "Learning How To Smell" at AIcrowd
+// - top-1 in first round of "Learning How To Smell" at AIcrowd
 - top-10% in Takeda competition at Signate
 - 5th place in Tochka Bank graph ML competition
