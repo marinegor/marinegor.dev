@@ -1,7 +1,8 @@
 #import "@preview/basic-resume:0.2.8": *
 
 // Put your personal information here, replacing mine
-#let name = "Egor Marin, Machine Learning Scientist (Drug Discovery & Computational Biology)"
+#let name = "Egor Marin, ML Engineer"
+// Applied ML Engineer/Scientist
 #let location = "Groningen, Netherlands"
 #let email = "me@marinegor.dev"
 #let github = "github.com/marinegor"
@@ -43,33 +44,33 @@
 
 == Summary
 
- - ML Scientist with a PhD in Structural Biology and 8+ years of research experience
- - specialized in building generative and predictive models (diffusion/PLMs with pytorch & jax) for antibody drug discovery and structural biology
- - managed complete research data lifecycles, from cryo-EM/crystallography data processing (20TB+) to deploying ML-driven analysis tools
- - Core Developer for MDAnalysis, contributing major features like a parallel processing backend (dask/multiprocessing)
+- ML Scientist with a PhD in Structural Biology and 8+ years of research experience
+- specialized in building generative and predictive models (diffusion/PLMs with pytorch & jax) for antibody drug discovery and structural biology
+- managed complete research data lifecycles, from cryo-EM/crystallography data processing (20TB+) to deploying ML-driven analysis tools
+- Core Developer for MDAnalysis, contributing major features like a parallel processing backend (dask/multiprocessing)
 
 // == Selected Projects
 //
 // #project(
-  // dates: dates-helper(start-date: "Sep 2017", end-date: "Sep 2020"),
-  // name: "Structure-function relationship of cysteinyl leukotriene receptors",
-  // role: "Scientist",
+// dates: dates-helper(start-date: "Sep 2017", end-date: "Sep 2020"),
+// name: "Structure-function relationship of cysteinyl leukotriene receptors",
+// role: "Scientist",
 // )
 // - did last-mile crystallography service from membrane protein crystals to refined PDB structures and wrote manuscripts collaborating with multiple research groups
 // - publications in Nature Communications, Science Advances and Biomolecules
 //
 // #project(
-  // dates: dates-helper(start-date: "Sep 2020", end-date: "Sep 2023"),
-  // name: "Structural characterisation of microbal rhodopsins",
-  // role: "Structural biologist",
+// dates: dates-helper(start-date: "Sep 2020", end-date: "Sep 2023"),
+// name: "Structural characterisation of microbal rhodopsins",
+// role: "Structural biologist",
 // )
 // - reconstituted membrane proteins in nanodiscs and processed cryoEM data subsequently
 // - publications in Nature Communications and Science Advances
 //
 // #project(
-  // dates: dates-helper(start-date: "May 2023", end-date: "Sep 2023"),
-  // name: "Implementation of parallel analysis in MDAnalysis",
-  // role: "Software developer",
+// dates: dates-helper(start-date: "May 2023", end-date: "Sep 2023"),
+// name: "Implementation of parallel analysis in MDAnalysis",
+// role: "Software developer",
 // )
 // - implemented backward-compatible parallelization for the most popular molecular dynamics analysis package; continue contributing as a core developer
 
@@ -127,7 +128,7 @@
 
 == Skills
 
-#text(weight: "bold")[Technology:]  python | rust | pytorch | jax | huggingface | polars | sklearn | mlflow | rdkit | docker | AWS | k8s | SLURM
+#text(weight: "bold")[Technology:]  python | rust | pytorch | jax | scipy | numpy | sklearn | polars | pydantic | mlflow | docker | AWS | k8s | SLURM
 
 #text(weight: "bold")[Domain:] cryoEM | X-ray crystallography | biophysics | drug discovery | cheminformatics | antibodies
 
@@ -326,7 +327,7 @@ For full list, see #link("https://scholar.google.com/citations?user=FJbv9XcAAAAJ
 #edu(
   institution: "Moscow Institute of Physics and Technology",
   location: "Moscow, Russia",
-  dates: dates-helper(start-date: "2017", end-date: "2019"),
+  dates: dates-helper(start-date: "2013", end-date: "2017"),
   degree: "BSc in applied mathematics and physics",
   consistent: true,
 )
