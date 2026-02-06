@@ -1,7 +1,7 @@
 #import "@preview/basic-resume:0.2.8": *
 
 // Put your personal information here, replacing mine
-#let name = "Egor Marin, ML Engineer"
+#let name = "Egor Marin, ML Engineer/Scientist"
 // Applied ML Engineer/Scientist
 #let location = "Groningen, Netherlands"
 #let email = "me@marinegor.dev"
@@ -45,7 +45,8 @@
 == Summary
 
 - ML Scientist with a PhD in Structural Biology and 8+ years of research experience
-- specialized in building generative and predictive models (diffusion/PLMs with pytorch & jax) for antibody drug discovery and structural biology
+- built and managed ML/DL codebase with data and model registry in a team of scientists and engineers
+- specialized in building generative and predictive models for antibody drug discovery and structural biology
 - managed complete research data lifecycles, from cryo-EM/crystallography data processing (20TB+) to deploying ML-driven analysis tools
 - Core Developer for MDAnalysis, contributing major features like a parallel processing backend (dask/multiprocessing)
 
@@ -85,6 +86,7 @@
 )
 - develop and deploy generative and predictive models for antibody drug discovery using pytorch/lightning and custom discrete diffusion pipelines
 - own the end-to-end ML lifecycle, from sourcing and cleaning biochemical data to building reproducible training pipelines with MLflow for experiment tracking
+- manage codebase with data and training pipelines, ensuring regular code reviews and code reusability while maintaining modularity and compatibility of the models
 
 #work(
   title: "Open-source software engineer",
