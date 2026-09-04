@@ -9,7 +9,16 @@ pygmentsstyle = "monokai"
 pygmentscodefences = true
 pygmentscodefencesguesssyntax = true
 
-paginate=5 # articles per page
+[pagination]
+	pagerSize = 5 # articles per page
+
+[outputs]
+	home = ["HTML", "RSS"]
+
+[outputFormats.rss]
+	mediaType = "application/rss+xml"
+	baseName = "feed"
+	isPlainText = true
 
 [params]
 	mode="auto" # color-mode → light,dark,toggle or auto
@@ -17,6 +26,7 @@ paginate=5 # articles per page
 	subtitle = 'Website with code snippets, informal project descriptions, and some ranting when I get older'
 	mathjax = true # enable MathJax support
 	katex = true # enable KaTeX support
+	customCSS = ["css/custom.css"]
 
 # Social Tags
 

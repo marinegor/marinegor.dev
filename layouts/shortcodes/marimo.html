@@ -1,0 +1,24 @@
+{{- $slug := .Get "slug" | default (.Get 0) -}}
+{{- $width := .Get "width" | default "100%" -}}
+{{- $height := .Get "height" | default "600px" -}}
+{{- $relpath := printf "notebooks/%s.html" $slug -}}
+{{- $checkpath := printf "static/%s" $relpath -}}
+{{- if not (fileExists $checkpath) -}}
+{{- warnf "marimo shortcode: %q not found at %s -- run `task marimo:export -- path/to/%s.py`" $slug $checkpath $slug -}}
+<div class="marimo-missing">
+  ⚠️ marimo notebook "<code>{{ $slug }}</code>" not found. Export it with
+  <code>task marimo:export -- path/to/{{ $slug }}.py</code>.
+</div>
+{{- else -}}
+<div class="marimo-embed">
+  <iframe
+    src="{{ $relpath | relURL }}"
+    width="{{ $width }}"
+    height="{{ $height }}"
+    loading="lazy"
+    allow="clipboard-write"
+    style="border:1px solid; border-radius:4px;"
+    title="marimo notebook: {{ $slug }}">
+  </iframe>
+</div>
+{{- end -}}

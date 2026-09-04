@@ -1,0 +1,27 @@
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+.project-card {
+  border: 1px solid var(--bordercl, #ddd);
+  border-radius: 6px;
+  padding: 1rem;
+}
+.project-title { margin: 0 0 .5rem; font-size: 1.1rem; }
+.project-description { margin: 0 0 .5rem; font-size: .95rem; }
+.project-tags { display: flex; flex-wrap: wrap; gap: .35rem; }
+.project-tag {
+  font-size: .75rem;
+  padding: .1rem .5rem;
+  border-radius: 999px;
+  border: 1px solid var(--bordercl, #ddd);
+}
+
+.marimo-embed iframe { width: 100%; max-width: 100%; }
+.marimo-missing {
+  border: 1px dashed var(--maincolor, #d33);
+  padding: .75rem;
+  border-radius: 4px;
+}

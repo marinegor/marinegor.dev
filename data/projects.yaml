@@ -1,0 +1,15 @@
+- title: "Project One"
+  url: "https://github.com/marinegor/project-one"
+  description: "One-line placeholder description — replace me."
+  emoji: "🧪"
+  tags: ["python"]
+- title: "Project Two"
+  url: "https://github.com/marinegor/project-two"
+  description: "Another placeholder — replace me."
+  emoji: "🔬"
+  tags: ["rust", "cli"]
+- title: "Project Three"
+  url: "https://example.com"
+  description: "Third placeholder entry — replace me."
+  emoji: "📊"
+  tags: []

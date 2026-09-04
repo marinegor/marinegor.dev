@@ -1,0 +1,38 @@
+version: '3'
+
+tasks:
+  install:
+    desc: Install Hugo (via go install) and init the theme submodule
+    status:
+      - PATH="$(go env GOPATH)/bin:$PATH" command -v hugo
+    cmds:
+      - go install github.com/gohugoio/hugo@latest
+      - git submodule update --init --recursive
+
+  serve:
+    desc: Run a local dev server (drafts + future/expired content visible)
+    deps: [install]
+    cmds:
+      - PATH="$(go env GOPATH)/bin:$PATH" hugo server -D -F --disableFastRender
+
+  build:
+    desc: Production build, mirroring the Cloudflare Pages build
+    deps: [install]
+    cmds:
+      - PATH="$(go env GOPATH)/bin:$PATH" hugo --minify
+
+  check:
+    desc: Build and sanity-check the output (valid feed.xml, no build errors)
+    deps: [build]
+    cmds:
+      - xmllint --noout public/feed.xml
+      - echo "OK"
+
+  marimo:export:
+    desc: 'Export a marimo notebook to static/notebooks/. Usage: task marimo:export -- path/to/notebook.py [slug]'
+    cmds:
+      - bash scripts/export_marimo.sh {{.CLI_ARGS}}
+
+  default:
+    cmds:
+      - task --list

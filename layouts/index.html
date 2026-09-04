@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	{{ partial "header.html" . }}
+	<body>
+		<div class="content">
+			{{ partial "head.html" . }}
+			<main class="list">
+				<div class="site-description">
+					{{- if isset .Site.Params "subtitle" -}}
+					<p>{{ .Site.Params.Subtitle | markdownify }}</p>
+					{{- end -}}
+				</div>
+
+				<h1 class="page-title">Fun projects</h1>
+				<div class="projects-grid">
+					{{ range .Site.Data.projects }}
+					<div class="project-card">
+						<h2 class="project-title">
+							{{ with .emoji }}{{ . }} {{ end }}<a href="{{ .url }}" target="_blank" rel="noopener">{{ .title }}</a>
+						</h2>
+						<p class="project-description">{{ .description }}</p>
+						{{ with .tags }}
+						<div class="project-tags">{{ range . }}<span class="project-tag">{{ . }}</span>{{ end }}</div>
+						{{ end }}
+					</div>
+					{{ end }}
+				</div>
+
+				<p><a class="readmore" href="{{ "/posts" | relURL }}">Read the blog ⟶</a></p>
+			</main>
+			{{ partial "footer.html" . }}
+		</div>
+	</body>
+</html>
