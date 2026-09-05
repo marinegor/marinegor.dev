@@ -1,9 +1,8 @@
 #import "@preview/basic-resume:0.2.8": *
 
 // Put your personal information here, replacing mine
-#let name = "Egor Marin, ML Engineer/Scientist"
-// Applied ML Engineer/Scientist
-#let location = "Groningen, Netherlands"
+#let name = "Egor Marin, Forward-Deployed ML Engineer in Cofolding"
+#let location = "Amsterdam, Netherlands"
 #let email = "me@marinegor.dev"
 #let github = "github.com/marinegor"
 #let linkedin = "linkedin.com/in/marinegor"
@@ -21,7 +20,7 @@
   linkedin: linkedin,
   // phone: phone,
   personal-site: personal-site,
-  accent-color: "#e9602a",
+  accent-color: "#FF3700",
   font: "New Computer Modern",
   paper: "us-letter",
   author-position: left,
@@ -79,10 +78,17 @@
 == Experience
 
 #work(
+  title: "Forward-Deployed ML Engineer",
+  location: "Berlin, Germany (remote)",
+  company: "Apheris",
+  dates: dates-helper(start-date: "August 2026", end-date: "Present"),
+)
+
+#work(
   title: "Machine Learning Scientist",
   location: "Den Bosch, Netherlands",
   company: "ENPICOM B.V.",
-  dates: dates-helper(start-date: "May 2024", end-date: "Present"),
+  dates: dates-helper(start-date: "May 2024", end-date: "June 2026"),
 )
 - develop and deploy generative and predictive models for antibody drug discovery using pytorch/lightning and custom discrete diffusion pipelines
 - own the end-to-end ML lifecycle, from sourcing and cleaning biochemical data to building reproducible training pipelines with MLflow for experiment tracking
@@ -130,7 +136,7 @@
 
 == Skills
 
-#text(weight: "bold")[Technology:]  python | rust | pytorch | jax | scipy | numpy | sklearn | polars | pydantic | mlflow | docker | AWS | k8s | SLURM
+#text(weight: "bold")[Technology:]  python | rust | polars | duckdb | pytorch | jax | numpy | sklearn | pydantic | mlflow | docker | AWS | k8s
 
 #text(weight: "bold")[Domain:] cryoEM | X-ray crystallography | biophysics | drug discovery | cheminformatics | antibodies
 
@@ -371,11 +377,11 @@ For full list, see #link("https://scholar.google.com/citations?user=FJbv9XcAAAAJ
 )
 - self-hosting multiple applications (paperless, llama.cpp, openwebui) for family use under a Tailscale VPN
 
-#extracurriculars(
-  activity: "Data Science Competitions",
-  dates: dates-helper(start-date: "2018", end-date: "Present"),
-)
-- top-10% in Kaggle "Predict Molecular Properties" (public notebooks + gradient boosting on self-written rotationally invariant features)
-// - top-1 in first round of "Learning How To Smell" at AIcrowd
-- top-10% in Takeda competition at Signate
-- 5th place in Tochka Bank graph ML competition
+// #extracurriculars(
+//   activity: "Data Science Competitions",
+//   dates: dates-helper(start-date: "2018", end-date: "Present"),
+// )
+// - top-10% in Kaggle "Predict Molecular Properties" (public notebooks + gradient boosting on self-written rotationally invariant features)
+// // - top-1 in first round of "Learning How To Smell" at AIcrowd
+// - top-10% in Takeda competition at Signate
+// - 5th place in Tochka Bank graph ML competition

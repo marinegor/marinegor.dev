@@ -33,6 +33,13 @@ tasks:
     cmds:
       - bash scripts/export_marimo.sh {{.CLI_ARGS}}
 
+  build-resume:
+    desc: 'Build a PDF version of the resume with typst'
+    cmds:
+      - typst compile basic-resume/main.typ static/cv.pdf
+    preconditions:
+      - sh: command -v typst
+
   default:
     cmds:
       - task --list
