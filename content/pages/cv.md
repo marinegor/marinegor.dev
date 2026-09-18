@@ -9,7 +9,7 @@ author: "Egor Marin"
 ---
 
 # Egor Marin
-Machine Learning Scientist @ [ENPICOM B.V.](https://enpicom.com), working with protein language models, bioinformatics, diffusion -- you name it; `@marinegor` at most of the platforms.
+Forward-Deployed ML Engineer in Cofolding @ [Apheris](https://apheris.com), working to deliver federated co-folding (cool word for structure prediction) models to customers, also enjoying open-source; `@marinegor` at most of the platforms.
 
 PDF version of this CV is [here](/cv.pdf)
 
@@ -35,9 +35,13 @@ I enjoy writing code and building complex systems, and want to do that for the t
 ## Career
 I have been roughly 8 years in science, working with membrane proteins and their structure-function relationships: GPCRs, (microbal) rhodopsins, membrane transporters, P450 enzymes, antibodies and nanobodies.
 
-I am currently employed at ENPICOM B.V., and before that have worked at the University of Groningen and Moscow Institute of Physics and Technology. Also, I have worked at many synchrotrons and XFELs, and also was a visiting research assistant at the University of Southern California.
+I am currently employed at Apheris GmbH, and before that have worked at ENPICOM, University of Groningen, and Moscow Institute of Physics and Technology (in reverse chronological order). Also, I have worked at many synchrotrons and XFELs, and also was a visiting research assistant at the University of Southern California and Center for Free Electron Science in Hamburg.
 
-### 2024-current: Machine Learning Scientist
+### 2026-current: Forward-Deployed ML Engineer in Cofolding
+
+Doing ML engineering in a federated data [company](https://apheris.com).
+
+### 2024-2026: Machine Learning Scientist
 
 Doing machine learning in biotech-oriented SaaS [company](https://enpicom.com).
 
@@ -61,7 +65,7 @@ Doing machine learning in biotech-oriented SaaS [company](https://enpicom.com).
 
 🤓 [MDAnalysis Core Developer](https://www.mdanalysis.org/pages/team/) since February 2025. For MDAnalysis, wrote a [parallel backend](https://github.com/MDAnalysis/mdanalysis/pull/4162) for all analysis classes (dask/multiprocessing), added a [DSSP module](https://github.com/MDAnalysis/mdanalysis/pull/4304) for native secondary structure assignment, currently working on an [MMCIF parser](https://github.com/MDAnalysis/mdanalysis/pull/4712).
 
-🧑‍💻 contributed to opensource: [reciprocalspaceship](https://github.com/rs-station/reciprocalspaceship): wrote parser for serial crystallography data into binary dataframe-like class, [ntfy-cryosparc](https://github.com/marinegor/ntfy_cryosparc/): wrote web-server to parse CryoSPARC (tm) notifications and notify appropriate users.
+🧑‍💻 contributed to opensource: [reciprocalspaceship](https://github.com/rs-station/reciprocalspaceship): wrote parser for serial crystallography data into binary dataframe-like class, [ntfy-cryosparc](https://github.com/marinegor/ntfy_cryosparc/): wrote web-server to parse CryoSPARC (tm) notifications and notify appropriate users, [immunum](https://github.com/ENPICOM/immunum): co-developed Rust-based antibody numbering tool (I wrote polars bindings and fixed at least [two](https://github.com/ENPICOM/immunum/pull/59) [bugs](https://github.com/ENPICOM/immunum/pull/54) there), [polars-#25383](https://github.com/pola-rs/polars/issues/25383): added a keyword argument to `replace_many` while trying to write pure polars tokenizer.
 
 😎 participated in Google Summer of Code contributing to [MDAnalysis](https://github.com/MDAnalysis/mdanalysis/): introduced process-based parallelization to the library using `dask` or `multiprocessing` (see main [PR](https://github.com/marinegor/mdanalysis/tree/feature/dask-0)).
 
@@ -103,4 +107,4 @@ MSc in applied mathematics and physics, summa cum laude, with specialization in 
 BSc in applied mathematics and physics, magna cum laude
 
 
-Last updated: September 2025.
+Last updated: September 2026.
