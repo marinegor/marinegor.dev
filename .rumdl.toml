@@ -1,0 +1,15 @@
+# rumdl (markdown linter) config — https://github.com/rvben/rumdl
+[global]
+disable = [
+  "MD013", # line length: prose is written one paragraph per line
+  "MD025", # multiple h1: posts use `#` sections below the front-matter title
+  "MD033", # inline HTML: allowed in Hugo content
+  "MD041", # first line heading: front matter provides the title
+  "MD026", # trailing punctuation in headings: editorial choice
+  "MD045", # image alt text: todo, add alt text to existing images
+  "MD059", # descriptive link text: "[here](...)" is fine for a personal blog
+]
+
+[per-file-ignores]
+# slides-style talk write-up: one "Implementation" section per slide
+"content/posts/gsoc-2023/mda_ugm_2023.md" = ["MD024"]

@@ -13,7 +13,6 @@ In the previous [blogpost](https://marinegor.github.io/posts/2023/06/gsoc-biweek
 
 Here I'll go through the implementation details of some methods -- namely, I'll explain how I went to a certain implementation of `_setup_bslices`, `_compute` and `run`.
 
-
 ## Where are we right now?
 
 At this moment, the `AnalysisBase.run()` method looks roughly like this:
@@ -40,7 +39,6 @@ Let's think of how `_setup_bslices` should look like -- which arguments it has a
 
 Well, clearly, it should know about the computation limits defined earlier in the `run` itself. Also, it should know about the scheduling parameters, in order to be able to distribute the load more or less evenly. Also, we know that we'll iterate over `self._bslices` in the `run()`, so we want to assign this attribute at the end. So, something like that:
 
-
 ```python
 def _setup_bslices(self, start, stop, step, frames, scheduler):
 	n_parts = some_function_of(scheduler)
@@ -55,7 +53,7 @@ Now, the first part with `n_parts = ...` is actually simple. For now, for clarit
 In order to split the work correctly, we need to know how exactly it looks like. In MDAnalysis, there are 2 mutually exclusive ways to define which frames you want to analyze:
 
 - `start, stop, step` -- a triplet of integer numbers with semantics similar to those in `range`
-- `frames` -- an iterable that works as a `slice` over trajectory. Can be of two kinds: 
+- `frames` -- an iterable that works as a `slice` over trajectory. Can be of two kinds:
   - `frames: Iterable[int]` -- an iterable with numbers of frames for analysis. For example, `frames = list(range(0, len(trajectory)))` will be equivalent to `start=0, stop=len(trajectory), step=1`
   - `frames: Iterable[bool]` -- an iterable with boolean values that define which frames to take into account. For example, `frames = [bool(i%2) for i in range(len(trajectory))]` is equivalent to `start=1, stop=len(trajectory), step=2`
 
@@ -85,7 +83,6 @@ def is_iterable_of_booleans(arr: Iterable):
 ```
 
 Unfortunately for us, we can't simply use the result of `split_work_into_parts` -- we not only need to split the frames evenly, but we also have to keep track of frame indices we're using, since in `_compute` we're explicitly assigning `self._frame_index = i`. Hence, we have to use something like `enumerate` before creating balanced slices, and make our function slightly more complicated:
-
 
 ```python
 def split_work_into_parts(n_parts: int = 1, start=None, stop=None, step=None, frames=None):
@@ -151,4 +148,5 @@ def _compute(self, bslice_idx):
 And that's it! This is really the core protocol of the `AnalysisBase.run()` method.
 
 ## Conclusion
+
 We now know crucial part of the parallelization works -- splitting work into equal parts and communicating between those parts. We haven't yet touched on aggregation of these results -- we only know that all workers, together with their results, will be stored in `self._remote_results: list[AnalysisBase]`, but we are yet to find out how to retrieve the main `AnalysisBase` results from these objects.

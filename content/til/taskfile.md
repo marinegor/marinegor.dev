@@ -68,5 +68,4 @@ It allows you to build the full environment quickly (~2 minutes with cold cache)
 
 Also, I can run `ipython` console, making sure that I'm running inside current environment, with `task ipython`. Pretty neat!
 
-
 Don't forget to add this Taskfile to your `.git/info/exclude` file in order not to commit it by accident.

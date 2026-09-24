@@ -12,17 +12,18 @@ tags:
 
 The content below is one-to-one a content of my MDAnalysis User Meeting in September 2023.
 
-
 ---
+
 # **Parallelization of MDAnalysis**
 
 Egor Marin, Google Summer of Code contributor
 
-marinegor@fastmail.com
+<marinegor@fastmail.com>
 
 <!-- ![](images/2023-09-26_MDA_UGM_qrcode.png) -->
 
 ---
+
 # Motivation
 
 - `T(insight) = T(simulation) + T(analysis)`
@@ -30,6 +31,7 @@ marinegor@fastmail.com
 - all MDAnalysis instances are parallelizable (courtesy @yuxuanzhuang)
 
 ---
+
 # Goals
 
 Change `AnalysisBase` in a way that...
@@ -42,8 +44,8 @@ Change `AnalysisBase` in a way that...
    - add your own execution backend
    - write your own parallelizable classes
 
-
 ---
+
 # Sneak peak: results
 
 ```python
@@ -58,6 +60,7 @@ Wall time: 50 sec
 ```
 
 ---
+
 # Sneak peak: results
 
 ```python
@@ -71,7 +74,8 @@ Wall time: 1 h
 Wall time: 8 min  
 ```
 
---- 
+---
+
 ## Implementation
 
 General `AnalysisBase.run()` protocol:
@@ -98,29 +102,36 @@ def run(self,
 ```
 
 ---
+
 ## Implementation
 
 split-apply-combine:
+
 - split all frames into groups
 - process each group independently
 - combine results
 
 ---
+
 ## Implementation
 
 Additional methods of `AnalysisBase`:
- - "split": `_setup_computation_groups()`
- - "apply": `_compute`
- - "combine": `_get_aggregator` & `ResultsGroup.merge()`
- - housekeeping: `_configure_backend`
+
+- "split": `_setup_computation_groups()`
+- "apply": `_compute`
+- "combine": `_get_aggregator` & `ResultsGroup.merge()`
+- housekeeping: `_configure_backend`
 
 ---
+
 ## Implementation
 
 ---
+
 ![mda-ugm-scheme](/posts/gsoc-2023/images/2023-09-26_MDA_UGM_scheme.png)
 
 ---
+
 ## Implementation
 
 Additional classes: `ResultsGroup`
@@ -134,6 +145,7 @@ class ResultsGroup:
 ```
 
 ---
+
 ## Implementation
 
 Additional classes: `ResultsGroup`
@@ -148,6 +160,7 @@ Additional classes: `ResultsGroup`
 ```
 
 ---
+
 ## Implementation
 
 Additional classes: `ResultsGroup`
@@ -162,7 +175,9 @@ Additional classes: `ResultsGroup`
 ```
 
 ---
+
 ## Implementation
+
 Additional classes: `BackendBase`
 
 ```python
@@ -182,7 +197,9 @@ class CustomBackend(BackendBase):
 ```
 
 ---
+
 ## Implementation
+
 Additional classes: `BackendBase`
 
 ```python
@@ -192,7 +209,9 @@ Additional classes: `BackendBase`
 ```
 
 ---
+
 ## Implementation
+
 Conditions for the `backend=...`
 
 - `Subclass.is_parallelizable() == True`
@@ -201,7 +220,9 @@ Conditions for the `backend=...`
   - if `BackendBase` subclass, explicitly say `unsafe=True`
 
 ---
+
 ## Add to your subclass
+
 Example: `RMSD`
 
 ```python
@@ -223,6 +244,7 @@ class RMSD(AnalysisBase):
 ```
 
 ---
+
 ## How fast
 
 - full-atom `xtc` ("lysozyme in water")
@@ -232,44 +254,53 @@ class RMSD(AnalysisBase):
 - i9-9900K CPU @ 3.60GHz, 8 cores/socket
 
 ---
+
 ## How fast
 
 ---
+
 ![](/posts/gsoc-2023/images/2023-09-26_MDA_UGM_time.png)
 
 ---
+
 ![](/posts/gsoc-2023/images/2023-09-26_MDA_UGM_speedup.png)
 
 ---
+
 ![](/posts/gsoc-2023/images/2023-09-26_MDA_UGM_efficiency.png)
 
 ---
+
 ## When should I use it
 
 Definitive answer: benchmark it yourself!
 
- - `%%time` in jupyter notebook
- - `step=MANY` or `start=0, stop=10_000` to achieve ~1-2 minute runtime with serial scheduler
+- `%%time` in jupyter notebook
+- `step=MANY` or `start=0, stop=10_000` to achieve ~1-2 minute runtime with serial scheduler
 
 ---
+
 ![](/posts/gsoc-2023/images/2023-09-26_MDA_UGM_when-to-use.png)
 
 ---
+
 ## When should I use it
 
- - `YourClass.is_parallelizable()` for your class
- - `_single_frame()` slower than reading from disk
+- `YourClass.is_parallelizable()` for your class
+- `_single_frame()` slower than reading from disk
 
 ---
+
 # Future features
 
 - 🔜 add to all subclasses
-   - have separate issues for complicated ones?
+  - have separate issues for complicated ones?
 - 🔜 add tutorials
   - how to use parallel backends
   - how to implement your own backend subclasses
 
 ---
+
 # Future features
 
 - 🤔 add distributed support
@@ -282,18 +313,20 @@ Definitive answer: benchmark it yourself!
   - one frame read exactly once
 
 ---
+
 # Acknowledgements
 
-- Google Summer of Code 2023 program 
+- Google Summer of Code 2023 program
 
 ![](/posts/gsoc-2023/images/2023-09-26_MDA_UGM_gsoc.png)
 
 ---
+
 # Acknowledgements
 
-- Mentors: 
-  -  Yuxuan Zhuang @yuxuanzhuang
-  -  Oliver Beckstein @orbeckst
-  -  Rocco Meli @RMeli
+- Mentors:
+  - Yuxuan Zhuang @yuxuanzhuang
+  - Oliver Beckstein @orbeckst
+  - Rocco Meli @RMeli
 - 💫 Paul Smith @p-j-smith
 - all contributors🫶

@@ -19,7 +19,6 @@ run automatically in multiple processes.
 
 You can read more about parallelization on [docs](https://docs.mdanalysis.org/dev/documentation_pages/analysis/parallelization.html), especially some limitations of the current approach.
 
-
 ## [Secondary structure analysis with DSSP for MDAnalysis](https://github.com/MDAnalysis/mdanalysis/pull/4304)
 
 A fun project emerged during MDAnalysis 2023 UGM hackathon. Basically, it adds a built-in secondary structure analysis, with no dependencies. The algorithm is based on [Kabsch et al](https://onlinelibrary.wiley.com/doi/10.1002/bip.360221211), and implementation is borrowed from [pyDSSP](https://github.com/ShintaroMinami/PyDSSP/tree/master/pydssp). I slightly modified the implementation, making it depend only on `numpy` (previously it depended on `einops` package).
@@ -41,7 +40,6 @@ My thesis, written under supervision of Albert Guskov, Valentin Borshchevskiy an
 Amazing (conflict of interest: I am the last author) paper, where we basically show that deep learning isn't needed for accelerated virtual screening.
 
 For more info, please go to the article [description]({{< ref "/posts/accelerated-virtual-screening" >}})
-
 
 ## [Custom Design of a Humidifier Chamber for In Meso Crystallization](https://doi.org/10.1021/acs.cgd.3c01034)
 

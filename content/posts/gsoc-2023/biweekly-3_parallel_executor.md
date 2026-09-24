@@ -16,13 +16,11 @@ In the previous [blogpost](https://marinegor.github.io/posts/2023/06/gsoc-biweek
 
 Here, I will explain how the actual implementation went south, and then evolved into something more complex and simple at the same time.
 
-
 ## What was the problem?
 
-So, the actual implementation of the `run` protocol turned out to be more complicated than I thought. When it was finally ready, the code looked horrible -- especially the `AnalysisBase.run()` method, that had multiple if-else branches that would choose the exact code path depending on scheduler, and also in all  this mess was the logic for the actual `run()`. Even though it worked (I had most of the subclasses working and passing all the tests), it would be a maintainer nightmare, and also adding new features would be close to impossible.
+So, the actual implementation of the `run` protocol turned out to be more complicated than I thought. When it was finally ready, the code looked horrible -- especially the `AnalysisBase.run()` method, that had multiple if-else branches that would choose the exact code path depending on scheduler, and also in all this mess was the logic for the actual `run()`. Even though it worked (I had most of the subclasses working and passing all the tests), it would be a maintainer nightmare, and also adding new features would be close to impossible.
 
 The mentor team noted that, and I had to come up with something that is easier to read, maintain, and add features to.
-
 
 ## How the code looked before the **change** you're talking about?
 
@@ -65,7 +63,7 @@ def _compute(self, bslice_idx):
         self._single_frame()
 ```
 
-As you can see, there is an ugly `if-elif-else` part of `run` method, and it's not exactly clear what is happening in each of the branches (and how to test and debug it). However, all these branches are doing exactly the same thing: they apply a function to a list of computations in a parallel fashion. 
+As you can see, there is an ugly `if-elif-else` part of `run` method, and it's not exactly clear what is happening in each of the branches (and how to test and debug it). However, all these branches are doing exactly the same thing: they apply a function to a list of computations in a parallel fashion.
 
 ## What do we do?
 
@@ -153,19 +151,21 @@ class ParallelExecutor:
 
 Cool! No code smell, easy testing, easy usage, potential to be used in other parts of the project.
 
-
 ## Important linguistic changes
+
 Two paragraphs on the naming -- if you're reading this posts few months into the future, you might notice that they use different terminology from the one used in the codebase. Here's the reason for it.
 
 ### `bslices --> computation_groups`
+
 This project was inspired by [pmda](https://github.com/MDAnalysis/pmda) and initially borrowed many things from there -- namely, the `bslices` term, which means "balanced slices". More specifically, it means "groups of frames that are then passed to independent worker objects". With this explanation, it's not exactly clear why are they slices and in which way they are balanced, so I decided to rename them into `computation_groups`, and respective method into `AnalysisBase._setup_computation_groups()`.
 
 ### `scheduler --> backend`
+
 It's nothing wrong with this term, but it turns out that `dask` uses the same term during standalone computations execution, or configuration of `dask.distributed.Client` object. In `dask`, `scheduler` can be either `synchronous`, `processes` or `threads`, which is vastly different from the usecases in MDAnalysis. In order to avoid confusion, `scheduler` is now called `backend`.
 
-
 ## Conclusion
-So, we figured out how to perform parallel computations in a way that a) does not disrupt the flow of the `AnalysisBase.run()` method; b) allows us to reuse a huge chunk of code for completely different purposes. 
+
+So, we figured out how to perform parallel computations in a way that a) does not disrupt the flow of the `AnalysisBase.run()` method; b) allows us to reuse a huge chunk of code for completely different purposes.
 However, we're still not finished on how to complete our re-writing of the `run` method -- namely, we haven't yet figured out on how to aggregate the results from independent workers.
 
 To be honest, this (and `pytest`) have been the reason of this post becoming less-than-bi-weekly, and I hope I'll have a proper answer next time. Stay tuned!

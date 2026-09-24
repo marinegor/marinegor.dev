@@ -18,18 +18,17 @@ Main idea here, described also before us, is to do an active learning, using the
 
 Here we showed that you can actually use a linear regression (literally, `sklearn.linear_model.LinearRegression`) model, trained on Morgan fingerprints, instead, and also few slightly more clever tricks to make your retrieval rate better. Namely:
 
- - use smaller batch size -- around 10_000 is perfect
- - re-use models -- aggregate few (we did 20) last batches via `MeanRank`, i.e. take the mean across last 20 models predicted rank of each molecule. You can also do some exponential decay of that, if you want.
- - use relatively big fingerprints -- [this](https://doi.org/10.26434/chemrxiv.14348117.v1) preprint by Martin et al benchmarks it much better
- - models like `sklearn.svm.SVR` could also be surprisingly good, though less stable across datasets
-
+- use smaller batch size -- around 10_000 is perfect
+- re-use models -- aggregate few (we did 20) last batches via `MeanRank`, i.e. take the mean across last 20 models predicted rank of each molecule. You can also do some exponential decay of that, if you want.
+- use relatively big fingerprints -- [this](https://doi.org/10.26434/chemrxiv.14348117.v1) preprint by Martin et al benchmarks it much better
+- models like `sklearn.svm.SVR` could also be surprisingly good, though less stable across datasets
 
 Our final active learinng model was following:
 
- - Morgan fingerprints with 1024 bits, radius 2, as features
- - `sklearn.linear_model.LinearRegression` as base learner
- - batch size 10_000
- - aggregation of last 20 models via mean ranking
+- Morgan fingerprints with 1024 bits, radius 2, as features
+- `sklearn.linear_model.LinearRegression` as base learner
+- batch size 10_000
+- aggregation of last 20 models via mean ranking
 
 With that, we could retrieve 70% of the top-0.05% of famous AmpC dataset from [Lyu et al](https://doi.org/10.1038/s41586-019-0917-9) after screening only 2% of the library, whereas the message-passing neural networks approach retrieves around 80%. Kinda cool, given that we used a CPU-only workstation with only a modest SSD for our work.
 

@@ -86,7 +86,6 @@ def convert_2_builtins(s: str) -> np.ndarray:
 So far so good! Let's look how how it performs.
 It should be noted that the strings aren't quite random -- they have some domain specifics. Namely, they're chemical fingerprints of molecules. Roughly, each bit represents whether a certain substructure is present in the molecule or not. So, I won't be testing the functions on purely random strings, but will take some real fingerprints -- 10k fingerprints, computed by wonderful `chemfp` package. Look like this:
 
-
 ```bash
 $ head -n 10 my.fps
 #FPS1
@@ -123,7 +122,6 @@ Not much, isn't it? Extrapolating to 10k fingerprints, we get horrible 3 seconds
 
 Let's think how our function `convert` would look like. There are two complicated things in the function: converting string to integer, converting integer to several 1 and 0's, and iterating over the array. The last two steps combined could probably be done within numpy, since it's very good with numbers. And indeed, there is a function `np.unpackbits`, that does exactly what's needed -- uncompresses the representation of array of numbers into single bits:
 
-
 ```python
 >>> a = [1,2,3]
 >>> np.unpackbits(a)
@@ -150,7 +148,6 @@ def convert_3_vectorized(s: str) -> np.ndarray:
 ```
 
 In the last line, we simply take last 4 bits of each number, since we're pretty sure that the first 4 bytest will be zeroes. Benchmarks:
-
 
 ```python
 >>> %timeit -n 10 [convert_3_vectorized(s) for s in fps]  
@@ -228,7 +225,8 @@ And the benchmark:
 >>> %timeit -n 10 [convert_5_shortint(s) for s in fps]
 869 µs ± 161 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 ```
-Ok, we're surprisingly getting somewhere! Although the function is super dumb and not idiomatic, it indeed gives some boost. 
+
+Ok, we're surprisingly getting somewhere! Although the function is super dumb and not idiomatic, it indeed gives some boost.
 
 Let's work further in this direction. Let's dream: it would be cool if we could simply use indexing instead of chain of `if ... elif` statements, and index some structure like `return struct[letter]`. Oh wait...
 
@@ -309,6 +307,7 @@ def convert_7_shortint_dict_cached(s: str) -> np.ndarray:
 ```
 
 And the benchmarks are indeed happy about it:
+
 ```python
 >>> %timeit -n 10 [convert_7_shortint_dict_cached(s) for s in fps]
 936 µs ± 338 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
@@ -316,7 +315,7 @@ And the benchmarks are indeed happy about it:
 
 Ok, not bad. But we still are kind of stuck around 1 ms per 10 fingerprints, which is still too much.
 
-Let's agree that we've exsausted all the oportunities for internal letter-to-integer conversion in default python, and think about ways to do it in numpy. To do that, we need to understand what is a letter, internally. Turns out it's quite simple: int `utf-8` encoding (which we work in), all ASCII letters (meaning, not weird emojis or stuff) are represented by a single byte. In order to access these bytes, we can use a builtin function `bytes` or `bytearray`. In our case, it's convenient to use a `bytearray.fromhex` constructor:
+Let's agree that we've exsausted all the opportunities for internal letter-to-integer conversion in default python, and think about ways to do it in numpy. To do that, we need to understand what is a letter, internally. Turns out it's quite simple: int `utf-8` encoding (which we work in), all ASCII letters (meaning, not weird emojis or stuff) are represented by a single byte. In order to access these bytes, we can use a builtin function `bytes` or `bytearray`. In our case, it's convenient to use a `bytearray.fromhex` constructor:
 
 ```python
 >>> s = '0123456789abcdef'
@@ -336,6 +335,7 @@ array([  1,  35,  69, 103, 137, 171, 205, 239], dtype=uint8)
 ```
 
 Which, after bit unpacking, turns into:
+
 ```python
 >>> np.unpackbits(np.frombuffer(bytearray.fromhex(s), dtype=np.uint8)).reshape(-1,4) 
 array([[0, 0, 0, 0],
@@ -372,9 +372,10 @@ And the benchmarks are as fast as you'd expect:
 >>> %timeit -n 10 [convert_8_frombuffer(s) for s in fps]
 49.2 µs ± 1.58 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 ```
+
 Wow, how cool is that! 20 times speed improvement by talking to the bits directly, without any conversion.
 
-Finally, let's remember that we always want to convert the whole array of strings, not a single string. Namely, we want to have a function that accepts a list of strings, and returns a 2D `np.ndarray`. To date, we used a simple list comprehension (in benchmarks) to achieve that: 
+Finally, let's remember that we always want to convert the whole array of strings, not a single string. Namely, we want to have a function that accepts a list of strings, and returns a 2D `np.ndarray`. To date, we used a simple list comprehension (in benchmarks) to achieve that:
 
 ```python
 def convert_9_List(fps: List[str], converter=convert_8_frombuffer) -> np.ndarray:
@@ -398,6 +399,7 @@ def convert_9_List_join(fps: List[str], converter=convert_8_frombuffer) -> np.nd
 ```
 
 Timing is slightly better:
+
 ```python
 >>> %timeit -n 10 convert_10_List_join(fps) 
 27.6 µs ± 8.19 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)  

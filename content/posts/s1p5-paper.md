@@ -16,7 +16,7 @@ The story behind this paper is relatively simple -- there's a receptor, there's 
 
 ## Crystallography and computer vision
 
-A technical issue with getting the structure was *very* high upstream scattering background on the images. Namely, while a normal dataset contains has background at around 15 detector counts, and signal (=diffraction peak) roughly above 50, this dataset had  the same diffraction peak strength while background was around **2000** counts. I've tried many different things while trying to get rid of that, and also learned approaches like `NMF` for denoising. Luckily, the background was smooth enough that the sliding-window noise subtraction actually helped a lot.
+A technical issue with getting the structure was *very* high upstream scattering background on the images. Namely, while a normal dataset contains has background at around 15 detector counts, and signal (=diffraction peak) roughly above 50, this dataset had the same diffraction peak strength while background was around **2000** counts. I've tried many different things while trying to get rid of that, and also learned approaches like `NMF` for denoising. Luckily, the background was smooth enough that the sliding-window noise subtraction actually helped a lot.
 
 ## Alphafold boom
 

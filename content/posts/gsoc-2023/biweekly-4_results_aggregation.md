@@ -1,7 +1,7 @@
 ---
 title: '(again bi)weekly GSOC-4: finally about results aggretation'
 date: 2023-08-14
-description: 'Fourh biweekly GSOC blogpost'
+description: 'Fourth biweekly GSOC blogpost'
 # permalink: /posts/2023/06/gsoc-biweekly-4/
 tags:
   - gsoc
@@ -16,8 +16,8 @@ In the last [blogpost](https://marinegor.github.io/posts/2023/06/gsoc-biweekly-3
 
 Here, I will (finally) talk about aggregating results from different worker objects, and how to make the implementation more explicit while not making people who create subclasses write a lot of boilerplate code.
 
-
 ## What are we trying to do?
+
 We're not looking on how to aggregate results from independent `AnalysisBase._compute()` methods. Also, we want `conclude()` methods of subclasses to run as they used to, so after we run our aggregation, `results` and all other attributes should look exactly as if we'd run `run(backend='local')`.
 
 Looking at the `_compute()` method signature, we can see that it returns `self` (`AnalysisBase`). Also, the main object we want to return is whatever the type of `results` is. Usually it is `MDAnalysis.analysis.Results` object (basically, a fancy `dict`), although for some old classes it might be `np.ndarray` or just a `list`.
@@ -32,6 +32,7 @@ def aggregate(remote_objects: list[AnalysisBase]) -> Results:
 Note that we have an ordered sequence of remote results, and can rely on this fact when aggregating the result without the need to match frame indices with respective results.
 
 ## First ideas
+
 First thought that came at least to me looked like this: let's take first object of `remote_objects` as a template, and based on how it looks like (=its type), try to do aggregation for it. Something like this:
 
 ```python
@@ -70,15 +71,17 @@ elif isinstance(template, Results):
 ```
 
 ## Why first ideas are bad
+
 The code above is probably already ugly for an experienced eye -- for instance, we're repeating ourselves quite a few times and have many nested `if-elif-else` parts that look super ugly. However, there's a more important flaw here from the library point -- if a subclass wants to have a custom aggregation function for its attribute, there is now way to conveniently reuse the base class method. Also, sometimes we can have different aggregation functions even if the objects have the same type -- some `ndarray`-s have to be averaged, some simply summed, etc. The only other thing we have to distinguish results from each other is the attribute name, so we must base our aggregation on them.
 
 To sum up, we actually don't want to do any type matching (and ugly `if-elif-else` branches), but instead want to:
 
- - rely on the attribute name, not type
- - provide a reusable library of basic aggregation functions
- - allow users to easily create their own aggregation functions without copying our boilerplate
+- rely on the attribute name, not type
+- provide a reusable library of basic aggregation functions
+- allow users to easily create their own aggregation functions without copying our boilerplate
 
 ## Good ideas: another new class
+
 So we want to aggregate results based on attribute name, and also store somewhere a list of pre-determined functions that do this. We probably would be fine with a complicated function that stores everything, but since we want to also store different aggregation functions somewhere, let's create a simple class which `staticmethod`s would be different aggregation functions, and one useful method would be our `merge` from above:
 
 ```python
@@ -114,10 +117,11 @@ class ResultsGroup:
 ```
 
 ### Sidenote: `Results` are cool!
+
 Before we get into the final look of `merge`, let's remember that `Results` is actually a very cool class. Namely, it allows us to track which attributes we added to the object without changing the attribute access interface. In other words, we can make our results a `Results` object from the very beginning (namely, in `_prepare` method call), and then whatever got assigned, will be accessible in `results.keys()`! We'll simply add line `self.results = Results()` in `AnalysisBase._prepare`.
 
-
 ### Keep writing `merge()`
+
 Given the coolness of the `Results`, now we can rely on the fact that we know for sure which attributes got assigned, and easily iterate through them. Also, since all `remote_objects` have the same `results` outline, we can pick the first one as an example, and then be sure that the rest have the same outline:
 
 ```python
@@ -140,8 +144,8 @@ class ResultsGroup:
 ```
 
 ## How will `AnalysisBase.run()` look like?
-Before, we had our aggregation function in `_parallel_conclude` method:
 
+Before, we had our aggregation function in `_parallel_conclude` method:
 
 ```python
 class AnalysisBase:
@@ -237,9 +241,11 @@ class AnalysisBase:
 		self.results = aggregator.merge(remote_objects)
 		self._conclude()
 ```
+
 And that's it, a final look of `AnalysisBase.run()`!
 
 ## How do I modify subclasses then?
+
 For instance, let's modify a `MDAnalysis.analysis.rms.RMSD` class so that it would work with our parallel backend. It has a huge `_prepare` method, but the only attribute that actually gets prepared is `self.results.rmsd` -- it's initialized with zeros of a proper shape:
 
 ```python
@@ -267,6 +273,7 @@ class RMSD(AnalysisBase):
 and that's it! And the function we've specified here in `lookup` has a super simple signature -- `Callable[list[T], T]`, and all the built-in functions have literally a single line of code in them.
 
 ## Conclusion
+
 In this post, we've finally finished writing our `AnalysisBase.run()` protocol via adding a `ResultsGroup` class. It accepts a `dict[str, Callable[list[T], T]]` lookup argument, which maps attribute name to a proper aggregation function. Its `merge` method does exactly one job -- flattens the results of all `objects` that got passed into it.
 
 Altogether, our `AnalysisBase.run()` has changed by addition of the following methods: `_compute()`, `_setup_computation_groups()`, `_get_aggregator()` and `available_backends()`. We've added `ParallelExecutor` and `ResultsGroup` classes that abstract away parallel execution and results aggregation, respectively. And finally, we added `multiprocessing` and `dask` backends that are supposed to speed up the analysis!

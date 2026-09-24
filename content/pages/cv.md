@@ -9,6 +9,7 @@ author: "Egor Marin"
 ---
 
 # Egor Marin
+
 Forward-Deployed ML Engineer in Cofolding @ [Apheris](https://apheris.com), working to deliver federated co-folding (cool word for structure prediction) models to customers, also enjoying open-source; `@marinegor` at most of the platforms.
 
 PDF version of this CV is [here](/cv.pdf)
@@ -23,16 +24,16 @@ I enjoy writing code and building complex systems, and want to do that for the t
 
 ## Socials
 
- - email: me@marinegor.dev
- - [github](https://github.com/marinegor)
- - [twitter](https://twitter.com/egor__marin)
- - [linkedin](https://www.linkedin.com/in/marinegor/)
- - [bluesky](https://bsky.app/profile/marinegor.bsky.social)
- - [google scholar](https://scholar.google.com/citations?user=FJbv9XcAAAAJ)
- - [ORCID](https://orcid.org/0000-0003-2369-1732)
-
+- email: <me@marinegor.dev>
+- [github](https://github.com/marinegor)
+- [twitter](https://twitter.com/egor__marin)
+- [linkedin](https://www.linkedin.com/in/marinegor/)
+- [bluesky](https://bsky.app/profile/marinegor.bsky.social)
+- [google scholar](https://scholar.google.com/citations?user=FJbv9XcAAAAJ)
+- [ORCID](https://orcid.org/0000-0003-2369-1732)
 
 ## Career
+
 I have been roughly 8 years in science, working with membrane proteins and their structure-function relationships: GPCRs, (microbal) rhodopsins, membrane transporters, P450 enzymes, antibodies and nanobodies.
 
 I am currently employed at Apheris GmbH, and before that have worked at ENPICOM, University of Groningen, and Moscow Institute of Physics and Technology (in reverse chronological order). Also, I have worked at many synchrotrons and XFELs, and also was a visiting research assistant at the University of Southern California and Center for Free Electron Science in Hamburg.
@@ -45,19 +46,19 @@ Doing ML engineering in a federated data [company](https://apheris.com).
 
 Doing machine learning in biotech-oriented SaaS [company](https://enpicom.com).
 
- - full-cycle ML model development: from literature survey and data collection to reproducible training and deployment 
- - working with both generative and predictive models for various tasks in the antibody development field
+- full-cycle ML model development: from literature survey and data collection to reproducible training and deployment
+- working with both generative and predictive models for various tasks in the antibody development field
 
 ### 2017-2023: Scientist
 
- - conducted research, managed data, wrote publications, participated in conferences
- - managed students (BSs & MSc diploma), created a course on modern protein crystallography
+- conducted research, managed data, wrote publications, participated in conferences
+- managed students (BSs & MSc diploma), created a course on modern protein crystallography
 
 ### 2016-2017: Scientific Journalist
 
- - analyzed publicational activity of MIPT
- - wrote press-releases on published papers
- - communicated with scientists & media.
+- analyzed publicational activity of MIPT
+- wrote press-releases on published papers
+- communicated with scientists & media.
 
 ## Software skills & activities
 
@@ -73,14 +74,13 @@ Doing machine learning in biotech-oriented SaaS [company](https://enpicom.com).
 
 💾 administrated ~15 Linux workstations and servers with around 40 users, managing around 200 Tb of research data.
 
-🍝 performed large-scale calculations on SLURM and PBS, wrote  bash scripts and pipelines or reliable and reproducible data processing of serial crystallography data.
+🍝 performed large-scale calculations on SLURM and PBS, wrote bash scripts and pipelines or reliable and reproducible data processing of serial crystallography data.
 
 🤷‍♂️ self-hosted bunch of things: *arr, telegram bots, WebDAV, proxy & VPN servers, paperless, openwebui, you name it
 
 🦀 Wrote a python(pyo3)+Rust(pest) parser for crystallographic data, contributed to [polars-distance](https://github.com/ion-elgreco/polars-distance)
 
-
-## Science skills & acitivities
+## Science skills & activities
 
 **Bag of words**: structural biology, crystallography, cryoEM, cheminformatics, computer vision, data science, molecular docking, drug discovery, protein structure, GPCRs, membrane proteins, structure-based drug discovery, antibodies, protein language models, discrete diffusion, flow matching, ~~Alpha~~Openfold
 
@@ -105,6 +105,5 @@ MSc in applied mathematics and physics, summa cum laude, with specialization in 
 
 **Moscow Institute of Physics and Technology, `2013-2017`**
 BSc in applied mathematics and physics, magna cum laude
-
 
 Last updated: September 2026.
