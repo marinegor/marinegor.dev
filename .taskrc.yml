@@ -1,0 +1,4 @@
+# Let Taskfile `env:` (e.g. PATH with ./.bin first) override the OS environment.
+# https://taskfile.dev/experiments/env-precedence/
+experiments:
+  ENV_PRECEDENCE: 1

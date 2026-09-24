@@ -1,0 +1,290 @@
+# https://taskfile.dev
+#
+# Every routine/CI action for this repo lives here; CI must call these
+# only via `task <name>` (see AGENTS.md).
+#
+# Tools are installed into ./.bin (pinned versions) and put first on PATH,
+# so `task` behaves the same locally and in CI.
+version: '3'
+
+vars:
+  # Keep equal to CF_HUGO_VERSION unless deliberately testing an upgrade.
+  HUGO_VERSION: 0.118.2
+  LYCHEE_VERSION: 0.24.2
+  BIN_DIR: '{{.ROOT_DIR}}/.bin'
+  PUBLIC_DIR: public
+  SITE_URL: https://marinegor.dev
+  # Cloudflare Pages (project marinegor-nl) builds `main` by itself (no CI
+  # involved) with `hugo`, using HUGO_VERSION from the Pages dashboard, or the
+  # build image default (v2: 0.118.2, v3: 0.147.7). 0.118.2 is inferred: it's
+  # the only one that builds the deployed main. If you change the dashboard,
+  # change this too. `test:cloudflare` builds with exactly this version.
+  CF_HUGO_VERSION: 0.118.2
+  # Files checked by linters
+  MD_FILES: content README.md AGENTS.md
+  SPELL_FILES: content README.md AGENTS.md hugo.toml basic-resume
+  # Commits checked by `lint:commits` (only the ones not yet on main)
+  COMMIT_RANGE: origin/main..HEAD
+
+env:
+  PATH: '{{.BIN_DIR}}:{{.PATH}}'
+
+tasks:
+  default:
+    desc: List all tasks
+    silent: true
+    cmds:
+      - task --list
+
+  # ---------------------------------------------------------------- setup
+
+  setup:
+    desc: Install everything needed to build, lint and test the site
+    cmds:
+      - task: submodules
+      - task: hugo:install
+      - task: lychee:install
+
+  submodules:
+    desc: Initialise/update git submodules (the theme)
+    preconditions:
+      - sh: command -v git
+        msg: git is not installed
+    status:
+      - test -z "$(git submodule status --recursive | grep '^-')"
+    cmds:
+      - git submodule update --init --recursive
+
+  hugo:install:
+    desc: 'Install hugo extended into .bin/ (default v{{.HUGO_VERSION}}; `task hugo:install VERSION=x.y.z` for others)'
+    preconditions: &download-tools
+      - sh: command -v curl
+        msg: curl is not installed
+      - sh: command -v tar
+        msg: tar is not installed
+    vars:
+      VERSION: '{{.VERSION | default .HUGO_VERSION}}'
+      DEST: '{{.BIN_DIR}}/hugo-{{.VERSION}}'
+      URL: https://github.com/gohugoio/hugo/releases/download/v{{.VERSION}}
+      ARCH: '{{if eq ARCH "arm64"}}arm64{{else}}amd64{{end}}'
+      # darwin release asset format changed from .tar.gz to .pkg around v0.153
+      DARWIN_PKG:
+        sh: 'printf "%s\n%s\n" 0.153.0 "{{.VERSION}}" | sort -V -C && echo true || echo false'
+    status:
+      - '"{{.DEST}}" version | grep -q "v{{.VERSION}}-"'
+      - '{{if eq .VERSION .HUGO_VERSION}}test "$(readlink "{{.BIN_DIR}}/hugo")" = "hugo-{{.VERSION}}"{{else}}true{{end}}'
+    cmds:
+      - mkdir -p "{{.BIN_DIR}}"
+      - cmd: |
+          set -eu
+          tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+          {{if eq .DARWIN_PKG "true" -}}
+          curl -fsSL -o "$tmp/hugo.pkg" "{{.URL}}/hugo_extended_{{.VERSION}}_darwin-universal.pkg"
+          pkgutil --expand-full "$tmp/hugo.pkg" "$tmp/x"
+          install -m 0755 "$tmp/x/Payload/hugo" "{{.DEST}}"
+          {{- else -}}
+          curl -fsSL "{{.URL}}/hugo_extended_{{.VERSION}}_darwin-universal.tar.gz" | tar -xz -C "$tmp" hugo
+          install -m 0755 "$tmp/hugo" "{{.DEST}}"
+          {{- end}}
+        platforms: [darwin]
+      - cmd: |
+          set -eu
+          tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+          curl -fsSL "{{.URL}}/hugo_extended_{{.VERSION}}_linux-{{.ARCH}}.tar.gz" | tar -xz -C "$tmp" hugo
+          install -m 0755 "$tmp/hugo" "{{.DEST}}"
+        platforms: [linux]
+      # only the pinned version becomes the default `hugo`
+      - '{{if eq .VERSION .HUGO_VERSION}}ln -sf "hugo-{{.VERSION}}" "{{.BIN_DIR}}/hugo"{{end}}'
+      - '"{{.DEST}}" version'
+
+  lychee:install:
+    desc: 'Install lychee v{{.LYCHEE_VERSION}} (link checker) into .bin/'
+    preconditions: *download-tools
+    status:
+      - '"{{.BIN_DIR}}/lychee" --version | grep -q "{{.LYCHEE_VERSION}}"'
+    vars:
+      TARGET: >-
+        {{- if eq OS "darwin" -}}
+          {{- if eq ARCH "arm64"}}aarch64{{else}}x86_64{{end}}-apple-darwin
+        {{- else -}}
+          {{- if eq ARCH "arm64"}}aarch64{{else}}x86_64{{end}}-unknown-linux-gnu
+        {{- end -}}
+    cmds:
+      - mkdir -p "{{.BIN_DIR}}"
+      - >
+        curl -fsSL "https://github.com/lycheeverse/lychee/releases/download/lychee-v{{.LYCHEE_VERSION}}/lychee-{{.TARGET}}.tar.gz"
+        | tar -xz -C "{{.BIN_DIR}}" --strip-components=1 "lychee-{{.TARGET}}/lychee"
+      - lychee --version
+
+  # ---------------------------------------------------------------- hugo
+
+  serve:
+    desc: Local dev server on http://localhost:1313 (drafts + future posts visible)
+    deps: [submodules]
+    preconditions:
+      - &hugo
+        sh: command -v hugo
+        msg: hugo not found in PATH, run `task hugo:install`
+    cmds:
+      - hugo server --buildDrafts --buildFuture --disableFastRender {{.CLI_ARGS}}
+
+  build:
+    desc: Production build into public/
+    deps: [submodules]
+    preconditions: [*hugo]
+    sources:
+      - hugo.toml
+      - content/**/*
+      - layouts/**/*
+      - static/**/*
+      - assets/**/*
+      - themes/**/*
+    generates:
+      - '{{.PUBLIC_DIR}}/index.html'
+    cmds:
+      - hugo --gc --minify --cleanDestinationDir --destination {{.PUBLIC_DIR}} {{.CLI_ARGS}}
+
+  clean:
+    desc: Remove build artefacts
+    cmds:
+      - rm -rf {{.PUBLIC_DIR}} resources/_gen .hugo_build.lock
+
+  new:
+    desc: 'Create new content, e.g. `task new -- posts/my-post.md`'
+    preconditions: [*hugo]
+    requires:
+      vars: [CLI_ARGS]
+    cmds:
+      - hugo new content {{.CLI_ARGS}}
+
+  # ---------------------------------------------------------------- lint / fix
+
+  lint:
+    desc: Run all linters (read-only)
+    cmds:
+      - task: lint:md
+      - task: lint:spell
+
+  lint:md:
+    desc: Lint markdown with rumdl (config in .rumdl.toml)
+    preconditions:
+      - &uvx
+        sh: command -v uvx
+        msg: uvx not found in PATH, install uv (https://docs.astral.sh/uv/)
+    cmds:
+      - uvx rumdl check {{.MD_FILES}}
+
+  lint:spell:
+    desc: Check spelling with typos (config in _typos.toml)
+    preconditions: [*uvx]
+    cmds:
+      - uvx typos {{.SPELL_FILES}}
+
+  lint:commits:
+    desc: 'Check commit messages in {{.COMMIT_RANGE}} follow commitizen/conventional commits'
+    preconditions:
+      - *uvx
+      - sh: command -v git
+        msg: git is not installed
+    cmds:
+      - uvx --from commitizen cz check --rev-range {{.COMMIT_RANGE}}
+
+  fix:
+    desc: Auto-fix markdown formatting and spelling
+    preconditions: [*uvx]
+    cmds:
+      - uvx rumdl fmt {{.MD_FILES}}
+      - uvx typos --write-changes {{.SPELL_FILES}}
+
+  # ---------------------------------------------------------------- test
+
+  test:
+    desc: Build the site and validate the output
+    cmds:
+      - task: build
+      - task: test:xml
+      - task: test:links
+      - task: test:files
+      - task: test:cloudflare
+
+  test:xml:
+    desc: Validate generated RSS feed and sitemap
+    preconditions:
+      - sh: command -v python3
+        msg: python3 not found in PATH
+      - sh: test -f {{.PUBLIC_DIR}}/index.html
+        msg: no build output, run `task build` first
+    cmds:
+      # well-formedness check of every generated feed + the sitemap
+      - >
+        find {{.PUBLIC_DIR}} -name '*.xml' -print0
+        | xargs -0 python3 -c 'import sys, xml.dom.minidom as m; [m.parse(f) for f in sys.argv[1:]]; print(f"{len(sys.argv)-1} xml files OK")'
+
+  test:links:
+    desc: Check all internal links in the built site (offline, no network)
+    preconditions:
+      - sh: command -v lychee
+        msg: lychee not found in PATH, run `task lychee:install`
+      - sh: test -f {{.PUBLIC_DIR}}/index.html
+        msg: no build output, run `task build` first
+    vars:
+      ROOT: '{{.ROOT_DIR}}/{{.PUBLIC_DIR}}'
+    cmds:
+      # absolute links to the site itself are remapped onto the local build
+      - >
+        lychee --offline --no-progress --include-fragments --index-files index.html
+        --root-dir "{{.ROOT}}"
+        --remap '^{{.SITE_URL}}/(.*)$ file://{{.ROOT}}/$1'
+        '{{.PUBLIC_DIR}}/**/*.html'
+
+  test:links:external:
+    desc: Check external links in the built site (needs network; not run in CI, flaky by nature)
+    preconditions:
+      - sh: command -v lychee
+        msg: lychee not found in PATH, run `task lychee:install`
+      - sh: test -f {{.PUBLIC_DIR}}/index.html
+        msg: no build output, run `task build` first
+    cmds:
+      - lychee --no-progress --max-concurrency 8 --exclude '^{{.SITE_URL}}' '{{.PUBLIC_DIR}}/**/*.html'
+
+  test:files:
+    desc: Check that files/URLs we promise to serve exist in the build
+    preconditions:
+      - sh: test -f {{.PUBLIC_DIR}}/index.html
+        msg: no build output, run `task build` first
+    cmds:
+      - for: [cv.pdf, cv/index.html, pages/cv/index.html, index.xml, favicon.ico]
+        cmd: test -f "{{.PUBLIC_DIR}}/{{.ITEM}}" || { echo "missing {{.PUBLIC_DIR}}/{{.ITEM}}"; exit 1; }
+
+  test:cloudflare:
+    desc: 'Check the site builds the way Cloudflare Pages builds it (plain `hugo` v{{.CF_HUGO_VERSION}})'
+    deps: [submodules]
+    vars:
+      OUT: '{{.ROOT_DIR}}/.task/cloudflare'
+    cmds:
+      - task: hugo:install
+        vars: { VERSION: '{{.CF_HUGO_VERSION}}' }
+      - rm -rf "{{.OUT}}"
+      - '"{{.BIN_DIR}}/hugo-{{.CF_HUGO_VERSION}}" --destination "{{.OUT}}"'
+      - test -f "{{.OUT}}/index.html" && test -f "{{.OUT}}/cv.pdf"
+
+  # ---------------------------------------------------------------- cv
+
+  cv:
+    desc: Render static/cv.pdf from basic-resume/main.typ
+    preconditions:
+      - sh: command -v typst
+        msg: typst not found in PATH (https://github.com/typst/typst)
+    sources: [basic-resume/**/*]
+    generates: [static/cv.pdf]
+    cmds:
+      - typst compile basic-resume/main.typ static/cv.pdf
+
+  # ---------------------------------------------------------------- ci
+
+  ci:
+    desc: Everything CI runs
+    cmds:
+      - task: setup
+      - task: lint
+      - task: test

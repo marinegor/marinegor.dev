@@ -1,3 +1,6 @@
 *.lock
 public
 .DS_Store
+.bin
+.task
+resources/_gen
