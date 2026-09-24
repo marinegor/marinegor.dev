@@ -19,71 +19,71 @@ Here I'll go through the initial implementation stages -- how I decided to decom
 
 ```python
 class AnalysisBase(object):
-	def __init__(self, trajectory):
-		"""
-		Initialize the run object
-		"""
-		self._trajectory = trajectory
-		self.results = ...
-	
-	def run(self, start, stop, step, frames):
-		"""
-		Perform the calculation
-		"""
-		self._setup_frames(self._trajectory, start=start, stop=stop,
-						   step=step, frames=frames)
-		self._prepare()
+    def __init__(self, trajectory):
+        """
+        Initialize the run object
+        """
+        self._trajectory = trajectory
+        self.results = ...
+    
+    def run(self, start, stop, step, frames):
+        """
+        Perform the calculation
+        """
+        self._setup_frames(self._trajectory, start=start, stop=stop,
+                           step=step, frames=frames)
+        self._prepare()
 
-		for i, ts in enumerate(self._sliced_trajectory):
-			self._frame_index = i
-			self._ts = ts
-			self.frames[i] = ts.frame
-			self.times[i] = ts.time
-			self._single_frame()
+        for i, ts in enumerate(self._sliced_trajectory):
+            self._frame_index = i
+            self._ts = ts
+            self.frames[i] = ts.frame
+            self.times[i] = ts.time
+            self._single_frame()
 
-		self._conclude()
-		return self
-	
-	def _setup_frames(self, trajectory, start, stop, step, frames):
-		"""
-		Prepare frames that will be used for the analysis
-		"""
-		self._sliced_trajectory = ...
-		self.start = start
-		self.stop = stop
-		self.step = step
-		self.n_frames = ...
-		self.frames = ...
-		self.times = ...
-	
-	def _single_frame(self, ...): # implemented in subclasses
-		"""
-		Perform calculations on a single frame
-		"""
-		do_some_computations()
-	
-	def _prepare(self, ...): # implemented in subclasses
-		"""
-		Prepare the storage attributes for intermediate results
-		"""
-		self._intermediate_data = ...
-	
-	def _conclude(self, ...): # implemented in subclasses
-		"""
-		Use the intermediate results to create the final ones
-		"""
-		self.results = some_function_of(self._intermediate_data)
+        self._conclude()
+        return self
+    
+    def _setup_frames(self, trajectory, start, stop, step, frames):
+        """
+        Prepare frames that will be used for the analysis
+        """
+        self._sliced_trajectory = ...
+        self.start = start
+        self.stop = stop
+        self.step = step
+        self.n_frames = ...
+        self.frames = ...
+        self.times = ...
+    
+    def _single_frame(self, ...): # implemented in subclasses
+        """
+        Perform calculations on a single frame
+        """
+        do_some_computations()
+    
+    def _prepare(self, ...): # implemented in subclasses
+        """
+        Prepare the storage attributes for intermediate results
+        """
+        self._intermediate_data = ...
+    
+    def _conclude(self, ...): # implemented in subclasses
+        """
+        Use the intermediate results to create the final ones
+        """
+        self.results = some_function_of(self._intermediate_data)
 ```
 
 Most of the computations happen in the `run` method -- namely, here:
 
 ```python
 for i, ts in enumerate(self._sliced_trajectory):
-	self._frame_index = i
-	self._ts = ts
-	self.frames[i] = ts.frame
-	self.times[i] = ts.time
-	self._single_frame()
+    self._frame_index = i
+    self._ts = ts
+    self.frames[i] = ts.frame
+    self.times[i] = ts.time
+    self._single_frame()
 ```
 
 So we must somehow parallelize the `_single_frame()` method, and make it run in separate processes simultaneously.
@@ -95,11 +95,13 @@ The parallelization in `dask`, which was our framework of choice (and also was u
 ```python
 from dask.delayed import delayed
 
+
 @delayed
 def simple_computation(x, y):
-	do_something()
+    do_something()
 
-parameter_space = [(x,y) for x in range(10**6) for y in range(10**6)]
+
+parameter_space = [(x, y) for x in range(10**6) for y in range(10**6)]
 computations = delayed([simple_computation(x, y) for x, y in parameter_space])
 results = computations.compute()
 ```
@@ -121,16 +123,16 @@ First, it should explicitly know the frames it was configured to work with -- we
 
 ```python
 def _compute(self, start, stop, step, frames):
-	self._setup_frames(..., start, stop, step, frames)
-	self._prepare()
-	for i, ts in enumerate(self._sliced_trajectory):
-		self._frame_index = i
-		self._ts = ts
-		self.frames[i] = ts.frame
-		self.times[i] = ts.time
-		self._single_frame()
-	
-	return self	
+    self._setup_frames(..., start, stop, step, frames)
+    self._prepare()
+    for i, ts in enumerate(self._sliced_trajectory):
+        self._frame_index = i
+        self._ts = ts
+        self.frames[i] = ts.frame
+        self.times[i] = ts.time
+        self._single_frame()
+
+    return self
 ```
 
 Now, since we're explicitly returning `self` here, we will have our `self.results` attribute, and won't loose it while sending it to the other workers.
@@ -142,27 +144,27 @@ The only thing left to do now is to collect all the results together from all th
 
 ```python
 def run(self, start, stop, step, frames):
-	"""
-	Perform the calculation
-	"""
-	self._setup_bslices(...)
-	computations = []
-	for bslice in self._bslices:
-		start, stop, step, frames = bslice
-		computations.append(delayed((self._compute)(start, stop, step, frames)))
-	results = computations.compute()
-	self._remote_results = results
-	self._parallel_conclude()
-	
-	self._conclude()
-	return self
+    """
+    Perform the calculation
+    """
+    self._setup_bslices(...)
+    computations = []
+    for bslice in self._bslices:
+        start, stop, step, frames = bslice
+        computations.append(delayed((self._compute)(start, stop, step, frames)))
+    results = computations.compute()
+    self._remote_results = results
+    self._parallel_conclude()
+    
+    self._conclude()
+    return self
 ```
 
 How should the `_parallel_conclude()` look like? Well, we have a list of instances of the executed `AnalysisBase` subclass in our `_remote_results` attribute. If each of them has their own `results`, it would look somewhat like this:
 
 ```python
 def _parallel_conclude(self):
-	self.results = some_aggregation_function(self._remote_results)
+    self.results = some_aggregation_function(self._remote_results)
 ```
 
 Unfortunately, here we can't avoid subclass-specific implementation -- every computation is different by how it collects its intermediate results (in fact, `AnalysisBase.results` actually has its own `Results` type, which is essentially a dictionary, and can hold arbitrary data). But it's ok, at least the `run` process itself is now parallelized.

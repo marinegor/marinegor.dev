@@ -85,11 +85,11 @@ def run(self,
         start=None, 
         stop=None, 
         step=None, 
-        frames=None, ...):	
+        frames=None, ...):    
   
   # prepare frames -- check boundaries, setup reader
   self._setup_frames(self._trajectory, start=start, stop=stop, step=step, frames=frames)
-	
+    
   # initialize attributes with intermediate results
   self._prepare()
 
@@ -138,10 +138,10 @@ Additional classes: `ResultsGroup`
 
 ```python
 class ResultsGroup:
-  def __init__(self, lookup: dict[str, Callable]): ...
-  def merge(self, objects: Sequence[Results], 
-            require_all_aggregators: bool = True) -> Results:
-    ...
+    def __init__(self, lookup: dict[str, Callable]): ...
+    def merge(
+        self, objects: Sequence[Results], require_all_aggregators: bool = True
+    ) -> Results: ...
 ```
 
 ---
@@ -183,17 +183,14 @@ Additional classes: `BackendBase`
 ```python
 from MDAnalysis.parallel import BackendBase
 
-class CustomBackend(BackendBase):
-  def __init__(self, some_resource):
-    self.some_resource = some_resource
 
-  def apply(self, 
-            func: Callable[T, R], 
-            computations: list[T]) -> list[R]:
-    results = [
-      self.some_resource.do_compute(func, task) 
-      for task in computations]
-    return results
+class CustomBackend(BackendBase):
+    def __init__(self, some_resource):
+        self.some_resource = some_resource
+
+    def apply(self, func: Callable[T, R], computations: list[T]) -> list[R]:
+        results = [self.some_resource.do_compute(func, task) for task in computations]
+        return results
 ```
 
 ---
@@ -228,19 +225,24 @@ Example: `RMSD`
 ```python
 from MDAnalysis.analysis.parallel import ResultsGroup
 
+
 class RMSD(AnalysisBase):
     @classmethod
     @property
     def available_backends(cls):
-        return ('serial', 'multiprocessing', 'dask',)
+        return (
+            "serial",
+            "multiprocessing",
+            "dask",
+        )
 
     @classmethod
     @property
     def is_parallelizable(self):
-      return True
-    
+        return True
+
     def _get_aggregator(self):
-      return ResultsGroup(lookup={'rmsd': ResultsGroup.ndarray_vstack})
+        return ResultsGroup(lookup={"rmsd": ResultsGroup.ndarray_vstack})
 ```
 
 ---

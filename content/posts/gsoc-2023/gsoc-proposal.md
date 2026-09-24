@@ -28,14 +28,14 @@ My proposal focuses exactly on this: I am planning to implement a parallel backe
 A key component of the MDAnalysis library is the `AnalysisBase` class, from which all objects that allow user to run an analysis of a trajectory are inherited. Namely, it implements a `run` method, that looks somewhat like that:
 
 ```python
-def run(self, start=None, stop=None, step=None, frames=None, ...):	
-	self._setup_frames(self._trajectory, start=start, stop=stop, step=step, frames=frames)
-	
-	self._prepare()
-	for i, ts in enumerate(self._sliced_trajectory, ...):
-		...
-		self._single_frame()
-	self._conclude()
+def run(self, start=None, stop=None, step=None, frames=None, ...):    
+    self._setup_frames(self._trajectory, start=start, stop=stop, step=step, frames=frames)
+    
+    self._prepare()
+    for i, ts in enumerate(self._sliced_trajectory, ...):
+        ...
+        self._single_frame()
+    self._conclude()
 ```
 
 and consists of three steps:
@@ -48,54 +48,64 @@ and consists of three steps:
 For a setup with multiple worker processes, this protocol will require an additional step of first separating a trajectory into **blocks**. Each block will be processed with a single separate process, and also results from different blocks will potentially be concluded separately:
 
 ```python
-def run(self, start=None, stop=None, step=None, frames=None, scheduler: Optional[str]=None):
-	if scheduler is None:
-	# fallback to the old behavior
-		self._setup_frames(self._trajectory, start=start, stop=stop, step=step, frames=frames)
-		
-		self._prepare()
-		for i, ts in enumerate(self._sliced_trajectory, ...):
-			...
-			self._single_frame()
-		self._conclude()
-		
-	else:
-		self._configure_scheduler(scheduler=scheduler)
-		self._setup_blocks(start=start, stop=stop, step=step, frames=frames) 
-		# split trajectory into blocks according to scheduler settings
+def run(
+    self, start=None, stop=None, step=None, frames=None, scheduler: Optional[str] = None
+):
+    if scheduler is None:
+        # fallback to the old behavior
+        self._setup_frames(
+            self._trajectory, start=start, stop=stop, step=step, frames=frames
+        )
 
-		tasks = []
-		for block in self._blocks:
-			# create separate tasks 
-			# that would fall back to the old behavior 
-			# and schedule them as dask tasks
-			subrun = self.__class__(start=block.start, stop=block.stop, step=block.step, frames=block.frames, scheduler=None)
-			dask_task = dask.delayed(subrun.run)
-			tasks.append(dask_task)
-		
-		# perform dask computation
-		tasks = dask.delayed(tasks)
-		res = tasks.compute(**self._scheduler_params)
-		self._parallel_conclude()
+        self._prepare()
+        for i, ts in enumerate(self._sliced_trajectory, ...):
+            ...
+            self._single_frame()
+        self._conclude()
+
+    else:
+        self._configure_scheduler(scheduler=scheduler)
+        self._setup_blocks(start=start, stop=stop, step=step, frames=frames)
+        # split trajectory into blocks according to scheduler settings
+
+        tasks = []
+        for block in self._blocks:
+            # create separate tasks
+            # that would fall back to the old behavior
+            # and schedule them as dask tasks
+            subrun = self.__class__(
+                start=block.start,
+                stop=block.stop,
+                step=block.step,
+                frames=block.frames,
+                scheduler=None,
+            )
+            dask_task = dask.delayed(subrun.run)
+            tasks.append(dask_task)
+
+        # perform dask computation
+        tasks = dask.delayed(tasks)
+        res = tasks.compute(**self._scheduler_params)
+        self._parallel_conclude()
 ```
 
 Which requires introducing following methods for the `AnalysisBase` class:
 
 ```python
 class AnalysisBase(object):
-	def _configure_scheduler(self, scheduler=scheduler, **params):
-	    ...
+    def _configure_scheduler(self, scheduler=scheduler, **params):
+        ...
 
-	@property
-	def _blocks(self):
-		...
-	
-	def _setup_blocks(start=start, stop=stop, step=step, frames=frames):
-		# will also update `self._blocks` accordingly
-		...
+    @property
+    def _blocks(self):
+        ...
+    
+    def _setup_blocks(start=start, stop=stop, step=step, frames=frames):
+        # will also update `self._blocks` accordingly
+        ...
 
-	def _parallel_conclude(...):
-		...
+    def _parallel_conclude(...):
+        ...
 ```
 
 Which is similar to the protocol implemented in `pmda`. Such a modular design has following advantages:

@@ -68,7 +68,7 @@ First we want to get a reference structure by taking the average of all frames. 
 ```python
 from MDAnalysis.analysis.align import AverageStructure
 
-avg = AverageStructure(mobile=u).run(backend='multiprocessing', n_workers=16)
+avg = AverageStructure(mobile=u).run(backend="multiprocessing", n_workers=16)
 ```
 
 but we get this:
@@ -134,9 +134,7 @@ Let's set up a cluster first:
 ```python
 from dask.distributed import Client, LocalCluster
 
-cluster = LocalCluster(n_workers=8, 
-                       threads_per_worker=1,
-                       memory_limit='30Gb')
+cluster = LocalCluster(n_workers=8, threads_per_worker=1, memory_limit="30Gb")
 client = Client(cluster)
 ```
 

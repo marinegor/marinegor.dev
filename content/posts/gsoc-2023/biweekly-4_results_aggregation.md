@@ -25,8 +25,7 @@ Looking at the `_compute()` method signature, we can see that it returns `self` 
 So, we're looking for something like this:
 
 ```python
-def aggregate(remote_objects: list[AnalysisBase]) -> Results:
-	...
+def aggregate(remote_objects: list[AnalysisBase]) -> Results: ...
 ```
 
 Note that we have an ordered sequence of remote results, and can rely on this fact when aggregating the result without the need to match frame indices with respective results.
@@ -37,20 +36,21 @@ First thought that came at least to me looked like this: let's take first object
 
 ```python
 def merge(remote_objects: list[AnalysisBase]) -> Results:
-	template: Results | list | np.ndarray = remote_objects[0].results
-	if isinstance(template, list):
-		remote_results = [obj.results for obj in remote_objects]
-		flat_results = flatten_arrays(objects_to_flatten)
-	elif isinstance(template, np.ndarray):
-		remote_results = np.array([obj.results for obj in remote_objects])
-		flat_results = np.hstack(remote_results)
-	elif isinstance(template, Results):
-		...
-	else:
-		raise ValueError('unknown results type')
+    template: Results | list | np.ndarray = remote_objects[0].results
+    if isinstance(template, list):
+        remote_results = [obj.results for obj in remote_objects]
+        flat_results = flatten_arrays(objects_to_flatten)
+    elif isinstance(template, np.ndarray):
+        remote_results = np.array([obj.results for obj in remote_objects])
+        flat_results = np.hstack(remote_results)
+    elif isinstance(template, Results):
+        ...
+    else:
+        raise ValueError("unknown results type")
+
 
 def flatten_arrays(arrs: list[list]) -> list:
-	return [obj for sublist in arrs for obj in sublist]
+    return [obj for sublist in arrs for obj in sublist]
 ```
 
 A little bit more complicated if `isinstance(remote_results, Results)`. Since `Results` is basically a dictionary, we have to go over its keys and do proper aggregation for each of them:
@@ -58,16 +58,16 @@ A little bit more complicated if `isinstance(remote_results, Results)`. Since `R
 ```python
 ... 
 elif isinstance(template, Results):
-	for key, obj_of_type in template.items():
-		results_of_key = [obj.results[key] for obj in remote_objects]
-		if isinstance(obj_of_type, list):
-			flat_results = flatten_arrays(results_of_key)
-		elif isinstance(obj_of_type, np.ndarray):
-			flat_results = np.hstack(np.array(results_of_key))
-		elif isinstance(obj_of_type, float):
-			...
-		else:
-			raise ValueError("couldn't find aggregation function")
+    for key, obj_of_type in template.items():
+        results_of_key = [obj.results[key] for obj in remote_objects]
+        if isinstance(obj_of_type, list):
+            flat_results = flatten_arrays(results_of_key)
+        elif isinstance(obj_of_type, np.ndarray):
+            flat_results = np.hstack(np.array(results_of_key))
+        elif isinstance(obj_of_type, float):
+            ...
+        else:
+            raise ValueError("couldn't find aggregation function")
 ```
 
 ## Why first ideas are bad
@@ -86,34 +86,33 @@ So we want to aggregate results based on attribute name, and also store somewher
 
 ```python
 class ResultsGroup:
-	def merge(self, remote_objects: list[AnalysisBase]) -> Results:
-		...
-	
-	@staticmethod
-	def flatten_arrays(arrs: list[list]) -> list:
-		return [obj for sublist in arrs for obj in sublist]
-	
-	@staticmethod
-	def ndarray_sum(arrs: list[np.ndarray]) -> np.ndarray:
-		return np.array(arrs).sum(axis=0)
+    def merge(self, remote_objects: list[AnalysisBase]) -> Results: ...
 
-	@staticmethod
-	def ndarray_stack(arrs: list[np.ndarray]) -> np.ndarray:
-		return np.hstack(arrs)
-	
-	@staticmethod
-	def ndarray_mean(arrs: list[np.ndarray]) -> np.ndarray:
-		return np.array(arrs).mean(axis=0)
-	
-	...
+    @staticmethod
+    def flatten_arrays(arrs: list[list]) -> list:
+        return [obj for sublist in arrs for obj in sublist]
+
+    @staticmethod
+    def ndarray_sum(arrs: list[np.ndarray]) -> np.ndarray:
+        return np.array(arrs).sum(axis=0)
+
+    @staticmethod
+    def ndarray_stack(arrs: list[np.ndarray]) -> np.ndarray:
+        return np.hstack(arrs)
+
+    @staticmethod
+    def ndarray_mean(arrs: list[np.ndarray]) -> np.ndarray:
+        return np.array(arrs).mean(axis=0)
+
+    ...
 ```
 
 But how do we initialize the class? Well, we want to be able to call our `merge` method right after we initialize it, so all the information on how to match attribute name with respective aggregation function should be given upon initialization. Hence, `__init__` should look like this:
 
 ```python
 class ResultsGroup:
-	def __init__(self, lookup: dict[str, Callable]):
-		self._lookup = lookup
+    def __init__(self, lookup: dict[str, Callable]):
+        self._lookup = lookup
 ```
 
 ### Sidenote: `Results` are cool!
@@ -126,21 +125,21 @@ Given the coolness of the `Results`, now we can rely on the fact that we know fo
 
 ```python
 class ResultsGroup:
-	def __init__(self, lookup: dict[str, Callable]):
-		self._lookup = lookup
-	
-	def merge(self, remote_objects: list[AnalysisBase]) -> Results:
-		rv = Results()
+    def __init__(self, lookup: dict[str, Callable]):
+        self._lookup = lookup
+    
+    def merge(self, remote_objects: list[AnalysisBase]) -> Results:
+        rv = Results()
 
-		for key in remote_objects[0].keys():
+        for key in remote_objects[0].keys():
             agg_function = self._lookup.get(key, None)
             if agg_function is None:
                 raise ValueError(f"No aggregation function for {key=}")
             results_of_t = [obj[key] for obj in objects]
             rv[key] = agg_function(results_of_t)
         return rv
-	
-	# and @staticmethod s with aggregation functions
+    
+    # and @staticmethod s with aggregation functions
 ```
 
 ## How will `AnalysisBase.run()` look like?
@@ -149,73 +148,77 @@ Before, we had our aggregation function in `_parallel_conclude` method:
 
 ```python
 class AnalysisBase:
-	def run(self, start, stop, step, frames, n_workers, scheduler):
-		self._setup_frames(start, stop, step, frames)
-		self._prepare()
-		computation_groups = self._setup_computation_groups(start, stop, step, frames, n_workers)
+    def run(self, start, stop, step, frames, n_workers, scheduler):
+        self._setup_frames(start, stop, step, frames)
+        self._prepare()
+        computation_groups = self._setup_computation_groups(
+            start, stop, step, frames, n_workers
+        )
 
-		executor = ParallelExecutor(n_workers, scheduler)
-		executor.apply(self._compute, computation_groups)
+        executor = ParallelExecutor(n_workers, scheduler)
+        executor.apply(self._compute, computation_groups)
 
-		# THIS ONE
-		# --------
-		self._parallel_conclude()
-		# --------
+        # THIS ONE
+        # --------
+        self._parallel_conclude()
+        # --------
 
-		self._conclude()
+        self._conclude()
 ```
 
 now, we can do everything more explicitly:
 
 ```python
 class AnalysisBase:
-	def run(self, start, stop, step, frames, n_workers, scheduler):
-		self._setup_frames(start, stop, step, frames)
-		self._prepare()
-		computation_groups = self._setup_computation_groups(start, stop, step, frames, n_workers)
+    def run(self, start, stop, step, frames, n_workers, scheduler):
+        self._setup_frames(start, stop, step, frames)
+        self._prepare()
+        computation_groups = self._setup_computation_groups(
+            start, stop, step, frames, n_workers
+        )
 
-		executor = ParallelExecutor(n_workers, scheduler)
-		remote_objects = executor.apply(self._compute, computation_groups)
+        executor = ParallelExecutor(n_workers, scheduler)
+        remote_objects = executor.apply(self._compute, computation_groups)
 
-		aggregator = ... # will think about it later
-		self.results = aggregator.merge(remote_objects)
-		self._conclude()
+        aggregator = ...  # will think about it later
+        self.results = aggregator.merge(remote_objects)
+        self._conclude()
 ```
 
 Obviously, in order to get an appropriate `ResultsGroup` aggregator, we should call some method of `self`. Well, let's call it exactly like this:
 
 ```python
 class AnalysisBase:
-	def run(self, start, stop, step, frames, n_workers, scheduler):
-		...
+    def run(self, start, stop, step, frames, n_workers, scheduler):
+        ...
 
-		aggregator = self._get_aggregator()
+        aggregator = self._get_aggregator()
 
-		...
-	
-	def _get_aggregator(self) -> ResultsGroup:
-		return ResultsGroup(lookup=None)
+        ...
+    
+    def _get_aggregator(self) -> ResultsGroup:
+        return ResultsGroup(lookup=None)
 ```
 
 Now, we're running into a backwards compatibility issue -- now we must have a meaningful `ResultsGroup` aggregator even if we're using only `backend='local'`, without any parallelization. In this case, however, our `remote_objects` is a list with 1 element, and we can simply return it in `merge` method:
 
 ```python
 class ResultsGroup:
-	def __init__(self, lookup: dict[str, Callable]):
-		self._lookup = lookup
-	
-	def merge(self, remote_objects: list[AnalysisBase]) -> Results:
-		if len(remote_objects) == 1:
-			rv = remote_objects[0]
-		else:
-			rv = Results()
-			for key in remote_objects[0].keys():
-  	          agg_function = self._lookup.get(key, None)
-  	          if agg_function is None:
-  	              raise ValueError(f"No aggregation function for {key=}")
-  	          results_of_t = [obj[key] for obj in objects]
-  	          rv[key] = agg_function(results_of_t)
-  	    return rv
+    def __init__(self, lookup: dict[str, Callable]):
+        self._lookup = lookup
+    
+    def merge(self, remote_objects: list[AnalysisBase]) -> Results:
+        if len(remote_objects) == 1:
+            rv = remote_objects[0]
+        else:
+            rv = Results()
+            for key in remote_objects[0].keys():
+                agg_function = self._lookup.get(key, None)
+                if agg_function is None:
+                    raise ValueError(f"No aggregation function for {key=}")
+                results_of_t = [obj[key] for obj in objects]
+                rv[key] = agg_function(results_of_t)
+          return rv
 ```
 
 note that we won't even screw the function signature up and return the `Results` type still, since we've added `self.results = Results()` in `_prepare()`.
@@ -224,22 +227,24 @@ The last touch is that not everything is stored in `results` -- in `_prepare` me
 
 ```python
 class AnalysisBase:
-	def run(self, start, stop, step, frames, n_workers, scheduler):
-		self._setup_frames(start, stop, step, frames)
-		self._prepare()
-		computation_groups = self._setup_computation_groups(start, stop, step, frames, n_workers)
+    def run(self, start, stop, step, frames, n_workers, scheduler):
+        self._setup_frames(start, stop, step, frames)
+        self._prepare()
+        computation_groups = self._setup_computation_groups(
+            start, stop, step, frames, n_workers
+        )
 
-		executor = ParallelExecutor(n_workers, scheduler)
-		remote_objects = executor.apply(self._compute, computation_groups)
+        executor = ParallelExecutor(n_workers, scheduler)
+        remote_objects = executor.apply(self._compute, computation_groups)
 
-		# manually merge `frames` and `times`
+        # manually merge `frames` and `times`
         self.frames = np.array([obj.frames for obj in remote_objects]).sum(axis=0)
         self.times = np.array([obj.times for obj in remote_objects]).sum(axis=0)
 
-		# apply ResultsGroup.merge()
-		aggregator = self._get_aggregator()
-		self.results = aggregator.merge(remote_objects)
-		self._conclude()
+        # apply ResultsGroup.merge()
+        aggregator = self._get_aggregator()
+        self.results = aggregator.merge(remote_objects)
+        self._conclude()
 ```
 
 And that's it, a final look of `AnalysisBase.run()`!
@@ -249,8 +254,7 @@ And that's it, a final look of `AnalysisBase.run()`!
 For instance, let's modify a `MDAnalysis.analysis.rms.RMSD` class so that it would work with our parallel backend. It has a huge `_prepare` method, but the only attribute that actually gets prepared is `self.results.rmsd` -- it's initialized with zeros of a proper shape:
 
 ```python
-self.results.rmsd = np.zeros((self.n_frames,
-							 3 + len(self._groupselections_atoms)))
+self.results.rmsd = np.zeros((self.n_frames, 3 + len(self._groupselections_atoms)))
 ```
 
 hence, in all but one remote objects value of `self.results.rmsd` will be zero, and we can simply add all results together to get a final result!
@@ -259,15 +263,15 @@ Let's do that, and also add `available_backends`:
 
 ```python
 class RMSD(AnalysisBase):
-	...
+    ...
 
-	@classmethod
-	@property
-	def available_backends(cls):
-		return ('local', 'multiprocessing', 'dask', 'dask.distributed')
-	
-	def _get_aggregator(self):
-		return ResultsGroup(lookup={'rmsd': ResultsGroup.ndarray_sum})
+    @classmethod
+    @property
+    def available_backends(cls):
+        return ("local", "multiprocessing", "dask", "dask.distributed")
+
+    def _get_aggregator(self):
+        return ResultsGroup(lookup={"rmsd": ResultsGroup.ndarray_sum})
 ```
 
 and that's it! And the function we've specified here in `lookup` has a super simple signature -- `Callable[list[T], T]`, and all the built-in functions have literally a single line of code in them.

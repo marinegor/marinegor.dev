@@ -19,20 +19,20 @@ At this moment, the `AnalysisBase.run()` method looks roughly like this:
 
 ```python
 def run(self, start, stop, step, frames):
-	"""
-	Perform the calculation
-	"""
-	self._setup_bslices(...)
-	computations = []
-	for bslice in self._bslices:
-		start, stop, step, frames = bslice
-		computations.append(delayed((self._compute)(start, stop, step, frames)))
-	results = computations.compute()
-	self._remote_results = results
-	self._parallel_conclude()
-	
-	self._conclude()
-	return self
+    """
+    Perform the calculation
+    """
+    self._setup_bslices(...)
+    computations = []
+    for bslice in self._bslices:
+        start, stop, step, frames = bslice
+        computations.append(delayed((self._compute)(start, stop, step, frames)))
+    results = computations.compute()
+    self._remote_results = results
+    self._parallel_conclude()
+    
+    self._conclude()
+    return self
 ```
 
 Let's think of how `_setup_bslices` should look like -- which arguments it has and what it returns, or which attributes of `self` modifies?
@@ -41,9 +41,9 @@ Well, clearly, it should know about the computation limits defined earlier in th
 
 ```python
 def _setup_bslices(self, start, stop, step, frames, scheduler):
-	n_parts = some_function_of(scheduler)
-	bslices = split_evenly(start, stop, step, frames)
-	self._bslices = bslices
+    n_parts = some_function_of(scheduler)
+    bslices = split_evenly(start, stop, step, frames)
+    self._bslices = bslices
 ```
 
 Now, the first part with `n_parts = ...` is actually simple. For now, for clarity, we'll just specify `scheduler` as a string that represents the scheduling backend -- either additionally installed `dask`, built-in `multiprocessing`, or `None` representing execution in the current process, and `n_parts` will be `n_workers` -- a parameter of a scheduler.
@@ -64,37 +64,45 @@ In order to split an iterable into `n` equal parts, one could start writing some
 Now, the splitting function needs to first match the type of our parameters, and then apply `np.array_split` single split. Something like this:
 
 ```python
-def split_work_into_parts(n_parts: int = 1, start=None, stop=None, step=None, frames=None):
-	if any([opt is not None for opt in (start, stop, step)]): # using `start-stop-step` notation
-		frames = np.arange(start, stop, step)
-	else: # using `frames` notation
-		if is_iterable_of_booleans(frames):
-			frames = np.arange(len(frames))[frames]
+def split_work_into_parts(
+    n_parts: int = 1, start=None, stop=None, step=None, frames=None
+):
+    if any([
+        opt is not None for opt in (start, stop, step)
+    ]):  # using `start-stop-step` notation
+        frames = np.arange(start, stop, step)
+    else:  # using `frames` notation
+        if is_iterable_of_booleans(frames):
+            frames = np.arange(len(frames))[frames]
 
-	frames = np.array_split(frames, n_parts)
-	return frames
+    frames = np.array_split(frames, n_parts)
+    return frames
 ```
 
 where `is_iterable_of_booleans(frames: Iterable)` looks something like:
 
 ```python
 def is_iterable_of_booleans(arr: Iterable):
-	return all((isinstance(obj, bool) for obj in arr))
+    return all((isinstance(obj, bool) for obj in arr))
 ```
 
 Unfortunately for us, we can't simply use the result of `split_work_into_parts` -- we not only need to split the frames evenly, but we also have to keep track of frame indices we're using, since in `_compute` we're explicitly assigning `self._frame_index = i`. Hence, we have to use something like `enumerate` before creating balanced slices, and make our function slightly more complicated:
 
 ```python
-def split_work_into_parts(n_parts: int = 1, start=None, stop=None, step=None, frames=None):
-	if any([opt is not None for opt in (start, stop, step)]): # using `start-stop-step` notation
-		frames = np.arange(start, stop, step)
-	else: # using `frames` notation
-		if is_iterable_of_booleans(frames):
-			frames = np.arange(len(frames))[frames]
+def split_work_into_parts(
+    n_parts: int = 1, start=None, stop=None, step=None, frames=None
+):
+    if any([
+        opt is not None for opt in (start, stop, step)
+    ]):  # using `start-stop-step` notation
+        frames = np.arange(start, stop, step)
+    else:  # using `frames` notation
+        if is_iterable_of_booleans(frames):
+            frames = np.arange(len(frames))[frames]
 
-	frames = np.array(list(enumerate(frames)))
-	frames = np.array_split(frames, n_parts)
-	return frames
+    frames = np.array(list(enumerate(frames)))
+    frames = np.array_split(frames, n_parts)
+    return frames
 ```
 
 Neat! Now we can get back to writing `_setup_bslices`.
@@ -105,38 +113,42 @@ Given all functions above, the target method will now look like this:
 
 ```python
 def _setup_bslices(self, start, stop, step, frames, n_workers):
-	equal_iterables = split_work_into_parts(n_parts=n_workers, start, stop, step, frames)
-	self._bslices = equal_iterables
+    equal_iterables = split_work_into_parts(n_parts=n_workers, start, stop, step, frames)
+    self._bslices = equal_iterables
 ```
 
 Now, we want to use these `bslices` in `run` method. We could get both indices and frames from `self._bslices` and then use them when creating list of computations, but since `self._bslices` will anyway get passed to the worker objects, let's just use a bslice index for assigning work, hence simplifying the `run` code. Like this:
 
 ```python
 def run(self, start, stop, step, frames, n_workers, scheduler):
-	self._setup_frames(start, stop, step, frames)
-	self._prepare()
-	self._setup_bslices(start, stop, step, frames, n_workers)
+    self._setup_frames(start, stop, step, frames)
+    self._prepare()
+    self._setup_bslices(start, stop, step, frames, n_workers)
 
-	if scheduler is None:
-		# we have no worker processes and only one `bslice`
-		self._compute(bslice_idx=0)
-	else:
-		from dask.delayed import delayed
-		computations = [delayed(self._compute)(bslice_idx) for bslice_idx in range(len(self._bslices))]
-		results = computations.compute()
-		self._remote_results = results
-		self._parallel_conclude()
-	
-	self._conclude()
+    if scheduler is None:
+        # we have no worker processes and only one `bslice`
+        self._compute(bslice_idx=0)
+    else:
+        from dask.delayed import delayed
+
+        computations = [
+            delayed(self._compute)(bslice_idx)
+            for bslice_idx in range(len(self._bslices))
+        ]
+        results = computations.compute()
+        self._remote_results = results
+        self._parallel_conclude()
+
+    self._conclude()
 ```
 
 And usage of `_compute` will also slightly change, since we're using bslice_idx instead of original `run`-inherited syntax:
 
 ```python
 def _compute(self, bslice_idx):
-	bslice = self._bslices[bslice_idx]
-	frame_indices, frames = bslices[:, 0], bslices[:, 1]
-	    for idx, ts in enumerate(trajectory):
+    bslice = self._bslices[bslice_idx]
+    frame_indices, frames = bslices[:, 0], bslices[:, 1]
+        for idx, ts in enumerate(trajectory):
         i = frame_indices[idx]
         self._frame_index = i
         self._ts = ts

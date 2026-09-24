@@ -35,40 +35,40 @@ If you have little experience and lots of patience, you'd write something like t
 
 ```python
 def convert_1_patience(s: str) -> np.ndarray:
-    rv = ''
+    rv = ""
     for letter in s:
-        if letter == '0':
-            rv += '0000'
-        elif letter == '1':
-            rv += '0001'
-        elif letter == '2':
-            rv += '0010'
-        elif letter == '3':
-            rv += '0011'
-        elif letter == '4':
-            rv += '0100'
-        elif letter == '5':
-            rv += '0101'
-        elif letter == '6':
-            rv += '0110'
-        elif letter == '7':
-            rv += '0111'
-        elif letter == '8':
-            rv += '1000'
-        elif letter == '9':
-            rv += '1001'
-        elif letter == 'a':
-            rv += '1010'
-        elif letter == 'b':
-            rv += '1011'
-        elif letter == 'c':
-            rv += '1100'
-        elif letter == 'd':
-            rv += '1101'
-        elif letter == 'e':
-            rv += '1110'
-        elif letter == 'f':
-            rv += '1111'
+        if letter == "0":
+            rv += "0000"
+        elif letter == "1":
+            rv += "0001"
+        elif letter == "2":
+            rv += "0010"
+        elif letter == "3":
+            rv += "0011"
+        elif letter == "4":
+            rv += "0100"
+        elif letter == "5":
+            rv += "0101"
+        elif letter == "6":
+            rv += "0110"
+        elif letter == "7":
+            rv += "0111"
+        elif letter == "8":
+            rv += "1000"
+        elif letter == "9":
+            rv += "1001"
+        elif letter == "a":
+            rv += "1010"
+        elif letter == "b":
+            rv += "1011"
+        elif letter == "c":
+            rv += "1100"
+        elif letter == "d":
+            rv += "1101"
+        elif letter == "e":
+            rv += "1110"
+        elif letter == "f":
+            rv += "1111"
     rv_int = []
     for letter in rv_str:
         rv_int.append(int(letter))
@@ -79,7 +79,7 @@ Which, in more idiomatic way and usage of builtins `int` and `bin` could be re-w
 
 ```python
 def convert_2_builtins(s: str) -> np.ndarray:
-    binarized = bin(int(s, 16))[2:].zfill(len(s)*4)
+    binarized = bin(int(s, 16))[2:].zfill(len(s) * 4)
     return np.array([int(i) for i in binarized])
 ```
 
@@ -143,7 +143,7 @@ The problem is, we now have twice as large array -- we wanted 4 elements per 1 s
 def convert_3_vectorized(s: str) -> np.ndarray:
     darr = [int(l, 16) for l in s]
     darr = np.array(darr).astype(np.uint8)
-    darr = np.unpackbits(darr).reshape(-1,8)[:,4:].flatten()
+    darr = np.unpackbits(darr).reshape(-1, 8)[:, 4:].flatten()
     return darr
 ```
 
@@ -159,10 +159,9 @@ Wow, that's 3 times improvement, not bad. Let's try a bit faster using lazy `np.
 ```python
 def convert_4_vectorized_iter(s: str) -> np.ndarray:
     darr = (int(l, 16) for l in s)
-    darr = np.unpackbits(
-        np.fromiter(darr, 
-            dtype=np.int8)
-        ).reshape(-1,8)[:,4:].flatten()
+    darr = (
+        np.unpackbits(np.fromiter(darr, dtype=np.int8)).reshape(-1, 8)[:, 4:].flatten()
+    )
     return darr
 ```
 
@@ -177,45 +176,45 @@ Probably, at this moment the main bottleneck lays in converting strings into int
 
 ```python
 def shortint(letter: str) -> int:
-    if letter == '0':
+    if letter == "0":
         return 0
-    elif letter == '1':
+    elif letter == "1":
         return 1
-    elif letter == '2':
+    elif letter == "2":
         return 2
-    elif letter == '3':
+    elif letter == "3":
         return 3
-    elif letter == '4':
+    elif letter == "4":
         return 4
-    elif letter == '5':
+    elif letter == "5":
         return 5
-    elif letter == '6':
+    elif letter == "6":
         return 6
-    elif letter == '7':
+    elif letter == "7":
         return 7
-    elif letter == '8':
+    elif letter == "8":
         return 8
-    elif letter == '9':
+    elif letter == "9":
         return 9
-    elif letter == 'a':
+    elif letter == "a":
         return 10
-    elif letter == 'b':
+    elif letter == "b":
         return 11
-    elif letter == 'c':
+    elif letter == "c":
         return 12
-    elif letter == 'd':
+    elif letter == "d":
         return 13
-    elif letter == 'e':
+    elif letter == "e":
         return 14
-    elif letter == 'f':
+    elif letter == "f":
         return 15
+
 
 def convert_5_shortint(s: str) -> np.ndarray:
     darr = (shortint(l) for l in s)
-    darr = np.unpackbits(
-        np.fromiter(darr, 
-            dtype=np.uint8)
-        ).reshape(-1,8)[:,4:].flatten()
+    darr = (
+        np.unpackbits(np.fromiter(darr, dtype=np.uint8)).reshape(-1, 8)[:, 4:].flatten()
+    )
     return darr
 ```
 
@@ -232,33 +231,33 @@ Let's work further in this direction. Let's dream: it would be cool if we could 
 
 ```python
 def shortint_dict(l: str) -> int:
-    struct = '01234567890abcdef'
+    struct = "01234567890abcdef"
     struct = {
-        '0':0,
-        '1':1, 
-        '2':2, 
-        '3':3, 
-        '4':4, 
-        '5':5, 
-        '6':6, 
-        '7':7, 
-        '8':8, 
-        '9':9, 
-        'a':10,
-        'b':11,
-        'c':12,
-        'd':13,
-        'e':14,
-        'f':15
+        "0": 0,
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6,
+        "7": 7,
+        "8": 8,
+        "9": 9,
+        "a": 10,
+        "b": 11,
+        "c": 12,
+        "d": 13,
+        "e": 14,
+        "f": 15,
     }
     return struct[letter]
 
+
 def convert_6_shortint_dict(s: str) -> np.ndarray:
     darr = (shortint_dict(l) for l in s)
-    darr = np.unpackbits(
-        np.fromiter(darr, 
-            dtype=np.uint8)
-        ).reshape(-1,8)[:,4:].flatten()
+    darr = (
+        np.unpackbits(np.fromiter(darr, dtype=np.uint8)).reshape(-1, 8)[:, 4:].flatten()
+    )
     return darr
 ```
 
@@ -299,9 +298,7 @@ def shortint_dict_default_cached(
 def convert_7_shortint_dict_cached(s: str) -> np.ndarray:
     darr = (shortint_dict_default_cached(l) for l in s)
     darr = (
-        np.unpackbits(np.fromiter(darr, dtype=np.uint8))
-        .reshape(-1, 8)[:, 4:]
-        .flatten()
+        np.unpackbits(np.fromiter(darr, dtype=np.uint8)).reshape(-1, 8)[:, 4:].flatten()
     )
     return darr
 ```
@@ -362,7 +359,7 @@ Wow, that's the result we actually wanted! Turns out, although the resulting byt
 The resulting function turns out to be extremely simple then:
 
 ```python
-def convert_8_frombuffer(s: str) -> np.ndarray: 
+def convert_8_frombuffer(s: str) -> np.ndarray:
     return np.unpackbits(np.frombuffer(bytearray.fromhex(s), dtype=np.uint8))
 ```
 
@@ -395,7 +392,7 @@ But... isn't the naive list comprehension something that we so successfully got 
 
 ```python
 def convert_9_List_join(fps: List[str], converter=convert_8_frombuffer) -> np.ndarray:
-    return converter(''.join(fps)).reshape(len(fps), -1)
+    return converter("".join(fps)).reshape(len(fps), -1)
 ```
 
 Timing is slightly better:

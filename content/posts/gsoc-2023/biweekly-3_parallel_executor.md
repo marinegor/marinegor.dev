@@ -28,33 +28,38 @@ The code looked roughly like this:
 
 ```python
 def run(self, start, stop, step, frames, n_workers, scheduler):
-	self._setup_frames(start, stop, step, frames)
-	self._prepare()
-	self._setup_bslices(start, stop, step, frames, n_workers)
+    self._setup_frames(start, stop, step, frames)
+    self._prepare()
+    self._setup_bslices(start, stop, step, frames, n_workers)
 
-	if scheduler is None:
-		# we have no worker processes and only one `bslice`
-		self._compute(bslice_idx=0)
-	elif scheduler == 'multiprocessing':
-		import multiprocessing
-		...
-	else:
-		from dask.delayed import delayed
-		computations = [delayed(self._compute)(bslice_idx) for bslice_idx in range(len(self._bslices))]
-		results = computations.compute()
-		self._remote_results = results
-		self._parallel_conclude()
-	
-	self._conclude()
+    if scheduler is None:
+        # we have no worker processes and only one `bslice`
+        self._compute(bslice_idx=0)
+    elif scheduler == "multiprocessing":
+        import multiprocessing
+
+        ...
+    else:
+        from dask.delayed import delayed
+
+        computations = [
+            delayed(self._compute)(bslice_idx)
+            for bslice_idx in range(len(self._bslices))
+        ]
+        results = computations.compute()
+        self._remote_results = results
+        self._parallel_conclude()
+
+    self._conclude()
 ```
 
 And `_compute` method looked like this:
 
 ```python
 def _compute(self, bslice_idx):
-	bslice = self._bslices[bslice_idx]
-	frame_indices, frames = bslices[:, 0], bslices[:, 1]
-	    for idx, ts in enumerate(trajectory):
+    bslice = self._bslices[bslice_idx]
+    frame_indices, frames = bslices[:, 0], bslices[:, 1]
+        for idx, ts in enumerate(trajectory):
         i = frame_indices[idx]
         self._frame_index = i
         self._ts = ts
@@ -71,39 +76,43 @@ What if we moved this functionality outside of the `AnalysisBase` class? Upon in
 
 ```python
 class ParallelExecutor:
-	def __init__(self, n_workers, scheduler):
-		self.n_workers = n_workers
-		self.scheduler = scheduler
-	
-	def apply(self, func, computations) -> list:
-		if self.scheduler == 'local':
-			return [func(task) for task in computations]
-		elif self.scheduler == 'multiprocessing':
-			import multiprocessing
-			with multiprocessing.Pool(self.n_workers) as pool:
-				return list(pool.map(func, computations))
-		elif self.scheduler == 'dask':
-			import dask
-			from dask.delayed import delayed
-			func_d = delayed(func)
-			return delayed([func_d(task) for task in computations]).compute(n_workers=self.n_workers)
-		else:
-			raise ValueError('wrong scheduler')
-```		
+    def __init__(self, n_workers, scheduler):
+        self.n_workers = n_workers
+        self.scheduler = scheduler
+
+    def apply(self, func, computations) -> list:
+        if self.scheduler == "local":
+            return [func(task) for task in computations]
+        elif self.scheduler == "multiprocessing":
+            import multiprocessing
+
+            with multiprocessing.Pool(self.n_workers) as pool:
+                return list(pool.map(func, computations))
+        elif self.scheduler == "dask":
+            import dask
+            from dask.delayed import delayed
+
+            func_d = delayed(func)
+            return delayed([func_d(task) for task in computations]).compute(
+                n_workers=self.n_workers
+            )
+        else:
+            raise ValueError("wrong scheduler")
+```        
 
 The `run` method would look somewhat like this:
 
 ```python
 def run(self, start, stop, step, frames, n_workers, scheduler):
-	self._setup_frames(start, stop, step, frames)
-	self._prepare()
-	bslices = self._setup_bslices(start, stop, step, frames, n_workers)
+    self._setup_frames(start, stop, step, frames)
+    self._prepare()
+    bslices = self._setup_bslices(start, stop, step, frames, n_workers)
 
-	executor = ParallelExecutor(n_workers, scheduler)
-	executor.apply(self._compute, bslices)
-	
-	self._parallel_conclude()
-	self._conclude()
+    executor = ParallelExecutor(n_workers, scheduler)
+    executor.apply(self._compute, bslices)
+    
+    self._parallel_conclude()
+    self._conclude()
 ```
 
 Ok, this looks much simpler! Now we can clearly see what's going on during `run`, without unnecessary configuration logic.
@@ -112,41 +121,45 @@ Minor thing is that we haven't completely got rid of the ugly `if-elif-else` par
 
 ```python
 class ParallelExecutor:
-	def __init__(self, n_workers, scheduler, client):
-		self.n_workers = n_workers
-		self.scheduler = scheduler
-	
-	def _compute_with_local(self, func, computations):
-		return [func(task) for task in computations]
+    def __init__(self, n_workers, scheduler, client):
+        self.n_workers = n_workers
+        self.scheduler = scheduler
 
-	def _compute_with_dask(self, func, computations):
-		import dask
-		from dask.delayed import delayed
-		func_d = delayed(func)
-		return delayed([func_d(task) for task in computations]).compute(n_workers=self.n_workers)
+    def _compute_with_local(self, func, computations):
+        return [func(task) for task in computations]
 
-	def _compute_with_multiprocessing(self, func, computations):
-		import multiprocessing
-		with multiprocessing.Pool(self.n_workers) as pool:
-			return list(pool.map(func, computations))
+    def _compute_with_dask(self, func, computations):
+        import dask
+        from dask.delayed import delayed
+
+        func_d = delayed(func)
+        return delayed([func_d(task) for task in computations]).compute(
+            n_workers=self.n_workers
+        )
+
+    def _compute_with_multiprocessing(self, func, computations):
+        import multiprocessing
+
+        with multiprocessing.Pool(self.n_workers) as pool:
+            return list(pool.map(func, computations))
 ```
 
 How do we now match it? Well, if we don't want our code to smell but still want to map pre-configured options to the desired code path, let's use a general mapping object -- dictionary:
 
 ```python
 class ParallelExecutor:
-	...
+    ...
 
-	def apply(self, func, computations):
-		computation_options = {
-			self._compute_with_local: self.scheduler == 'local',
-			self._compute_with_dask: self.scheduler == 'dask',
-			self._compute_with_multiprocessing: self.scheduler == 'multiprocessing',
-		}
-		for applicator, condition in computation_options.items():
-			if condition:
-				return applicator(func, computations)
-		raise ValueError('wrong configuration')
+    def apply(self, func, computations):
+        computation_options = {
+            self._compute_with_local: self.scheduler == "local",
+            self._compute_with_dask: self.scheduler == "dask",
+            self._compute_with_multiprocessing: self.scheduler == "multiprocessing",
+        }
+        for applicator, condition in computation_options.items():
+            if condition:
+                return applicator(func, computations)
+        raise ValueError("wrong configuration")
 ```
 
 Cool! No code smell, easy testing, easy usage, potential to be used in other parts of the project.
