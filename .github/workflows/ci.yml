@@ -1,0 +1,26 @@
+# Lint + test only. Deployment is done by Cloudflare Pages itself, which
+# builds `main` on push; nothing here deploys.
+# All logic lives in Taskfile.yml; this file only provides the toolchain.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0 # lint:commits needs history
+      - uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: astral-sh/setup-uv@v6
+      - run: task ci
+      - if: github.event_name == 'pull_request'
+        run: task lint:commits COMMIT_RANGE=origin/${{ github.base_ref }}..HEAD
