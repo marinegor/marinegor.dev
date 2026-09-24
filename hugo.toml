@@ -37,6 +37,10 @@ listSummaries = true
 listDateFormat = '2 Jan 2006'
 singleDateFormat = '2 Jan 2006'
 
+# Main RSS feed (/index.xml): full posts from these sections only, see
+# layouts/_default/rss.xml; keep in sync with RSS_SECTIONS in Taskfile.yml
+rssSections = ['posts', 'til']
+
 # KaTeX on every page ($...$ and $$...$$)
 math = true
 
@@ -71,6 +75,11 @@ url = "https://bsky.app/profile/marinegor.bsky.social"
 name = "googlescholar"
 title = "Google Scholar"
 url = "https://scholar.google.com/citations?user=FJbv9XcAAAAJ"
+
+[[params.social]]
+name = "rss"
+title = "RSS"
+url = "/index.xml"
 
 # Main menu
 [[params.menu]]

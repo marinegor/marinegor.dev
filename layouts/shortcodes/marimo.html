@@ -15,7 +15,7 @@
 {{- if not (fileExists $src) -}}
   {{- errorf "marimo shortcode: %s not found (%s)" $src .Position -}}
 {{- end -}}
-{{- $data := index site.Data.marimo $name -}}
+{{- $data := index hugo.Data.marimo $name -}}
 {{- if not $data -}}
   {{- errorf "marimo shortcode: no data/marimo/%s.json, run `task marimo:embed` (%s)" $name .Position -}}
 {{- end -}}

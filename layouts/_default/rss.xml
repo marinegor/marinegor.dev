@@ -1,0 +1,97 @@
+{{- /*
+  Based on Hugo's embedded rss.xml (v0.166.0), changed for marinegor.dev:
+  - home feed: only sections in params.rssSections (default: posts, til), so
+    updates to /pages/ (CV, publications, ...) don't show up as new items
+  - items carry the full post (.Content), not the auto summary
+  - home channel title/description: site title/description
+  - tags as <category>
+  - typo's heading anchors and code "copy" buttons are stripped from items,
+    root-relative URLs are made absolute
+  Embeds (e.g. the `marimo` shortcode) have *.rss.xml variants that render a link.
+*/ -}}
+{{- $authorEmail := "" }}
+{{- with site.Params.author }}
+	{{- if reflect.IsMap . }}
+		{{- with .email }}
+			{{- $authorEmail = . }}
+		{{- end }}
+	{{- end }}
+{{- end }}
+
+{{- $authorName := "" }}
+{{- with site.Params.author }}
+	{{- if reflect.IsMap . }}
+		{{- with .name }}
+			{{- $authorName = . }}
+		{{- end }}
+	{{- else }}
+		{{- $authorName = . }}
+	{{- end }}
+{{- end }}
+
+{{- $pctx := . }}
+{{- if .IsHome }}{{ $pctx = .Site }}{{ end }}
+{{- $pages := slice }}
+{{- if $.IsHome }}
+	{{- $sections := site.Params.rssSections | default (slice "posts" "til") }}
+	{{- $pages = where site.RegularPages "Section" "in" $sections }}
+{{- else if $.IsSection }}
+	{{- $pages = $pctx.RegularPages }}
+{{- else }}
+	{{- $pages = $pctx.Pages }}
+{{- end }}
+{{- $limit := .Site.Config.Services.RSS.Limit }}
+{{- if ge $limit 1 }}
+	{{- $pages = $pages | first $limit }}
+{{- end }}
+{{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		{{- if .IsHome }}
+		<title>{{ site.Title }}</title>
+		<link>{{ .Permalink }}</link>
+		<description>{{ site.Params.description | default (printf "Recent content on %s" site.Title) }}</description>
+		{{- else }}
+		<title>{{ if eq .Title .Site.Title }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{ . }} on {{ end }}{{ .Site.Title }}{{ end }}</title>
+		<link>{{ .Permalink }}</link>
+		<description>Recent content {{ if ne .Title .Site.Title }}{{ with .Title }}in {{ . }} {{ end }}{{ end }}on {{ .Site.Title }}</description>
+		{{- end }}
+		<generator>Hugo</generator>
+		<language>{{ site.Language.Locale }}</language>
+		{{ with $authorEmail }}
+			<managingEditor>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</managingEditor>
+		{{ end }}
+		{{ with $authorEmail }}
+			<webMaster>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</webMaster>
+		{{ end }}
+		{{ with .Site.Copyright }}
+			<copyright>{{ . }}</copyright>
+		{{ end }}
+		{{ if and (not .Date.IsZero) $pages }}
+			<lastBuildDate>{{ (index $pages.ByLastmod.Reverse 0).Lastmod.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>
+		{{ end }}
+		{{- with .OutputFormats.Get "RSS" }}
+			{{ printf "<atom:link href=%q rel=\"self\" type=%q />" .Permalink .MediaType | safeHTML }}
+		{{- end }}
+		{{- range $pages }}
+			<item>
+				<title>{{ .Title }}</title>
+				<link>{{ .Permalink }}</link>
+				<pubDate>{{ .PublishDate.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
+				{{- with $authorEmail }}<author>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</author>{{ end }}
+				<guid>{{ .Permalink }}</guid>
+				{{- range .GetTerms "tags" }}
+				<category>{{ .LinkTitle }}</category>
+				{{- end }}
+				{{- /* drop typo's UI bits that make no sense in a feed reader:
+				       the heading "#" anchors and the code-block "copy" buttons */}}
+				{{- $content := .Content }}
+				{{- $content = $content | replaceRE `<a class="anchor" href="#[^"]*">#</a>` "" }}
+				{{- $content = $content | replaceRE `(?s)<button class="copy-code-button">.*?</button>` "" }}
+				{{- /* feed readers can't resolve root-relative URLs (e.g. images) */}}
+				{{- $content = $content | replaceRE `(src|href)="/([^/])` (printf `$1="%s/$2` (strings.TrimSuffix "/" site.BaseURL)) }}
+				<description>{{ $content | transform.XMLEscape | safeHTML }}</description>
+			</item>
+		{{- end }}
+	</channel>
+</rss>

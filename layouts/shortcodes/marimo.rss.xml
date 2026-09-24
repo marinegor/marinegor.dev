@@ -1,0 +1,3 @@
+{{- /* RSS variant of the `marimo` shortcode: feed readers don't run iframes, so link to the post instead. */ -}}
+{{- $name := .Get "name" | default (.Get 0) -}}
+<p><em>This post embeds an interactive <a href="https://marimo.io">marimo</a> notebook (<code>{{ $name }}</code>), which doesn't run in feed readers: <a href="{{ .Page.Permalink }}">open the post</a> to try it, or see its <a href="{{ printf "/notebooks/%s.py" $name | absURL }}">source</a>.</em></p>

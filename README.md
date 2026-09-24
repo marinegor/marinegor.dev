@@ -45,6 +45,14 @@ Cloudflare uses Hugo **0.118.2**. That's the build image default, unless
 version. To upgrade Hugo, set `HUGO_VERSION` in the dashboard and bump
 `HUGO_VERSION` + `CF_HUGO_VERSION` in `Taskfile.yml` together.
 
+## RSS
+
+`/index.xml` is the main feed: full text of `posts` and `til` (see
+`rssSections` in `hugo.toml`, template in `layouts/_default/rss.xml`). Every
+section and tag has its own feed too, e.g. `/til/index.xml`,
+`/tags/python/index.xml`. Embeds like marimo notebooks become links in feeds.
+`task test:feed` checks the main feed.
+
 ## CV
 
 `static/cv.pdf` (served at `/cv.pdf`) is rendered from `basic-resume/main.typ`
