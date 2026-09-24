@@ -13,3 +13,7 @@ disable = [
 [per-file-ignores]
 # slides-style talk write-up: one "Implementation" section per slide
 "content/posts/gsoc-2023/mda_ugm_2023.md" = ["MD024"]
+
+[MD010]
+code-blocks = true # no hard tabs in code blocks either; `task fix` expands them
+spaces-per-tab = 4

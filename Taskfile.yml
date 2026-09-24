@@ -24,6 +24,14 @@ vars:
   CHROMA_LIGHT: github
   CHROMA_DARK: github-dark
   CHROMA_CSS: assets/css/chroma.css
+  # Pinned versions of tools run via uvx (bump deliberately; ruff's markdown
+  # formatting is a preview feature and may change between releases)
+  RUFF: ruff@0.16.3
+  TY: ty@0.0.72
+  RUMDL: rumdl@0.2.77
+  TYPOS: typos@1.50.2
+  MARIMO: marimo@0.25.0
+  COMMITIZEN: commitizen@4.19.0
   # Files checked by linters
   MD_FILES: content README.md AGENTS.md
   SPELL_FILES: content README.md AGENTS.md hugo.toml basic-resume notebooks
@@ -182,6 +190,7 @@ tasks:
     desc: Run all linters (read-only)
     cmds:
       - task: lint:md
+      - task: lint:md-code
       - task: lint:spell
       - task: lint:chroma
       - task: lint:py
@@ -196,8 +205,8 @@ tasks:
         sh: command -v uvx
         msg: uvx not found in PATH, install uv (https://docs.astral.sh/uv/)
     cmds:
-      - uvx ruff check {{.PY_DIRS}}
-      - uvx ruff format --check {{.PY_DIRS}}
+      - uvx {{.RUFF}} check {{.PY_DIRS}}
+      - uvx {{.RUFF}} format --check {{.PY_DIRS}}
 
   lint:ty:
     desc: Type-check each notebook with ty, in its own PEP 723 environment
@@ -210,7 +219,7 @@ tasks:
       - for: { var: NOTEBOOKS }
         cmd: |
           uv sync --quiet --script {{.ITEM}}
-          uvx ty check --python "$(uv python find --script {{.ITEM}})" {{.ITEM}}
+          uvx {{.TY}} check --python "$(uv python find --script {{.ITEM}})" {{.ITEM}}
 
   lint:marimo-embed:
     desc: 'Check data/marimo/*.json is up to date with `task marimo:embed`'
@@ -223,7 +232,7 @@ tasks:
     desc: Check notebooks with marimo's own linter (`marimo check`)
     preconditions: [*uvx]
     cmds:
-      - uvx marimo check --strict {{.NOTEBOOKS}}
+      - uvx {{.MARIMO}} check --strict {{.NOTEBOOKS}}
 
   lint:chroma:
     desc: 'Check {{.CHROMA_CSS}} is up to date with `task chroma`'
@@ -236,16 +245,22 @@ tasks:
       - 'diff -u {{.CHROMA_CSS}} .task/chroma.css || { echo "{{.CHROMA_CSS}} is stale, run: task chroma"; exit 1; }'
 
   lint:md:
-    desc: Lint markdown with rumdl (config in .rumdl.toml)
+    desc: Lint markdown with rumdl (config in .rumdl.toml; incl. no tabs in code blocks)
     preconditions: [*uvx]
     cmds:
-      - uvx rumdl check {{.MD_FILES}}
+      - uvx {{.RUMDL}} check {{.MD_FILES}}
+
+  lint:md-code:
+    desc: Check python code blocks in markdown are ruff-formatted (where parseable)
+    preconditions: [*uvx]
+    cmds:
+      - uvx {{.RUFF}} format --preview --check {{.MD_FILES}}
 
   lint:spell:
     desc: Check spelling with typos (config in _typos.toml)
     preconditions: [*uvx]
     cmds:
-      - uvx typos {{.SPELL_FILES}}
+      - uvx {{.TYPOS}} {{.SPELL_FILES}}
 
   lint:commits:
     desc: 'Check commit messages in {{.COMMIT_RANGE}} follow commitizen/conventional commits'
@@ -254,22 +269,25 @@ tasks:
       - sh: command -v git
         msg: git is not installed
     cmds:
-      - uvx --from commitizen cz check --rev-range {{.COMMIT_RANGE}}
+      - uvx --from {{.COMMITIZEN}} cz check --rev-range {{.COMMIT_RANGE}}
 
   fix:
     desc: Auto-fix markdown formatting and spelling
     preconditions: [*uvx]
     cmds:
-      - uvx rumdl fmt {{.MD_FILES}}
-      - uvx typos --write-changes {{.SPELL_FILES}}
-      - uvx ruff check --fix {{.PY_DIRS}}
-      - uvx ruff format {{.PY_DIRS}}
+      # markdown first (incl. tabs -> 4 spaces in code blocks), so that ruff can
+      # then parse and format python code blocks that had tabs
+      - uvx {{.RUMDL}} fmt {{.MD_FILES}}
+      - uvx {{.RUFF}} format --preview {{.MD_FILES}}
+      - uvx {{.TYPOS}} --write-changes {{.SPELL_FILES}}
+      - uvx {{.RUFF}} check --fix {{.PY_DIRS}}
+      - uvx {{.RUFF}} format {{.PY_DIRS}}
 
   format:
     desc: Format python with ruff (subset of `fix`)
     preconditions: [*uvx]
     cmds:
-      - uvx ruff format {{.PY_DIRS}}
+      - uvx {{.RUFF}} format {{.PY_DIRS}}
 
   # ---------------------------------------------------------------- marimo
 
@@ -290,7 +308,7 @@ tasks:
       - sh: test -f "{{.CLI_ARGS}}"
         msg: 'no such notebook: {{.CLI_ARGS}}'
     cmds:
-      - uvx marimo edit --sandbox "{{.CLI_ARGS}}"
+      - uvx {{.MARIMO}} edit --sandbox "{{.CLI_ARGS}}"
 
   # ---------------------------------------------------------------- test
 
