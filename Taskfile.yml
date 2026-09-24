@@ -9,17 +9,17 @@ version: '3'
 
 vars:
   # Keep equal to CF_HUGO_VERSION unless deliberately testing an upgrade.
-  HUGO_VERSION: 0.118.2
+  HUGO_VERSION: 0.166.0
   LYCHEE_VERSION: 0.24.2
   BIN_DIR: '{{.ROOT_DIR}}/.bin'
   PUBLIC_DIR: public
   SITE_URL: https://marinegor.dev
   # Cloudflare Pages (project marinegor-nl) builds `main` by itself (no CI
   # involved) with `hugo`, using HUGO_VERSION from the Pages dashboard, or the
-  # build image default (v2: 0.118.2, v3: 0.147.7). 0.118.2 is inferred: it's
-  # the only one that builds the deployed main. If you change the dashboard,
-  # change this too. `test:cloudflare` builds with exactly this version.
-  CF_HUGO_VERSION: 0.118.2
+  # build image default (v2: 0.118.2, v3: 0.147.7). Must equal HUGO_VERSION in
+  # the Pages dashboard (Preview + Production). If you change one, change both.
+  # `test:cloudflare` builds with exactly this version.
+  CF_HUGO_VERSION: 0.166.0
   # Files checked by linters
   MD_FILES: content README.md AGENTS.md
   SPELL_FILES: content README.md AGENTS.md hugo.toml basic-resume

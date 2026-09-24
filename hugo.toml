@@ -1,88 +1,98 @@
 baseURL = 'https://marinegor.dev'
-languageCode = 'en-us'
+locale = 'en-us'
 title = 'marinegor.dev'
-theme = 'archie'
+theme = 'typo'
 copyright = "Egor Marin"
 
-# Code Highlight
-pygmentsstyle = "monokai"
-pygmentscodefences = true
-pygmentscodefencesguesssyntax = true
+[taxonomies]
+tag = 'tags'
 
-paginate=5 # articles per page
+[pagination]
+pagerSize = 100
+
+[markup.highlight]
+noClasses = false # typo ships its own chroma css (light + dark)
 
 [params]
-	mode="auto" # color-mode → light,dark,toggle or auto
-	useCDN=false # don't use CDNs for fonts and icons, instead serve them locally.
-	subtitle = 'Website with code snippets, informal project descriptions, and some ranting when I get older'
-	mathjax = true # enable MathJax support
-	katex = true # enable KaTeX support
+description = 'Website with code snippets, informal project descriptions, and some ranting when I get older'
 
-# Social Tags
+# Appearance: light/dark follows the OS, with a toggle
+theme = 'auto'
+colorPalette = 'default'
+hideHeader = false
 
+# Home page
+homeIntroTitle = 'Hi!'
+homeIntroContent = """
+I'm Egor, a Forward-Deployed ML Engineer in Cofolding @ [Apheris](https://apheris.com). \
+This is a website with code snippets, informal project descriptions, \
+and some ranting when I get older.
+"""
+homeCollectionTitle = 'Posts'
+homeCollection = 'posts'
+
+# Lists
+paginationSize = 100
+listSummaries = true
+listDateFormat = '2 Jan 2006'
+singleDateFormat = '2 Jan 2006'
+
+# KaTeX on every page ($...$ and $$...$$)
+math = true
+
+# Footer
+showFooter = true
+footerContent = "© Egor Marin"
+
+[params.breadcrumbs]
+enabled = true
+showCurrentPage = true
+home = "~"
+
+# Social icons (names are simple-icons slugs)
 [[params.social]]
-name = "GitHub"
-icon = "github"
+name = "github"
 url = "https://github.com/marinegor"
 
 [[params.social]]
-name = "Twitter"
-icon = "twitter"
+name = "x"
+title = "Twitter"
 url = "https://twitter.com/egor__marin/"
 
 [[params.social]]
-name = "Linkedin"
-icon = "linkedin"
+name = "linkedin"
 url = "https://www.linkedin.com/in/marinegor/"
 
 [[params.social]]
-name = "Bluesky"
-icon = "sun"
+name = "bluesky"
 url = "https://bsky.app/profile/marinegor.bsky.social"
 
 [[params.social]]
-name = "Google Scholar"
-icon = "book-open"
+name = "googlescholar"
+title = "Google Scholar"
 url = "https://scholar.google.com/citations?user=FJbv9XcAAAAJ"
 
-# Main menu Items
-
-# [[menu.main]]
-# name = "Home"
-# url = "/"
-# weight = 1
-
-[[menu.main]]
-name = "All posts"
+# Main menu
+[[params.menu]]
+name = "posts"
 url = "/posts"
-weight = 1
 
-[[menu.main]]
-name = "TIL"
+[[params.menu]]
+name = "til"
 url = "/til"
-weight = 2
 
-[[menu.main]]
-name = "Publications"
+[[params.menu]]
+name = "publications"
 url = "/pages/publications"
-weight = 3
 
-# [[menu.main]]
-# name = "Pages"
-# url = "/pages"
-# weight = 3
-
-[[menu.main]]
-name = "CV"
+[[params.menu]]
+name = "cv"
 url = "/pages/cv"
-weight = 4
 
-[[menu.main]]
-name = "Tags"
+[[params.menu]]
+name = "tags"
 url = "/tags"
-weight = 5
 
-[[menu.main]]
-name = "All pages"
+[[params.menu]]
+name = "pages"
 url = "/pages"
-weight = 6
