@@ -26,7 +26,11 @@ vars:
   CHROMA_CSS: assets/css/chroma.css
   # Files checked by linters
   MD_FILES: content README.md AGENTS.md
-  SPELL_FILES: content README.md AGENTS.md hugo.toml basic-resume
+  SPELL_FILES: content README.md AGENTS.md hugo.toml basic-resume notebooks
+  PY_DIRS: notebooks scripts
+  # marimo notebooks: PEP 723 scripts, served as-is under /notebooks/
+  NOTEBOOKS:
+    sh: find notebooks -name '*.py' -not -path '*/__marimo__/*' | sort | tr '\n' ' '
   # Commits checked by `lint:commits` (only the ones not yet on main)
   COMMIT_RANGE: origin/main..HEAD
 
@@ -180,6 +184,46 @@ tasks:
       - task: lint:md
       - task: lint:spell
       - task: lint:chroma
+      - task: lint:py
+      - task: lint:ty
+      - task: lint:marimo
+      - task: lint:marimo-embed
+
+  lint:py:
+    desc: Lint and check formatting of python with ruff (config in ruff.toml)
+    preconditions:
+      - &uvx
+        sh: command -v uvx
+        msg: uvx not found in PATH, install uv (https://docs.astral.sh/uv/)
+    cmds:
+      - uvx ruff check {{.PY_DIRS}}
+      - uvx ruff format --check {{.PY_DIRS}}
+
+  lint:ty:
+    desc: Type-check each notebook with ty, in its own PEP 723 environment
+    preconditions:
+      - *uvx
+      - &uv
+        sh: command -v uv
+        msg: uv not found in PATH, install uv (https://docs.astral.sh/uv/)
+    cmds:
+      - for: { var: NOTEBOOKS }
+        cmd: |
+          uv sync --quiet --script {{.ITEM}}
+          uvx ty check --python "$(uv python find --script {{.ITEM}})" {{.ITEM}}
+
+  lint:marimo-embed:
+    desc: 'Check data/marimo/*.json is up to date with `task marimo:embed`'
+    preconditions: [*uv]
+    cmds:
+      - rm -rf .task/marimo && uv run --quiet --script scripts/marimo_embed.py .task/marimo {{.NOTEBOOKS}} >/dev/null
+      - 'diff -ru data/marimo .task/marimo || { echo "data/marimo is stale, run: task marimo:embed"; exit 1; }'
+
+  lint:marimo:
+    desc: Check notebooks with marimo's own linter (`marimo check`)
+    preconditions: [*uvx]
+    cmds:
+      - uvx marimo check --strict {{.NOTEBOOKS}}
 
   lint:chroma:
     desc: 'Check {{.CHROMA_CSS}} is up to date with `task chroma`'
@@ -193,10 +237,7 @@ tasks:
 
   lint:md:
     desc: Lint markdown with rumdl (config in .rumdl.toml)
-    preconditions:
-      - &uvx
-        sh: command -v uvx
-        msg: uvx not found in PATH, install uv (https://docs.astral.sh/uv/)
+    preconditions: [*uvx]
     cmds:
       - uvx rumdl check {{.MD_FILES}}
 
@@ -221,6 +262,35 @@ tasks:
     cmds:
       - uvx rumdl fmt {{.MD_FILES}}
       - uvx typos --write-changes {{.SPELL_FILES}}
+      - uvx ruff check --fix {{.PY_DIRS}}
+      - uvx ruff format {{.PY_DIRS}}
+
+  format:
+    desc: Format python with ruff (subset of `fix`)
+    preconditions: [*uvx]
+    cmds:
+      - uvx ruff format {{.PY_DIRS}}
+
+  # ---------------------------------------------------------------- marimo
+
+  marimo:embed:
+    desc: Precompute embed data (data/marimo/*.json) for the `marimo` shortcode
+    preconditions: [*uv]
+    cmds:
+      - uv run --quiet --script scripts/marimo_embed.py data/marimo {{.NOTEBOOKS}}
+
+  marimo:
+    desc: 'Edit a notebook interactively with its own dependencies: `task marimo -- notebooks/foo.py`'
+    interactive: true
+    requires:
+      vars: [CLI_ARGS]
+    preconditions:
+      - *uvx
+      - *uv # --sandbox uses uv to build the notebook's PEP 723 environment
+      - sh: test -f "{{.CLI_ARGS}}"
+        msg: 'no such notebook: {{.CLI_ARGS}}'
+    cmds:
+      - uvx marimo edit --sandbox "{{.CLI_ARGS}}"
 
   # ---------------------------------------------------------------- test
 
@@ -281,6 +351,9 @@ tasks:
     cmds:
       - for: [cv.pdf, cv/index.html, pages/cv/index.html, index.xml, favicon.ico]
         cmd: test -f "{{.PUBLIC_DIR}}/{{.ITEM}}" || { echo "missing {{.PUBLIC_DIR}}/{{.ITEM}}"; exit 1; }
+      # every notebook is served as-is
+      - for: { var: NOTEBOOKS }
+        cmd: cmp -s "{{.ITEM}}" "{{.PUBLIC_DIR}}/{{.ITEM}}" || { echo "{{.ITEM}} not served at /{{.ITEM}}"; exit 1; }
 
   test:cloudflare:
     desc: 'Check the site builds the way Cloudflare Pages builds it (plain `hugo` v{{.CF_HUGO_VERSION}})'
