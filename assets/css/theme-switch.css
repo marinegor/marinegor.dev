@@ -9,7 +9,3 @@
   padding: 0;
   cursor: pointer;
 }
-
-.theme-switch:hover {
-  text-decoration: underline;
-}
