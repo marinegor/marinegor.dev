@@ -13,8 +13,10 @@
     const current = () =>
       els[0].classList.contains("dark") ? "dark"
         : els[0].classList.contains("light") ? "light" : "auto";
+    const label = btn.querySelector(".theme-label");
     const show = (m) => {
-      btn.textContent = "/" + m;
+      btn.dataset.mode = m; // selects the icon, see theme-switch.css
+      if (label) label.textContent = m;
       btn.setAttribute("aria-label", "colour theme: " + m + ", click to change");
     };
     btn.addEventListener("click", () => {

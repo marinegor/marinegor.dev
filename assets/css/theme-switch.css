@@ -1,5 +1,9 @@
 /* Theme switch button in the header menu (layouts/partials/header.html):
-   looks like the other /menu links. */
+   pushed to the right end of the menu, icon + label for the current mode. */
+
+.theme-switch-item {
+  margin-left: auto; /* header-menu is a flex row: push to the far right */
+}
 
 .theme-switch {
   font: inherit;
@@ -8,4 +12,23 @@
   border: none;
   padding: 0;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.theme-switch[hidden] {
+  display: none;
+}
+
+.theme-icon {
+  width: 1.1em;
+  height: 1.1em;
+  display: none;
+}
+
+.theme-switch[data-mode="auto"] .theme-icon-auto,
+.theme-switch[data-mode="light"] .theme-icon-light,
+.theme-switch[data-mode="dark"] .theme-icon-dark {
+  display: inline-block;
 }
