@@ -144,7 +144,8 @@ tasks:
         sh: command -v hugo
         msg: hugo not found in PATH, run `task hugo:install`
     cmds:
-      - hugo server --buildDrafts --buildFuture --disableFastRender {{.CLI_ARGS}}
+      # in memory, so it doesn't fight with `task build`/`task test` over public/
+      - hugo server --renderToMemory --buildDrafts --buildFuture --disableFastRender {{.CLI_ARGS}}
 
   build:
     desc: Production build into public/
@@ -324,6 +325,7 @@ tasks:
       - task: test:images
       - task: test:feed
       - task: test:sidetoc
+      - task: test:theme
       - task: test:cloudflare
 
   test:xml:
@@ -405,6 +407,17 @@ tasks:
       - 'grep -q "<details class=\"\\?sidetoc\"\\?>" {{.LONG_POST}} || { echo "no collapsed sidetoc in {{.LONG_POST}}"; exit 1; }'
       - '! grep -rlE "<details class=\"?sidetoc\"? open" {{.PUBLIC_DIR}} || { echo "sidetoc open by default in the files above"; exit 1; }'
       - '! grep -qE "class=\"?sidetoc\"?[ >]" {{.PUBLIC_DIR}}/index.html {{.PUBLIC_DIR}}/posts/index.html || { echo "sidetoc on a list page"; exit 1; }'
+
+  test:theme:
+    desc: 'Check the theme switch: "auto" by default, saved theme applied before first paint'
+    preconditions: [*python3, *built]
+    cmds:
+      - >
+        python3 scripts/check_theme.py
+        {{.PUBLIC_DIR}}/index.html
+        {{.PUBLIC_DIR}}/posts/index.html
+        {{.PUBLIC_DIR}}/posts/marimo/index.html
+        {{.PUBLIC_DIR}}/pages/cv/index.html
 
   test:cloudflare:
     desc: 'Check the site builds the way Cloudflare Pages builds it (plain `hugo` v{{.CF_HUGO_VERSION}})'

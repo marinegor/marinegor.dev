@@ -12,3 +12,8 @@
 {{ with resources.Get "css/sidetoc.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
 {{ end }}
+
+{{/* theme switch button, see partials/header.html */}}
+{{ with resources.Get "css/theme-switch.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
+{{ end }}

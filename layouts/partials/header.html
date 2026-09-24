@@ -1,0 +1,47 @@
+{{/* Header. Override (marinegor.dev) of typo's header.html: adds the theme
+     switch (script at the top + button at the end of the menu). */}}
+
+{{/* Theme switch, part 2/3: first thing inside <body>, before any content is
+     parsed, so <body> has the saved theme class before first paint. */}}
+<script>
+  (() => {
+    const c = document.documentElement.classList;
+    if (c.contains("light")) document.body.classList.add("light");
+    if (c.contains("dark")) document.body.classList.add("dark");
+  })();
+</script>
+
+<div class="header">
+
+    {{ if or (not (.Param "hideHeader")) .IsHome }}
+
+    <h1 class="header-title">
+        <a href="{{ site.BaseURL }}">{{ site.Title }}</a>
+    </h1>
+
+    <div class="header-menu">
+        {{ $currentPage := . }}
+
+        {{ with site.Params.menu }}
+        {{ range . }}
+
+        <p
+            class="small {{ if eq .name (lower $currentPage.Name) }} bold {{end}}">
+            <a href="{{ .url }}" {{ if and (isset . "newTab") .newTab
+                }}target="_blank" rel="noopener noreferrer" {{ end }}>
+                /{{.name }}
+            </a>
+        </p>
+        {{ end }}
+        {{ end }}
+
+        {{/* hidden until JS labels it: without JS it couldn't do anything */}}
+        <p class="small">
+            <button type="button" class="theme-switch" hidden
+                aria-label="colour theme" title="colour theme: auto / light / dark">/auto</button>
+        </p>
+    </div>
+
+    {{ end }}
+
+</div>
