@@ -1,6 +1,17 @@
 # Agent / contributor conventions for marinegor.dev
 
-Hugo site (theme: `themes/archie`, git submodule), deployed via Cloudflare Pages.
+Hugo site (theme: git submodule under `themes/`), deployed by Cloudflare Pages.
+
+## 0. Deployment: don't break Cloudflare
+
+- Cloudflare Pages builds `main` by itself with a plain `hugo`. There is no
+  deploy step in CI, and there's no `deploy` task on purpose.
+- Cloudflare's Hugo version is set in its dashboard, not in the repo. It's
+  mirrored in `Taskfile.yml` as `CF_HUGO_VERSION`. Any theme/config/content
+  change must pass `task test:cloudflare` (part of `task test`).
+- Hugo versions are not forward/backward compatible for themes. Never bump
+  `HUGO_VERSION`/`CF_HUGO_VERSION` or theme submodules without the user also
+  updating `HUGO_VERSION` in the Cloudflare dashboard.
 
 ## 1. Commit messages
 
@@ -8,7 +19,7 @@ Commits follow [commitizen / Conventional Commits](https://www.conventionalcommi
 for the header, and [Conventional Comments](https://conventionalcomments.org/)
 labels for the body.
 
-```
+```text
 <type>(<optional scope>): <short imperative summary, lowercase, no period>
 
 <label> [decorations]: <subject>
@@ -26,7 +37,7 @@ labels for the body.
 
 Example:
 
-```
+```text
 feat(marimo): add shortcode for embedding wasm notebooks
 
 note: notebooks are exported to static/notebooks/<slug>.html via `task marimo:export`
@@ -45,6 +56,10 @@ serve, deploy, tests, linting, formatting, exports, ...) must:
 2. be invoked from CI (GitHub Actions, Cloudflare Pages build command, etc.)
    **only** as `task <name>` — no inline multi-step shell logic in CI configs.
 
-If a CI step needs a tool, install it inside a Task (e.g. a `task install`
-dependency), and have CI install only `task` itself (e.g.
-`arduino/setup-task`).
+If a CI step needs a tool, install it inside a Task (e.g. `task setup`).
+CI may only provide base toolchains (`arduino/setup-task`, `astral-sh/setup-uv`).
+
+Every task must declare `preconditions` checking that the tools it calls
+exist in `PATH` (`command -v <tool>`), with a `msg` saying how to install them.
+Pinned tools go into `./.bin`, which tasks put first on `PATH` (this relies
+on the `ENV_PRECEDENCE` experiment enabled in `.taskrc.yml`).
