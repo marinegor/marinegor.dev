@@ -10,6 +10,10 @@ tag = 'tags'
 [pagination]
 pagerSize = 100
 
+[markup.tableOfContents]
+startLevel = 1 # many posts use `#` for their sections
+endLevel = 3
+
 [markup.highlight]
 noClasses = false # typo ships its own chroma css (light + dark)
 

@@ -1,0 +1,36 @@
+{{/* typo hook, rendered at the end of <body> */}}
+
+{{/* Right-side table of contents: collapsed until the reader opens it (the
+     choice is remembered in localStorage). Shown on pages with at least
+     3 TOC entries; `sidetoc: false` in front matter disables it. */}}
+{{- if and .IsPage (ne (.Param "sidetoc") false) }}
+{{- $toc := .TableOfContents }}
+{{- if ge (len (findRE `<li>` $toc)) 3 }}
+<details class="sidetoc">
+  <summary title="table of contents" aria-label="table of contents">contents</summary>
+  <div class="sidetoc-panel">
+    {{ $toc }}
+  </div>
+</details>
+<script>
+  (() => {
+    const toc = document.querySelector("details.sidetoc");
+    if (!toc) return;
+    const key = "sidetoc-open";
+    try {
+      toc.open = localStorage.getItem(key) === "1";
+      toc.addEventListener("toggle", () =>
+        localStorage.setItem(key, toc.open ? "1" : "0"),
+      );
+    } catch (_) {} // storage disabled: stays collapsed, still toggles
+    // on narrow screens the panel covers the text: close it after navigating
+    const narrow = matchMedia("(max-width: 1359px)");
+    toc.querySelectorAll("a").forEach((a) =>
+      a.addEventListener("click", () => {
+        if (narrow.matches) toc.open = false;
+      }),
+    );
+  })();
+</script>
+{{- end }}
+{{- end }}

@@ -7,3 +7,8 @@
 {{ with resources.Get "css/chroma.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
 {{ end }}
+
+{{/* right-side table of contents toggle, see hooks/body_end.html */}}
+{{ with resources.Get "css/sidetoc.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
+{{ end }}

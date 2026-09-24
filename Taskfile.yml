@@ -323,6 +323,7 @@ tasks:
       - task: test:files
       - task: test:images
       - task: test:feed
+      - task: test:sidetoc
       - task: test:cloudflare
 
   test:xml:
@@ -394,6 +395,16 @@ tasks:
     preconditions: [*python3, *built]
     cmds:
       - python3 scripts/check_feed.py {{.PUBLIC_DIR}}/index.xml {{.SITE_URL}} {{.RSS_SECTIONS}}
+
+  test:sidetoc:
+    desc: Check the right-side TOC toggle is on long posts, collapsed by default, and not on list pages
+    preconditions: [*built]
+    vars:
+      LONG_POST: '{{.PUBLIC_DIR}}/posts/gsoc-2023/mda_ugm_2023/index.html'
+    cmds:
+      - 'grep -q "<details class=\"\\?sidetoc\"\\?>" {{.LONG_POST}} || { echo "no collapsed sidetoc in {{.LONG_POST}}"; exit 1; }'
+      - '! grep -rlE "<details class=\"?sidetoc\"? open" {{.PUBLIC_DIR}} || { echo "sidetoc open by default in the files above"; exit 1; }'
+      - '! grep -qE "class=\"?sidetoc\"?[ >]" {{.PUBLIC_DIR}}/index.html {{.PUBLIC_DIR}}/posts/index.html || { echo "sidetoc on a list page"; exit 1; }'
 
   test:cloudflare:
     desc: 'Check the site builds the way Cloudflare Pages builds it (plain `hugo` v{{.CF_HUGO_VERSION}})'
