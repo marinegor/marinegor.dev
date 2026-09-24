@@ -2,6 +2,19 @@
 
 Hugo site (theme: git submodule under `themes/`), deployed by Cloudflare Pages.
 
+## Sandbox rules (hard constraints)
+
+- Work **only inside this repository directory**. Do not read/write/clone
+  into `/tmp`, `$HOME` or anywhere else; scratch files go into `.task/`
+  (gitignored) inside the repo.
+- Do **not** launch applications on the machine: no browsers (Chrome,
+  headless or not), no GUI apps, no Docker/containers, no VMs.
+- Do **not** start long-running/background processes (dev servers,
+  `python -m http.server`, `task serve`, ...). Verify via `task build` /
+  `task test` output and generated files instead; leave visual checks to the user.
+- Network use is limited to what the Taskfile does (downloading pinned tools,
+  `uvx`) and reading docs; `git push` only when explicitly asked.
+
 ## 0. Deployment: don't break Cloudflare
 
 - Cloudflare Pages builds `main` by itself with a plain `hugo`. There is no
