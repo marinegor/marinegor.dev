@@ -20,7 +20,7 @@ noClasses = false # typo ships its own chroma css (light + dark)
 [params]
 description = 'Website with code snippets, informal project descriptions, and some ranting when I get older'
 
-# Appearance: light/dark follows the OS, with a toggle
+# Appearance: 'auto' follows the OS (typo has no visitor-facing toggle); 'light'/'dark' force one
 theme = 'auto'
 colorPalette = 'default'
 hideHeader = false
