@@ -20,6 +20,10 @@ vars:
   # the Pages dashboard (Preview + Production). If you change one, change both.
   # `test:cloudflare` builds with exactly this version.
   CF_HUGO_VERSION: 0.166.0
+  # Chroma styles for code highlighting, see https://xyproto.github.io/splash/docs/
+  CHROMA_LIGHT: github
+  CHROMA_DARK: github-dark
+  CHROMA_CSS: assets/css/chroma.css
   # Files checked by linters
   MD_FILES: content README.md AGENTS.md
   SPELL_FILES: content README.md AGENTS.md hugo.toml basic-resume
@@ -144,6 +148,17 @@ tasks:
     cmds:
       - hugo --gc --minify --cleanDestinationDir --destination {{.PUBLIC_DIR}} {{.CLI_ARGS}}
 
+  chroma:
+    desc: 'Generate {{.CHROMA_CSS}} (code colours: {{.CHROMA_LIGHT}} light / {{.CHROMA_DARK}} dark)'
+    preconditions:
+      - *hugo
+      - &bash
+        sh: command -v bash
+        msg: bash not found in PATH
+    cmds:
+      - mkdir -p "$(dirname {{.CHROMA_CSS}})"
+      - bash scripts/gen-chroma-css.sh {{.CHROMA_LIGHT}} {{.CHROMA_DARK}} > {{.CHROMA_CSS}}
+
   clean:
     desc: Remove build artefacts
     cmds:
@@ -164,6 +179,17 @@ tasks:
     cmds:
       - task: lint:md
       - task: lint:spell
+      - task: lint:chroma
+
+  lint:chroma:
+    desc: 'Check {{.CHROMA_CSS}} is up to date with `task chroma`'
+    preconditions:
+      - *hugo
+      - *bash
+    cmds:
+      - mkdir -p .task
+      - bash scripts/gen-chroma-css.sh {{.CHROMA_LIGHT}} {{.CHROMA_DARK}} > .task/chroma.css
+      - 'diff -u {{.CHROMA_CSS}} .task/chroma.css || { echo "{{.CHROMA_CSS}} is stale, run: task chroma"; exit 1; }'
 
   lint:md:
     desc: Lint markdown with rumdl (config in .rumdl.toml)
