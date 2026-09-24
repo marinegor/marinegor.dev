@@ -10,12 +10,26 @@ Run `task --list` to see all tasks.
 ```text
 task setup    # init theme submodule, install pinned hugo + lychee into ./.bin
 task serve    # dev server on http://localhost:1313 (drafts visible)
-task lint     # markdown lint (rumdl) + spell check (typos)
-task fix      # auto-fix what `lint` complains about
+task lint     # rumdl, typos, ruff, ty, marimo check, generated-file freshness
+task fix      # auto-fix what `lint` complains about (incl. ruff format)
 task test     # build + validate feeds, internal links, cv.pdf, Cloudflare build
 task ci       # setup + lint + test, what GitHub Actions runs
 task cv       # render static/cv.pdf from basic-resume/main.typ (typst)
+task chroma   # regenerate code-highlighting colours (assets/css/chroma.css)
 ```
+
+## marimo notebooks
+
+Notebooks live in `notebooks/` (PEP 723 scripts) and are served as-is under
+`/notebooks/`. To embed one in a post:
+
+```text
+task marimo -- notebooks/foo.py   # edit interactively, with its own dependencies
+task marimo:embed                 # after editing: refresh data/marimo/*.json
+```
+
+and in markdown: `{{</* marimo "foo" */>}}`. The build fails if
+`data/marimo/foo.json` is stale.
 
 Hugo and lychee are installed into `./.bin` at pinned versions, and tasks put
 `./.bin` first on `PATH` (see `.taskrc.yml`). `uvx` ([uv](https://docs.astral.sh/uv/))

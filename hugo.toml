@@ -96,3 +96,14 @@ url = "/tags"
 [[params.menu]]
 name = "pages"
 url = "/pages"
+
+# Serve ./notebooks (marimo notebooks, PEP 723 scripts) as-is under /notebooks/.
+# Defining mounts replaces the default static mount, so re-add it.
+[[module.mounts]]
+source = "static"
+target = "static"
+
+[[module.mounts]]
+source = "notebooks"
+target = "static/notebooks"
+files = ["! **/__marimo__/**", "! **/__pycache__/**", "! **.md"]
