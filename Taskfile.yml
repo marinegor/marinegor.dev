@@ -35,6 +35,7 @@ vars:
   TYPOS: typos@1.50.2
   MARIMO: marimo@0.25.0
   COMMITIZEN: commitizen@4.19.0
+  OPENSPEC: '@fission-ai/openspec@1.13.0'
   # Files checked by linters
   MD_FILES: content README.md AGENTS.md
   SPELL_FILES: content README.md AGENTS.md hugo.toml basic-resume notebooks
@@ -201,6 +202,7 @@ tasks:
       - task: lint:ty
       - task: lint:marimo
       - task: lint:marimo-embed
+      - task: lint:openspec
 
   lint:py:
     desc: Lint and check formatting of python with ruff (config in ruff.toml)
@@ -224,6 +226,14 @@ tasks:
         cmd: |
           uv sync --quiet --script {{.ITEM}}
           uvx {{.TY}} check --python "$(uv python find --script {{.ITEM}})" {{.ITEM}}
+
+  lint:openspec:
+    desc: Validate openspec specs and changes (strict)
+    preconditions:
+      - sh: command -v npx
+        msg: npx not found in PATH, install node.js
+    cmds:
+      - npx --yes {{.OPENSPEC}} validate --all --strict --no-interactive
 
   lint:marimo-embed:
     desc: 'Check data/marimo/*.json is up to date with `task marimo:embed`'
