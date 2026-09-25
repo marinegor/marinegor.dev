@@ -1,0 +1,100 @@
+/* Search box in the header menu (layouts/partials/header.html,
+   assets/js/search.js). */
+
+.search-item {
+  margin-left: auto; /* header-menu is a flex row: search + theme switch on the right */
+  align-self: center;
+}
+
+.site-search {
+  position: relative;
+  margin: 0;
+}
+
+.site-search input[type="search"] {
+  font: inherit;
+  color: inherit;
+  width: 11em;
+  padding: 0.15em 0.5em;
+  background: var(--background);
+  border: 1px solid var(--code-border);
+  border-radius: 6px;
+}
+
+.site-search input[type="search"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.search-results {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  z-index: 20;
+  width: min(30rem, 90vw);
+  max-height: 70vh;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.3rem;
+  list-style: none;
+  background: var(--background);
+  border: 1px solid var(--code-border);
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.15);
+}
+
+.search-results li {
+  margin: 0;
+}
+
+.search-results a {
+  display: block;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.search-results a.selected,
+.search-results a:hover {
+  background: var(--code-background);
+}
+
+.search-results a:hover .search-title,
+.search-results a.selected .search-title {
+  color: var(--accent);
+}
+
+.search-title {
+  font-weight: bold;
+}
+
+.search-snippet {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.9em;
+  color: var(--content-secondary);
+}
+
+.search-empty {
+  padding: 0.4rem 0.6rem;
+  color: var(--content-secondary);
+}
+
+@media (max-width: 600px) {
+  .search-item {
+    margin-left: 0;
+    flex-basis: 100%;
+    order: 99; /* own row under the menu on phones */
+  }
+
+  .site-search input[type="search"] {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .search-results {
+    left: 0;
+    width: auto;
+  }
+}

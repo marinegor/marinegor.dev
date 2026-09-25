@@ -53,6 +53,13 @@ section and tag has its own feed too, e.g. `/til/index.xml`,
 `/tags/python/index.xml`. Embeds like marimo notebooks become links in feeds.
 `task test:feed` checks the main feed.
 
+## Search
+
+The header search box searches `/search.json`, which Hugo builds
+(`layouts/home.searchindex.json`), in the browser with `assets/js/search.js`.
+Press `/` to focus it. Without JS it falls back to a DuckDuckGo site search.
+`task test:search` checks the index and the ranking.
+
 ## CV
 
 `static/cv.pdf` (served at `/cv.pdf`) is rendered from `basic-resume/main.typ`

@@ -10,6 +10,17 @@ tag = 'tags'
 [pagination]
 pagerSize = 100
 
+# Site search: a JSON index at /search.json (layouts/home.searchindex.json),
+# searched in the browser by assets/js/search.js
+[outputFormats.SearchIndex]
+mediaType = "application/json"
+baseName = "search"
+isPlainText = true
+notAlternative = true
+
+[outputs]
+home = ["HTML", "RSS", "SearchIndex"]
+
 [markup.tableOfContents]
 startLevel = 1 # many posts use `#` for their sections
 endLevel = 3

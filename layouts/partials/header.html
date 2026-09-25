@@ -1,5 +1,5 @@
 {{/* Header. Override (marinegor.dev) of typo's header.html: adds the theme
-     switch (script at the top + button at the end of the menu). */}}
+     switch (script at the top + button at the end of the menu) and the search box. */}}
 
 {{/* Theme switch, part 2/3: first thing inside <body>, before any content is
      parsed, so <body> has the saved theme class before first paint. */}}
@@ -34,6 +34,20 @@
         </p>
         {{ end }}
         {{ end }}
+
+        {{/* Site search (assets/js/search.js). Without JS it's a plain form
+             that searches this site on DuckDuckGo. <div>, not <p>: a <form>
+             can't live inside a <p>. */}}
+        <div class="small search-item">
+            <form class="site-search" role="search" action="https://duckduckgo.com/" method="get"
+                data-index="{{ "search.json" | relURL }}">
+                <input type="search" name="q" placeholder="search  /" aria-label="search this site"
+                    autocomplete="off" spellcheck="false"
+                    aria-controls="search-results" aria-expanded="false">
+                <input type="hidden" name="sites" value="{{ (urls.Parse site.BaseURL).Host }}">
+                <ul id="search-results" class="search-results" hidden></ul>
+            </form>
+        </div>
 
         {{/* hidden until JS labels it: without JS it couldn't do anything.
              data-mode (set by JS) picks which icon is shown, see theme-switch.css */}}

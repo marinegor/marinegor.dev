@@ -327,6 +327,7 @@ tasks:
       - task: test:feed
       - task: test:sidetoc
       - task: test:theme
+      - task: test:search
       - task: test:cloudflare
 
   test:xml:
@@ -421,6 +422,15 @@ tasks:
         {{.PUBLIC_DIR}}/posts/index.html
         {{.PUBLIC_DIR}}/posts/marimo/index.html
         {{.PUBLIC_DIR}}/pages/cv/index.html
+
+  test:search:
+    desc: Check the search index (/search.json) and the search logic (assets/js/search.js)
+    preconditions:
+      - sh: command -v node
+        msg: node not found in PATH, install node.js
+      - *built
+    cmds:
+      - node scripts/test_search.js {{.PUBLIC_DIR}}
 
   test:cloudflare:
     desc: 'Check the site builds the way Cloudflare Pages builds it (plain `hugo` v{{.CF_HUGO_VERSION}})'
