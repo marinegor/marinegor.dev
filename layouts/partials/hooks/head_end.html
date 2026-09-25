@@ -6,6 +6,7 @@
      - sidetoc.css:      right-side table of contents (hooks/body_end.html)
      - theme-switch.css: auto/light/dark button (partials/header.html)
      - feed.css:         section labels in the home page feed (partials/post-entry.html)
+     - publications.css: publications list (publications/list.html)
      - accent.css:       orange link underline + hover colour (last, so it wins) */}}
 {{ $css := slice
   (resources.Get "css/code.css")
@@ -13,6 +14,7 @@
   (resources.Get "css/sidetoc.css")
   (resources.Get "css/theme-switch.css")
   (resources.Get "css/feed.css")
+  (resources.Get "css/publications.css")
   (resources.Get "css/accent.css")
 }}
 {{ with $css | resources.Concat "css/site.css" | minify | fingerprint }}

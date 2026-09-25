@@ -43,11 +43,12 @@ singleDateFormat = '2 Jan 2006'
 # "Feed": sections listed on the home page *and* in the main RSS feed
 # (/index.xml, full text), see layouts/_default/{home.html,rss.xml}.
 # Keep in sync with FEED_SECTIONS in Taskfile.yml.
-feedSections = ['posts', 'til']
+feedSections = ['posts', 'til', 'publications']
 # labels shown next to entries in the home page feed
 [params.sectionLabels]
 posts = 'post'
 til = 'til'
+publications = 'paper'
 
 # KaTeX on every page ($...$ and $$...$$)
 math = true
@@ -100,19 +101,13 @@ url = "/til"
 
 [[params.menu]]
 name = "publications"
-url = "/pages/publications"
+url = "/publications"
 
 [[params.menu]]
 name = "cv"
 url = "/pages/cv"
 
-[[params.menu]]
-name = "tags"
-url = "/tags"
 
-[[params.menu]]
-name = "pages"
-url = "/pages"
 
 # Serve ./notebooks (marimo notebooks, PEP 723 scripts) as-is under /notebooks/.
 # Defining mounts replaces the default static mount, so re-add it.
