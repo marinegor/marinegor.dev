@@ -1,0 +1,16 @@
+{{- /* Search index for assets/js/search.js: every regular page, with plain
+       text content (capped per page to keep the index small). */ -}}
+{{- $labels := site.Params.sectionLabels | default dict -}}
+{{- $pages := slice -}}
+{{- range site.RegularPages -}}
+  {{- $pages = $pages | append (dict
+    "t" .Title
+    "u" .RelPermalink
+    "s" (index $labels .Section | default .Section)
+    "d" (.Date.Format "2006-01-02")
+    "desc" (.Description | plainify)
+    "tags" (.Params.tags | default slice)
+    "c" (.Plain | truncate 20000 "")
+  ) -}}
+{{- end -}}
+{{- $pages | jsonify -}}

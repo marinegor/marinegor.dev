@@ -1,0 +1,72 @@
+{{/* typo hook, rendered at the end of <body> */}}
+
+{{/* Theme switch, part 3/3: the button cycles auto -> light -> dark. "auto"
+     follows the OS and is the default; the choice is saved in localStorage.
+     Parts 1-2 (no-flash apply on load) are in hooks/head_start.html and
+     partials/header.html. */}}
+<script>
+  (() => {
+    const btn = document.querySelector("button.theme-switch");
+    if (!btn) return;
+    const modes = ["auto", "light", "dark"];
+    const els = [document.documentElement, document.body];
+    const current = () =>
+      els[0].classList.contains("dark") ? "dark"
+        : els[0].classList.contains("light") ? "light" : "auto";
+    const label = btn.querySelector(".theme-label");
+    const show = (m) => {
+      btn.dataset.mode = m; // selects the icon, see theme-switch.css
+      if (label) label.textContent = m;
+      btn.setAttribute("aria-label", "colour theme: " + m + ", click to change");
+    };
+    btn.addEventListener("click", () => {
+      const next = modes[(modes.indexOf(current()) + 1) % modes.length];
+      for (const el of els) {
+        el.classList.remove("light", "dark");
+        if (next !== "auto") el.classList.add(next);
+      }
+      try {
+        if (next === "auto") localStorage.removeItem("theme");
+        else localStorage.setItem("theme", next);
+      } catch (_) {}
+      show(next);
+    });
+    show(current());
+    btn.hidden = false;
+  })();
+</script>
+
+{{/* Right-side table of contents: collapsed until the reader opens it (the
+     choice is remembered in localStorage). Shown on pages with at least
+     3 TOC entries; `sidetoc: false` in front matter disables it. */}}
+{{- if and .IsPage (ne (.Param "sidetoc") false) }}
+{{- $toc := .TableOfContents }}
+{{- if ge (len (findRE `<li>` $toc)) 3 }}
+<details class="sidetoc">
+  <summary title="table of contents" aria-label="table of contents">contents</summary>
+  <div class="sidetoc-panel">
+    {{ $toc }}
+  </div>
+</details>
+<script>
+  (() => {
+    const toc = document.querySelector("details.sidetoc");
+    if (!toc) return;
+    const key = "sidetoc-open";
+    try {
+      toc.open = localStorage.getItem(key) === "1";
+      toc.addEventListener("toggle", () =>
+        localStorage.setItem(key, toc.open ? "1" : "0"),
+      );
+    } catch (_) {} // storage disabled: stays collapsed, still toggles
+    // on narrow screens the panel covers the text: close it after navigating
+    const narrow = matchMedia("(max-width: 1359px)");
+    toc.querySelectorAll("a").forEach((a) =>
+      a.addEventListener("click", () => {
+        if (narrow.matches) toc.open = false;
+      }),
+    );
+  })();
+</script>
+{{- end }}
+{{- end }}

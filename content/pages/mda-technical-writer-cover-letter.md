@@ -10,7 +10,6 @@ tags:
     - technical writing
 ---
 
-
 Dear MDAnalysis core team,
 
 My name is Egor Marin. You might remember me from the Google Summer of Code 2023 program, where I contributed "Parallelization for `AnalysisBase`" and presented it later at the UGM 2023.

@@ -1,0 +1,14 @@
+/* Publications list (layouts/publications/list.html). */
+
+.publications .pub-year {
+  margin-top: 2.5rem;
+}
+
+.publications .pub-title {
+  font-size: var(--p-font-size);
+  margin-bottom: 0.25rem;
+}
+
+.publications .pub p {
+  margin-top: 0.25rem;
+}

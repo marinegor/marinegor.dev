@@ -1,0 +1,24 @@
+{{- /* Publications list (content/publications/): grouped by year, each with its
+       paper link and comment, like the old single publications page. Every
+       publication is also its own page, so it shows up in the feed/RSS. */ -}}
+{{ define "main" }}
+
+<div class="list-container publications">
+
+    {{ partial "breadcrumbs.html" . }}
+
+    <h1>{{ .Title }}</h1>
+    {{ .Content }}
+
+    {{ range .Pages.GroupByDate "2006" }}
+    <h2 class="pub-year" id="{{ .Key }}">{{ .Key }}</h2>
+    {{ range .Pages }}
+    <article class="pub">
+        <h3 class="pub-title" id="{{ .File.ContentBaseName }}"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+        {{ .Content }}
+    </article>
+    {{ end }}
+    {{ end }}
+
+</div>
+{{ end }}

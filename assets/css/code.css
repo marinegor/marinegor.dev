@@ -1,0 +1,16 @@
+/* Code blocks: a bit smaller and less bulky than typo's defaults. */
+
+:root {
+  --code-block-font-size: 0.78em; /* typo: 0.9em (~14.4px) -> ~12.5px */
+  --code-padding: 1rem 1.25rem;   /* typo: 1.5rem */
+}
+
+pre code {
+  font-size: var(--code-block-font-size);
+}
+
+pre {
+  line-height: 1.45;
+  tab-size: 4; /* any tab left in code renders as 4 spaces */
+  -moz-tab-size: 4;
+}

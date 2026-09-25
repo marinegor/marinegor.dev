@@ -1,0 +1,476 @@
+# https://taskfile.dev
+#
+# Every routine/CI action for this repo lives here; CI must call these
+# only via `task <name>` (see AGENTS.md).
+#
+# Tools are installed into ./.bin (pinned versions) and put first on PATH,
+# so `task` behaves the same locally and in CI.
+version: '3'
+
+vars:
+  # Keep equal to CF_HUGO_VERSION unless deliberately testing an upgrade.
+  HUGO_VERSION: 0.166.0
+  LYCHEE_VERSION: 0.24.2
+  BIN_DIR: '{{.ROOT_DIR}}/.bin'
+  PUBLIC_DIR: public
+  SITE_URL: https://marinegor.dev
+  # sections in the home page feed + main RSS feed; keep in sync with
+  # params.feedSections in hugo.toml
+  FEED_SECTIONS: posts til publications
+  # Cloudflare Pages (project marinegor-nl) builds `main` by itself (no CI
+  # involved) with `hugo`, using HUGO_VERSION from the Pages dashboard, or the
+  # build image default (v2: 0.118.2, v3: 0.147.7). Must equal HUGO_VERSION in
+  # the Pages dashboard (Preview + Production). If you change one, change both.
+  # `test:cloudflare` builds with exactly this version.
+  CF_HUGO_VERSION: 0.166.0
+  # Chroma styles for code highlighting, see https://xyproto.github.io/splash/docs/
+  CHROMA_LIGHT: github
+  CHROMA_DARK: github-dark
+  CHROMA_CSS: assets/css/chroma.css
+  # Pinned versions of tools run via uvx (bump deliberately; ruff's markdown
+  # formatting is a preview feature and may change between releases)
+  RUFF: ruff@0.16.3
+  TY: ty@0.0.72
+  RUMDL: rumdl@0.2.77
+  TYPOS: typos@1.50.2
+  MARIMO: marimo@0.25.0
+  COMMITIZEN: commitizen@4.19.0
+  OPENSPEC: '@fission-ai/openspec@1.13.0'
+  # Files checked by linters
+  MD_FILES: content README.md AGENTS.md
+  SPELL_FILES: content README.md AGENTS.md hugo.toml basic-resume notebooks
+  PY_DIRS: notebooks scripts
+  # marimo notebooks: PEP 723 scripts, served as-is under /notebooks/
+  NOTEBOOKS:
+    sh: find notebooks -name '*.py' -not -path '*/__marimo__/*' | sort | tr '\n' ' '
+  # Commits checked by `lint:commits` (only the ones not yet on main)
+  COMMIT_RANGE: origin/main..HEAD
+
+env:
+  PATH: '{{.BIN_DIR}}:{{.PATH}}'
+
+tasks:
+  default:
+    desc: List all tasks
+    silent: true
+    cmds:
+      - task --list
+
+  # ---------------------------------------------------------------- setup
+
+  setup:
+    desc: Install everything needed to build, lint and test the site
+    cmds:
+      - task: submodules
+      - task: hugo:install
+      - task: lychee:install
+
+  submodules:
+    desc: Initialise/update git submodules (the theme)
+    preconditions:
+      - sh: command -v git
+        msg: git is not installed
+    status:
+      - test -z "$(git submodule status --recursive | grep '^-')"
+    cmds:
+      - git submodule update --init --recursive
+
+  hugo:install:
+    desc: 'Install hugo extended into .bin/ (default v{{.HUGO_VERSION}}; `task hugo:install VERSION=x.y.z` for others)'
+    preconditions: &download-tools
+      - sh: command -v curl
+        msg: curl is not installed
+      - sh: command -v tar
+        msg: tar is not installed
+    vars:
+      VERSION: '{{.VERSION | default .HUGO_VERSION}}'
+      DEST: '{{.BIN_DIR}}/hugo-{{.VERSION}}'
+      URL: https://github.com/gohugoio/hugo/releases/download/v{{.VERSION}}
+      ARCH: '{{if eq ARCH "arm64"}}arm64{{else}}amd64{{end}}'
+      # darwin release asset format changed from .tar.gz to .pkg around v0.153
+      DARWIN_PKG:
+        sh: 'printf "%s\n%s\n" 0.153.0 "{{.VERSION}}" | sort -V -C && echo true || echo false'
+    status:
+      - '"{{.DEST}}" version | grep -q "v{{.VERSION}}-"'
+      - '{{if eq .VERSION .HUGO_VERSION}}test "$(readlink "{{.BIN_DIR}}/hugo")" = "hugo-{{.VERSION}}"{{else}}true{{end}}'
+    cmds:
+      - mkdir -p "{{.BIN_DIR}}"
+      - cmd: |
+          set -eu
+          tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+          {{if eq .DARWIN_PKG "true" -}}
+          curl -fsSL -o "$tmp/hugo.pkg" "{{.URL}}/hugo_extended_{{.VERSION}}_darwin-universal.pkg"
+          pkgutil --expand-full "$tmp/hugo.pkg" "$tmp/x"
+          install -m 0755 "$tmp/x/Payload/hugo" "{{.DEST}}"
+          {{- else -}}
+          curl -fsSL "{{.URL}}/hugo_extended_{{.VERSION}}_darwin-universal.tar.gz" | tar -xz -C "$tmp" hugo
+          install -m 0755 "$tmp/hugo" "{{.DEST}}"
+          {{- end}}
+        platforms: [darwin]
+      - cmd: |
+          set -eu
+          tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+          curl -fsSL "{{.URL}}/hugo_extended_{{.VERSION}}_linux-{{.ARCH}}.tar.gz" | tar -xz -C "$tmp" hugo
+          install -m 0755 "$tmp/hugo" "{{.DEST}}"
+        platforms: [linux]
+      # only the pinned version becomes the default `hugo`
+      - '{{if eq .VERSION .HUGO_VERSION}}ln -sf "hugo-{{.VERSION}}" "{{.BIN_DIR}}/hugo"{{end}}'
+      - '"{{.DEST}}" version'
+
+  lychee:install:
+    desc: 'Install lychee v{{.LYCHEE_VERSION}} (link checker) into .bin/'
+    preconditions: *download-tools
+    status:
+      - '"{{.BIN_DIR}}/lychee" --version | grep -q "{{.LYCHEE_VERSION}}"'
+    vars:
+      TARGET: >-
+        {{- if eq OS "darwin" -}}
+          {{- if eq ARCH "arm64"}}aarch64{{else}}x86_64{{end}}-apple-darwin
+        {{- else -}}
+          {{- if eq ARCH "arm64"}}aarch64{{else}}x86_64{{end}}-unknown-linux-gnu
+        {{- end -}}
+    cmds:
+      - mkdir -p "{{.BIN_DIR}}"
+      - >
+        curl -fsSL "https://github.com/lycheeverse/lychee/releases/download/lychee-v{{.LYCHEE_VERSION}}/lychee-{{.TARGET}}.tar.gz"
+        | tar -xz -C "{{.BIN_DIR}}" --strip-components=1 "lychee-{{.TARGET}}/lychee"
+      - lychee --version
+
+  # ---------------------------------------------------------------- hugo
+
+  serve:
+    desc: Local dev server on http://localhost:1313 (drafts + future posts visible)
+    deps: [submodules]
+    preconditions:
+      - &hugo
+        sh: command -v hugo
+        msg: hugo not found in PATH, run `task hugo:install`
+    cmds:
+      # in memory, so it doesn't fight with `task build`/`task test` over public/
+      - hugo server --renderToMemory --buildDrafts --buildFuture --disableFastRender {{.CLI_ARGS}}
+
+  build:
+    desc: Production build into public/
+    deps: [submodules]
+    preconditions: [*hugo]
+    sources:
+      - hugo.toml
+      - content/**/*
+      - layouts/**/*
+      - static/**/*
+      - assets/**/*
+      - themes/**/*
+    generates:
+      - '{{.PUBLIC_DIR}}/index.html'
+    cmds:
+      - hugo --gc --minify --cleanDestinationDir --destination {{.PUBLIC_DIR}} {{.CLI_ARGS}}
+
+  chroma:
+    desc: 'Generate {{.CHROMA_CSS}} (code colours: {{.CHROMA_LIGHT}} light / {{.CHROMA_DARK}} dark)'
+    preconditions:
+      - *hugo
+      - &bash
+        sh: command -v bash
+        msg: bash not found in PATH
+    cmds:
+      - mkdir -p "$(dirname {{.CHROMA_CSS}})"
+      - bash scripts/gen-chroma-css.sh {{.CHROMA_LIGHT}} {{.CHROMA_DARK}} > {{.CHROMA_CSS}}
+
+  clean:
+    desc: Remove build artefacts
+    cmds:
+      - rm -rf {{.PUBLIC_DIR}} resources/_gen .hugo_build.lock
+
+  new:
+    desc: 'Create new content, e.g. `task new -- posts/my-post.md`'
+    preconditions: [*hugo]
+    requires:
+      vars: [CLI_ARGS]
+    cmds:
+      - hugo new content {{.CLI_ARGS}}
+
+  # ---------------------------------------------------------------- lint / fix
+
+  lint:
+    desc: Run all linters (read-only)
+    cmds:
+      - task: lint:md
+      - task: lint:md-code
+      - task: lint:spell
+      - task: lint:chroma
+      - task: lint:py
+      - task: lint:ty
+      - task: lint:marimo
+      - task: lint:marimo-embed
+      - task: lint:openspec
+
+  lint:py:
+    desc: Lint and check formatting of python with ruff (config in ruff.toml)
+    preconditions:
+      - &uvx
+        sh: command -v uvx
+        msg: uvx not found in PATH, install uv (https://docs.astral.sh/uv/)
+    cmds:
+      - uvx {{.RUFF}} check {{.PY_DIRS}}
+      - uvx {{.RUFF}} format --check {{.PY_DIRS}}
+
+  lint:ty:
+    desc: Type-check each notebook with ty, in its own PEP 723 environment
+    preconditions:
+      - *uvx
+      - &uv
+        sh: command -v uv
+        msg: uv not found in PATH, install uv (https://docs.astral.sh/uv/)
+    cmds:
+      - for: { var: NOTEBOOKS }
+        cmd: |
+          uv sync --quiet --script {{.ITEM}}
+          uvx {{.TY}} check --python "$(uv python find --script {{.ITEM}})" {{.ITEM}}
+
+  lint:openspec:
+    desc: Validate openspec specs and changes (strict)
+    preconditions:
+      - sh: command -v npx
+        msg: npx not found in PATH, install node.js
+    cmds:
+      - npx --yes {{.OPENSPEC}} validate --all --strict --no-interactive
+
+  lint:marimo-embed:
+    desc: 'Check data/marimo/*.json is up to date with `task marimo:embed`'
+    preconditions: [*uv]
+    cmds:
+      - rm -rf .task/marimo && uv run --quiet --script scripts/marimo_embed.py .task/marimo {{.NOTEBOOKS}} >/dev/null
+      - 'diff -ru data/marimo .task/marimo || { echo "data/marimo is stale, run: task marimo:embed"; exit 1; }'
+
+  lint:marimo:
+    desc: Check notebooks with marimo's own linter (`marimo check`)
+    preconditions: [*uvx]
+    cmds:
+      - uvx {{.MARIMO}} check --strict {{.NOTEBOOKS}}
+
+  lint:chroma:
+    desc: 'Check {{.CHROMA_CSS}} is up to date with `task chroma`'
+    preconditions:
+      - *hugo
+      - *bash
+    cmds:
+      - mkdir -p .task
+      - bash scripts/gen-chroma-css.sh {{.CHROMA_LIGHT}} {{.CHROMA_DARK}} > .task/chroma.css
+      - 'diff -u {{.CHROMA_CSS}} .task/chroma.css || { echo "{{.CHROMA_CSS}} is stale, run: task chroma"; exit 1; }'
+
+  lint:md:
+    desc: Lint markdown with rumdl (config in .rumdl.toml; incl. no tabs in code blocks)
+    preconditions: [*uvx]
+    cmds:
+      - uvx {{.RUMDL}} check {{.MD_FILES}}
+
+  lint:md-code:
+    desc: Check python code blocks in markdown are ruff-formatted (where parseable)
+    preconditions: [*uvx]
+    cmds:
+      - uvx {{.RUFF}} format --preview --check {{.MD_FILES}}
+
+  lint:spell:
+    desc: Check spelling with typos (config in _typos.toml)
+    preconditions: [*uvx]
+    cmds:
+      - uvx {{.TYPOS}} {{.SPELL_FILES}}
+
+  lint:commits:
+    desc: 'Check commit messages in {{.COMMIT_RANGE}} follow commitizen/conventional commits'
+    preconditions:
+      - *uvx
+      - sh: command -v git
+        msg: git is not installed
+    cmds:
+      - uvx --from {{.COMMITIZEN}} cz check --rev-range {{.COMMIT_RANGE}}
+
+  fix:
+    desc: Auto-fix markdown formatting and spelling
+    preconditions: [*uvx]
+    cmds:
+      # markdown first (incl. tabs -> 4 spaces in code blocks), so that ruff can
+      # then parse and format python code blocks that had tabs
+      - uvx {{.RUMDL}} fmt {{.MD_FILES}}
+      - uvx {{.RUFF}} format --preview {{.MD_FILES}}
+      - uvx {{.TYPOS}} --write-changes {{.SPELL_FILES}}
+      - uvx {{.RUFF}} check --fix {{.PY_DIRS}}
+      - uvx {{.RUFF}} format {{.PY_DIRS}}
+
+  format:
+    desc: Format python with ruff (subset of `fix`)
+    preconditions: [*uvx]
+    cmds:
+      - uvx {{.RUFF}} format {{.PY_DIRS}}
+
+  # ---------------------------------------------------------------- marimo
+
+  marimo:embed:
+    desc: Precompute embed data (data/marimo/*.json) for the `marimo` shortcode
+    preconditions: [*uv]
+    cmds:
+      - uv run --quiet --script scripts/marimo_embed.py data/marimo {{.NOTEBOOKS}}
+
+  marimo:
+    desc: 'Edit a notebook interactively with its own dependencies: `task marimo -- notebooks/foo.py`'
+    interactive: true
+    requires:
+      vars: [CLI_ARGS]
+    preconditions:
+      - *uvx
+      - *uv # --sandbox uses uv to build the notebook's PEP 723 environment
+      - sh: test -f "{{.CLI_ARGS}}"
+        msg: 'no such notebook: {{.CLI_ARGS}}'
+    cmds:
+      - uvx {{.MARIMO}} edit --sandbox "{{.CLI_ARGS}}"
+
+  # ---------------------------------------------------------------- test
+
+  test:
+    desc: Build the site and validate the output
+    cmds:
+      - task: build
+      - task: test:xml
+      - task: test:links
+      - task: test:files
+      - task: test:images
+      - task: test:feed
+      - task: test:sidetoc
+      - task: test:theme
+      - task: test:search
+      - task: test:cloudflare
+
+  test:xml:
+    desc: Validate generated RSS feed and sitemap
+    preconditions:
+      - sh: command -v python3
+        msg: python3 not found in PATH
+      - sh: test -f {{.PUBLIC_DIR}}/index.html
+        msg: no build output, run `task build` first
+    cmds:
+      # well-formedness check of every generated feed + the sitemap
+      - >
+        find {{.PUBLIC_DIR}} -name '*.xml' -print0
+        | xargs -0 python3 -c 'import sys, xml.dom.minidom as m; [m.parse(f) for f in sys.argv[1:]]; print(f"{len(sys.argv)-1} xml files OK")'
+
+  test:links:
+    desc: Check all internal links in the built site (offline, no network)
+    preconditions:
+      - sh: command -v lychee
+        msg: lychee not found in PATH, run `task lychee:install`
+      - sh: test -f {{.PUBLIC_DIR}}/index.html
+        msg: no build output, run `task build` first
+    vars:
+      ROOT: '{{.ROOT_DIR}}/{{.PUBLIC_DIR}}'
+    cmds:
+      # absolute links to the site itself are remapped onto the local build
+      - >
+        lychee --offline --no-progress --include-fragments --index-files index.html
+        --root-dir "{{.ROOT}}"
+        --remap '^{{.SITE_URL}}/(.*)$ file://{{.ROOT}}/$1'
+        '{{.PUBLIC_DIR}}/**/*.html'
+
+  test:links:external:
+    desc: Check external links in the built site (needs network; not run in CI, flaky by nature)
+    preconditions:
+      - sh: command -v lychee
+        msg: lychee not found in PATH, run `task lychee:install`
+      - sh: test -f {{.PUBLIC_DIR}}/index.html
+        msg: no build output, run `task build` first
+    cmds:
+      - lychee --no-progress --max-concurrency 8 --exclude '^{{.SITE_URL}}' '{{.PUBLIC_DIR}}/**/*.html'
+
+  test:files:
+    desc: Check that files/URLs we promise to serve exist in the build
+    preconditions:
+      - sh: test -f {{.PUBLIC_DIR}}/index.html
+        msg: no build output, run `task build` first
+    cmds:
+      - for: [cv.pdf, cv/index.html, pages/cv/index.html, index.xml, favicon.ico, publications/index.html, pages/publications/index.html]
+        cmd: test -f "{{.PUBLIC_DIR}}/{{.ITEM}}" || { echo "missing {{.PUBLIC_DIR}}/{{.ITEM}}"; exit 1; }
+      # every notebook is served as-is
+      - for: { var: NOTEBOOKS }
+        cmd: cmp -s "{{.ITEM}}" "{{.PUBLIC_DIR}}/{{.ITEM}}" || { echo "{{.ITEM}} not served at /{{.ITEM}}"; exit 1; }
+
+  test:images:
+    desc: Check every image referenced in content is rendered as an <img>
+    preconditions:
+      - &python3
+        sh: command -v python3
+        msg: python3 not found in PATH
+      - &built
+        sh: test -f {{.PUBLIC_DIR}}/index.html
+        msg: no build output, run `task build` first
+    cmds:
+      - python3 scripts/check_images.py content {{.PUBLIC_DIR}}
+
+  test:feed:
+    desc: 'Check the home page feed and main RSS feed: same entries, only {{.FEED_SECTIONS}}, full content, absolute URLs, no iframes'
+    preconditions: [*python3, *built]
+    cmds:
+      - python3 scripts/check_feed.py {{.PUBLIC_DIR}}/index.xml {{.SITE_URL}} {{.FEED_SECTIONS}}
+      # the home page "Feed" lists exactly the same entries as the RSS feed
+      - python3 scripts/check_home_feed.py {{.PUBLIC_DIR}}/index.html {{.PUBLIC_DIR}}/index.xml {{.SITE_URL}}
+
+  test:sidetoc:
+    desc: Check the right-side TOC toggle is on long posts, collapsed by default, and not on list pages
+    preconditions: [*built]
+    vars:
+      LONG_POST: '{{.PUBLIC_DIR}}/posts/gsoc-2023/mda_ugm_2023/index.html'
+    cmds:
+      - 'grep -q "<details class=\"\\?sidetoc\"\\?>" {{.LONG_POST}} || { echo "no collapsed sidetoc in {{.LONG_POST}}"; exit 1; }'
+      - '! grep -rlE "<details class=\"?sidetoc\"? open" {{.PUBLIC_DIR}} || { echo "sidetoc open by default in the files above"; exit 1; }'
+      - '! grep -qE "class=\"?sidetoc\"?[ >]" {{.PUBLIC_DIR}}/index.html {{.PUBLIC_DIR}}/posts/index.html || { echo "sidetoc on a list page"; exit 1; }'
+
+  test:theme:
+    desc: 'Check the theme switch: "auto" by default, saved theme applied before first paint'
+    preconditions: [*python3, *built]
+    cmds:
+      - >
+        python3 scripts/check_theme.py
+        {{.PUBLIC_DIR}}/index.html
+        {{.PUBLIC_DIR}}/posts/index.html
+        {{.PUBLIC_DIR}}/posts/marimo/index.html
+        {{.PUBLIC_DIR}}/pages/cv/index.html
+
+  test:search:
+    desc: Check the search index (/search.json) and the search logic (assets/js/search.js)
+    preconditions:
+      - sh: command -v node
+        msg: node not found in PATH, install node.js
+      - *built
+    cmds:
+      - node scripts/test_search.js {{.PUBLIC_DIR}}
+
+  test:cloudflare:
+    desc: 'Check the site builds the way Cloudflare Pages builds it (plain `hugo` v{{.CF_HUGO_VERSION}})'
+    deps: [submodules]
+    vars:
+      OUT: '{{.ROOT_DIR}}/.task/cloudflare'
+    cmds:
+      - task: hugo:install
+        vars: { VERSION: '{{.CF_HUGO_VERSION}}' }
+      - rm -rf "{{.OUT}}"
+      - '"{{.BIN_DIR}}/hugo-{{.CF_HUGO_VERSION}}" --destination "{{.OUT}}"'
+      - test -f "{{.OUT}}/index.html" && test -f "{{.OUT}}/cv.pdf"
+
+  # ---------------------------------------------------------------- cv
+
+  cv:
+    desc: Render static/cv.pdf from basic-resume/main.typ
+    preconditions:
+      - sh: command -v typst
+        msg: typst not found in PATH (https://github.com/typst/typst)
+    sources: [basic-resume/**/*]
+    generates: [static/cv.pdf]
+    cmds:
+      - typst compile basic-resume/main.typ static/cv.pdf
+
+  # ---------------------------------------------------------------- ci
+
+  ci:
+    desc: Everything CI runs
+    cmds:
+      - task: setup
+      - task: lint
+      - task: test

@@ -1,0 +1,22 @@
+/* Accent colour: orange link underlines and hover colour.
+   light-dark() follows typo's color-scheme, so it works for auto (OS), and
+   for light/dark forced by the theme switch. */
+
+:root {
+  --accent-light: #c2410c; /* 5.2:1 on white */
+  --accent-dark: #ff922b;  /* 8.2:1 on typo's dark background */
+  --accent: light-dark(var(--accent-light), var(--accent-dark));
+}
+
+a {
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.2em;
+}
+
+a:hover,
+.theme-switch:hover,
+.sidetoc > summary:hover,
+.sidetoc-panel a:hover {
+  color: var(--accent);
+}

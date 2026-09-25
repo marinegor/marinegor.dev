@@ -1,0 +1,39 @@
+{{/* override (marinegor.dev) of typo's post-entry.html. Called with a page
+     (like typo does), or with (dict "page" $page "showSection" true) to label
+     the entry with its section, e.g. on the home page feed. */}}
+{{- $showSection := false }}
+{{- $page := . }}
+{{- if reflect.IsMap . }}
+  {{- $page = .page }}
+  {{- $showSection = .showSection | default false }}
+{{- end }}
+{{- with $page }}
+<div class="post-line">
+
+    {{ $dateFormat := .Site.Params.listDateFormat | default "2 Jan 2006" }}
+
+    {{ if .Parent.Param "showListDate" | default true }}
+        <p class="line-date">{{ .Date | time.Format $dateFormat }} </p>
+    {{ end }}
+
+    <div>
+        <p class="line-title">
+            <a href="{{ .RelPermalink }}">
+                {{ .Title }}
+            </a>
+            {{- if $showSection }}
+            {{- with .CurrentSection }}
+            {{- $label := index (site.Params.sectionLabels | default dict) $page.Section | default (lower .Title) }}
+            <a class="section-label section-{{ $page.Section }}" href="{{ .RelPermalink }}">{{ $label }}</a>
+            {{- end }}
+            {{- end }}
+        </p>
+
+        {{ if .Site.Params.listSummaries }}
+        {{/* override (marinegor.dev): prefer front-matter description over the
+             auto-generated summary, which can contain e.g. TOC anchors */}}
+        <p class="line-summary"> {{ with .Description }}{{ . | markdownify }}{{ else }}{{ .Summary }}{{ end }} </p>
+        {{ end }}
+    </div>
+</div>
+{{- end }}

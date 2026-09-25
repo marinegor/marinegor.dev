@@ -1,0 +1,67 @@
+{{/* Header. Override (marinegor.dev) of typo's header.html: adds the theme
+     switch (script at the top + button at the end of the menu) and the search box. */}}
+
+{{/* Theme switch, part 2/3: first thing inside <body>, before any content is
+     parsed, so <body> has the saved theme class before first paint. */}}
+<script>
+  (() => {
+    const c = document.documentElement.classList;
+    if (c.contains("light")) document.body.classList.add("light");
+    if (c.contains("dark")) document.body.classList.add("dark");
+  })();
+</script>
+
+<div class="header">
+
+    {{ if or (not (.Param "hideHeader")) .IsHome }}
+
+    <h1 class="header-title">
+        <a href="{{ site.BaseURL }}">{{ site.Title }}</a>
+    </h1>
+
+    <div class="header-menu">
+        {{ $currentPage := . }}
+
+        {{ with site.Params.menu }}
+        {{ range . }}
+
+        <p
+            class="small {{ if eq .name (lower $currentPage.Name) }} bold {{end}}">
+            <a href="{{ .url }}" {{ if and (isset . "newTab") .newTab
+                }}target="_blank" rel="noopener noreferrer" {{ end }}>
+                /{{.name }}
+            </a>
+        </p>
+        {{ end }}
+        {{ end }}
+
+        {{/* Site search (assets/js/search.js). Without JS it's a plain form
+             that searches this site on DuckDuckGo. <div>, not <p>: a <form>
+             can't live inside a <p>. */}}
+        <div class="small search-item">
+            <form class="site-search" role="search" action="https://duckduckgo.com/" method="get"
+                data-index="{{ "search.json" | relURL }}">
+                <input type="search" name="q" placeholder="search  /" aria-label="search this site"
+                    autocomplete="off" spellcheck="false"
+                    aria-controls="search-results" aria-expanded="false">
+                <input type="hidden" name="sites" value="{{ (urls.Parse site.BaseURL).Host }}">
+                <ul id="search-results" class="search-results" hidden></ul>
+            </form>
+        </div>
+
+        {{/* hidden until JS labels it: without JS it couldn't do anything.
+             data-mode (set by JS) picks which icon is shown, see theme-switch.css */}}
+        <p class="small theme-switch-item">
+            <button type="button" class="theme-switch" data-mode="auto" hidden
+                aria-label="colour theme" title="colour theme: auto / light / dark">
+                <svg class="theme-icon theme-icon-auto" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>
+                <svg class="theme-icon theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <svg class="theme-icon theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" fill="currentColor"/></svg>
+                <span class="theme-label">auto</span>
+            </button>
+        </p>
+    </div>
+
+    {{ end }}
+
+</div>

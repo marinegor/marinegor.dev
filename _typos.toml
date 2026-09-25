@@ -1,0 +1,7 @@
+# typos (spell checker) config — https://github.com/crate-ci/typos
+[default.extend-words]
+arange = "arange" # numpy.arange
+ONO = "ONO"       # ONO Pharmaceuticals
+
+[files]
+extend-exclude = ["static/", "themes/"]

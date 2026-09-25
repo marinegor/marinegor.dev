@@ -1,0 +1,43 @@
+{{- /*
+  Embed a marimo notebook from ./notebooks as a live WebAssembly iframe.
+
+    {{< marimo "cellular-automaton-art" >}}
+    {{< marimo name="cellular-automaton-art" height="900px" >}}
+
+  The notebook code travels in the iframe URL (lz-compressed, as marimo.app
+  expects), precomputed into data/marimo/<name>.json by `task marimo:embed`.
+  The build fails if that data is stale. The raw file is also served at
+  /notebooks/<name>.py.
+*/ -}}
+{{- $name := .Get "name" | default (.Get 0) -}}
+{{- $height := .Get "height" | default "700px" -}}
+{{- $src := printf "notebooks/%s.py" $name -}}
+{{- if not (fileExists $src) -}}
+  {{- errorf "marimo shortcode: %s not found (%s)" $src .Position -}}
+{{- end -}}
+{{- $data := index hugo.Data.marimo $name -}}
+{{- if not $data -}}
+  {{- errorf "marimo shortcode: no data/marimo/%s.json, run `task marimo:embed` (%s)" $name .Position -}}
+{{- end -}}
+{{- if ne $data.sha256 (readFile $src | crypto.SHA256) -}}
+  {{- errorf "marimo shortcode: data/marimo/%s.json is stale for %s, run `task marimo:embed` (%s)" $name $src .Position -}}
+{{- end -}}
+{{- $url := printf "https://marimo.app/?embed=true#code/%s" $data.lz -}}
+<div class="marimo-embed">
+  <iframe
+    src="{{ $url | safeURL }}"
+    title="marimo notebook: {{ $name }}"
+    width="100%"
+    height="{{ $height }}"
+    style="border: 1px solid var(--code-border); border-radius: 8px;"
+    sandbox="allow-scripts allow-same-origin allow-downloads allow-popups allow-forms"
+    allow="microphone"
+    allowfullscreen
+    loading="lazy"
+  ></iframe>
+  <p class="small">
+    source: <a href="{{ printf "/%s" $src | relURL }}">{{ $src }}</a> ·
+    <a href="{{ $url | safeURL }}" target="_blank" rel="noopener">open in marimo.app</a> ·
+    run locally: <code>uvx marimo edit --sandbox {{ printf "/%s" $src | absURL }}</code>
+  </p>
+</div>
