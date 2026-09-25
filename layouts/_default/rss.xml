@@ -1,6 +1,7 @@
 {{- /*
   Based on Hugo's embedded rss.xml (v0.166.0), changed for marinegor.dev:
-  - home feed: only sections in params.rssSections (default: posts, til), so
+  - home feed: only sections in params.feedSections (default: posts, til), same
+    entries as the home page feed, so
     updates to /pages/ (CV, publications, ...) don't show up as new items
   - items carry the full post (.Content), not the auto summary
   - home channel title/description: site title/description
@@ -33,7 +34,7 @@
 {{- if .IsHome }}{{ $pctx = .Site }}{{ end }}
 {{- $pages := slice }}
 {{- if $.IsHome }}
-	{{- $sections := site.Params.rssSections | default (slice "posts" "til") }}
+	{{- $sections := site.Params.feedSections | default (slice "posts" "til") }}
 	{{- $pages = where site.RegularPages "Section" "in" $sections }}
 {{- else if $.IsSection }}
 	{{- $pages = $pctx.RegularPages }}

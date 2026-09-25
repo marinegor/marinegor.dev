@@ -32,8 +32,7 @@ I'm Egor, a Forward-Deployed ML Engineer in Cofolding @ [Apheris](https://apheri
 This is a website with code snippets, informal project descriptions, \
 and some ranting when I get older.
 """
-homeCollectionTitle = 'Posts'
-homeCollection = 'posts'
+homeCollectionTitle = 'Feed'
 
 # Lists
 paginationSize = 100
@@ -41,9 +40,14 @@ listSummaries = true
 listDateFormat = '2 Jan 2006'
 singleDateFormat = '2 Jan 2006'
 
-# Main RSS feed (/index.xml): full posts from these sections only, see
-# layouts/_default/rss.xml; keep in sync with RSS_SECTIONS in Taskfile.yml
-rssSections = ['posts', 'til']
+# "Feed": sections listed on the home page *and* in the main RSS feed
+# (/index.xml, full text), see layouts/_default/{home.html,rss.xml}.
+# Keep in sync with FEED_SECTIONS in Taskfile.yml.
+feedSections = ['posts', 'til']
+# labels shown next to entries in the home page feed
+[params.sectionLabels]
+posts = 'post'
+til = 'til'
 
 # KaTeX on every page ($...$ and $$...$$)
 math = true

@@ -1,0 +1,20 @@
+/* Section labels ("post", "til") next to entries in the home page feed
+   (layouts/partials/post-entry.html). */
+
+.section-label {
+  margin-left: 0.5em;
+  padding: 0 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.75em;
+  vertical-align: 0.1em;
+  color: var(--content-secondary);
+  border: 1px solid var(--code-border);
+  border-radius: 4px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.section-label:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}

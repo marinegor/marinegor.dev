@@ -48,7 +48,7 @@ version. To upgrade Hugo, set `HUGO_VERSION` in the dashboard and bump
 ## RSS
 
 `/index.xml` is the main feed: full text of `posts` and `til` (see
-`rssSections` in `hugo.toml`, template in `layouts/_default/rss.xml`). Every
+`feedSections` in `hugo.toml`; the home page "Feed" lists the same entries, template in `layouts/_default/rss.xml`). Every
 section and tag has its own feed too, e.g. `/til/index.xml`,
 `/tags/python/index.xml`. Embeds like marimo notebooks become links in feeds.
 `task test:feed` checks the main feed.
