@@ -1,32 +1,74 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+# Project context, shown to AI when creating artifacts.
+# AGENTS.md is the source of truth for conventions; this is a summary of it
+# plus the parts of the site that changes usually touch.
+context: |
+  marinegor.dev: a personal website (posts, TILs, publications, CV) built with
+  Hugo and the typo theme (git submodule in themes/typo, pinned to a release).
+  Read AGENTS.md first; it has the hard rules. In short:
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Deployment
+  - Cloudflare Pages builds `main` by itself with a plain `hugo`; there is no
+    deploy step in CI and no deploy task. Nothing may need a post-build step.
+  - Cloudflare's Hugo version lives in its dashboard and is mirrored as
+    HUGO_VERSION / CF_HUGO_VERSION in Taskfile.yml (currently 0.166.0). Bumping
+    Hugo or the theme submodule needs the user to update the dashboard too.
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+  Tooling
+  - Taskfile first: anything routine or run on CI (build, lint, test, codegen)
+    is a `task` entry with a `desc:` and `preconditions` checking its tools are
+    in PATH; CI (.github/workflows/ci.yml) only runs `task ci`.
+  - Pinned tools: hugo/lychee in ./.bin, python tools via `uvx <tool>@<version>`
+    (ruff, ty, rumdl, typos, marimo, commitizen).
+  - `task lint`: rumdl, ruff (incl. python code blocks in markdown), typos, ty,
+    marimo check, freshness of generated files (assets/css/chroma.css,
+    data/marimo/*.json). `task fix` repairs most of it.
+  - `task test`: builds the site, then checks xml, internal links (lychee,
+    offline), served files, images, RSS + home feed, right-side TOC, theme
+    switch, search, and a build with Cloudflare's Hugo version.
+    Run it as `task test PUBLIC_DIR=.task/public` if a dev server is running.
+
+  Site structure
+  - Theme customisations never edit themes/typo: they use typo hooks
+    (layouts/partials/hooks/{head_start,head_end,body_end}.html) or overrides
+    of single typo files in layouts/, each marked "override (marinegor.dev)".
+  - Site CSS is bundled into one css/site.css in hooks/head_end.html
+    (assets/css/*.css); colours use `--accent` and typo's light-dark() vars.
+  - Sections: content/posts, content/til, content/publications (one page per
+    paper), content/pages (CV etc.). params.feedSections in hugo.toml drives
+    both the home page "Feed" and the full-text RSS feed.
+  - marimo notebooks live in notebooks/ (PEP 723 scripts, served under
+    /notebooks/) and are embedded with the `marimo` shortcode; run
+    `task marimo:embed` after editing one.
+  - Client-side search: /search.json (layouts/home.searchindex.json) +
+    assets/js/search.js.
+
+  Working rules
+  - Work only inside this repo (scratch files in .task/), no browsers, GUI
+    apps, containers or dev servers; visual checks are left to the user.
+  - Commits: commitizen header (`type(scope): summary`) + Conventional
+    Comments labels in the body (`note:`, `issue:`, `todo:`, ...).
+
+# Per-artifact rules.
+rules:
+  proposal:
+    - Include an "Impact" section stating whether the change affects the Cloudflare build (Hugo version, theme submodule, post-build steps), the RSS/home feed, or search.
+    - Keep proposals short; this is a personal site, not a product.
+  design:
+    - Prefer typo hooks and single-file overrides over editing themes/typo, and say which typo files get overridden.
+    - Anything that must work without JavaScript (content, navigation) must say how it degrades.
+  tasks:
+    - Every new routine command becomes a Taskfile entry with desc and preconditions before anything calls it.
+    - Every behaviour that can regress gets a check in `task test` (or `task lint`), and the task list includes proving the check fails without the change.
+    - End every task list with running `task lint` and `task test` and committing with commitizen + Conventional Comments messages.
+
+# Per-operation guidance.
+operations:
+  apply:
+    guidance:
+      - Verify with `task lint` and `task test` (use PUBLIC_DIR=.task/public if a dev server may be running), never by opening a browser.
+      - Commit in logical steps, each passing lint and test.
+  archive:
+    guidance:
+      - Summarise what changed for the site's visitors, and anything the user must do outside the repo (e.g. the Cloudflare dashboard).

@@ -76,3 +76,10 @@ Every task must declare `preconditions` checking that the tools it calls
 exist in `PATH` (`command -v <tool>`), with a `msg` saying how to install them.
 Pinned tools go into `./.bin`, which tasks put first on `PATH` (this relies
 on the `ENV_PRECEDENCE` experiment enabled in `.taskrc.yml`).
+
+## 3. OpenSpec
+
+Planned changes go through [OpenSpec](https://openspec.dev) (`openspec/`,
+skills in `.pi/skills/` and `.claude/skills/`, prompts `/opsx-*`).
+`openspec/config.yaml` → `context` summarises this file for OpenSpec
+artifacts: when a rule here changes, update it there too.
