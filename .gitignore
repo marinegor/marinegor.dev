@@ -4,3 +4,4 @@ public
 .bin
 .task
 resources/_gen
+notebooks/__marimo__
