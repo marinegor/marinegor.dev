@@ -242,8 +242,8 @@ def _(
 
         return pl.DataFrame(list(data.values())).with_columns(
             interview_id=pl.lit(interview_id),
-            check_hr=pl.col("hr") < config.hr,
-            check_team=pl.col("team") < config.team,
+            check_hr=pl.col("relevnance") * pl.col("hr") < config.hr,
+            check_team=pl.col("relevnance") * pl.col("team") < config.team,
             check_interviews=pl.all_horizontal(
                 pl.col(f"interview_pass_{i}") < config.interview_pass
                 for i in range(config.n_interviews)

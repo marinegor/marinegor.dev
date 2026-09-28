@@ -19,7 +19,7 @@ The model is somewhat inspired by role playing games -- for each stage, a candid
  - 📞 HR screening: your resume has to pass an initial HR screen 
  - 🧑‍💻 interviews: you have `n` technical interviews, each of them you can pass with some probability (and you have to pass all of them)
  - 🤙 team ~~vibe check~~ cultural fit: you have to talk to the team and pass their vibe check
- - 🤞 relevance: defines overall fit for the position that all stages consider, and works as multiplier for all thresholds above
+ - 🤞 relevance: defines overall fit for the position that all stages, except for interviews, consider, and works as multiplier for all thresholds above
 
 In this (very simple) model, all applications are considered identical between each other, i.e. thresholds for each stage are identical between candidates, and candidates are identical between each other. After all candidates pass (or not) their checks, one candidate is randomly selected among all suitable candidates.
 
