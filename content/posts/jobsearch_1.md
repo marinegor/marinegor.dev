@@ -47,6 +47,10 @@ uvx marimo edit --sandbox https://marinegor.dev/notebooks/jobsearch-1.py
 
 ## Discussion
 
+To compare different employers, here is the same simulation for three scenarios -- a small startup (few candidates, one interview), an average case, and a big company (many candidates, more interview rounds). The top row shows `p_offer` against the application number, the bottom row against the day number (at the default pace of applications per week). Lines show the mean over 100 simulated job searches, and shaded bands show the min-max range:
+
+![Offer probability for three scenarios: small startup, average case, big company](/jobsearch-1-scenarios.svg)
+
 I find it fun to play around with different scenarios -- e.g. "mass-applying to multiple positions with many candidates" vs "targeted applications to companies with high relevance". Interestingly enough, since candidates are all equal, you often can see that e.g. low probability to pass HR check (or team vibe or interview) might actually lead to faster hire specifically for you. I guess it's because, if our model, probability of getting an offer is inversely proportional to the number of candidates at the end of the hiring funnel, so if you manage to pass it once (e.g. if companies massively false-reject good candidates), you'll get hired faster.
 
 Another interesting thing is how much fluctiation in probabilities we get if we have low number of applications (or at least, for early applications). Depending on number of candidates, this uncertainty period might actually last for weeks, and in narrow-scoped specializations practically diminishes your ability to predict your timelines based on how your friends / colleagues / ... are doing on the job market.

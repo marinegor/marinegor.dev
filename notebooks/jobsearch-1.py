@@ -329,6 +329,7 @@ def _(
         )
 
     return (
+        JobInterviewConfig,
         get_poffer_by_n_distribution,
         get_poffer_distribution,
         simulate_jobsearch,
@@ -443,7 +444,7 @@ def _(alt, cs, pl):
             .encode(
                 alt.X("application_number"),
                 alt.Y("p_offer"),
-                alt.Tooltip("application_number", "p_offer"),
+                tooltip=["application_number", "p_offer"],
             )
         )
 
@@ -462,11 +463,49 @@ def _(alt, cs, pl):
             .encode(
                 alt.X("day_number"),
                 alt.Y("p_offer"),
-                alt.Tooltip("application_number", "p_offer"),
+                tooltip=["day_number", "p_offer"],
             )
         )
 
+    def plot_mean_range(
+        df: pl.DataFrame,
+        x: str = "application_number",
+        applications_per_week: float = 7,
+    ):
+        """Mean offer probability over runs, with a min-max band."""
+        runs = [c for c in df.columns if c.startswith("p_offer_")]
+        summary = df.select(
+            "application_number",
+            mean=pl.mean_horizontal(runs),
+            lo=pl.min_horizontal(runs),
+            hi=pl.max_horizontal(runs),
+        ).with_columns(
+            day_number=pl.col("application_number") / applications_per_week * 7,
+        )
+        x_enc = alt.X(x)
+        y_scale = alt.Scale(domain=[0, 1])
+        band = (
+            alt.Chart(summary)
+            .mark_area(opacity=0.3)
+            .encode(
+                x_enc,
+                alt.Y("lo", scale=y_scale, title="p_offer"),
+                alt.Y2("hi"),
+            )
+        )
+        line = (
+            alt.Chart(summary)
+            .mark_line()
+            .encode(
+                x_enc,
+                alt.Y("mean", scale=y_scale, title="p_offer"),
+                tooltip=[x, "mean", "lo", "hi"],
+            )
+        )
+        return band + line
+
     return (
+        plot_mean_range,
         plot_cumulative_probability_with_application,
         plot_cumulative_probability_with_application_in_days,
         stacked_histograms,
@@ -524,6 +563,87 @@ def _(
         ),
     ).interactive()
     return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    ## Three scenarios
+
+    The same curves for three kinds of employers (other parameters are taken from the sliders above):
+
+    | scenario | candidates per position | interviews | interview pass check | std of relevance |
+    |---|---|---|---|---|
+    | small startup | 20 | 1 | 0.8 | 0.3 |
+    | average case | 100 | 2 | 0.8 | 0.3 |
+    | big company | 300 | 4 | 0.7 | 0.3 |
+
+    Top row: offer probability vs application number. Bottom row: the same vs day number. Lines show the mean over 100 simulated job searches, bands show the min-max range.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(
+    JobInterviewConfig,
+    alt,
+    applications_per_week,
+    get_poffer_by_n_distribution,
+    n_applications,
+    plot_mean_range,
+):
+    _n_runs = 100
+    _scenarios = {
+        "Small startup": JobInterviewConfig(
+            n_candidates=20,
+            n_interviews=1,
+            interview_pass=0.8,
+            relevance_std=0.3,
+        ),
+        "Average case": JobInterviewConfig(
+            n_candidates=100,
+            n_interviews=2,
+            interview_pass=0.8,
+            relevance_std=0.3,
+        ),
+        "Big company": JobInterviewConfig(
+            n_candidates=300,
+            n_interviews=4,
+            interview_pass=0.7,
+            relevance_std=0.3,
+        ),
+    }
+    _dists = {
+        _name: get_poffer_by_n_distribution(
+            n_applications=n_applications.value,
+            config=_config,
+            n_runs=_n_runs,
+        )
+        for _name, _config in _scenarios.items()
+    }
+
+    scenario_chart = alt.vconcat(
+        alt.hconcat(
+            *[
+                plot_mean_range(_df, "application_number").properties(
+                    title=_name, width=220, height=200
+                )
+                for _name, _df in _dists.items()
+            ]
+        ),
+        alt.hconcat(
+            *[
+                plot_mean_range(
+                    _df,
+                    "day_number",
+                    applications_per_week=applications_per_week.value,
+                ).properties(title=_name, width=220, height=200)
+                for _name, _df in _dists.items()
+            ]
+        ),
+    )
+    scenario_chart
+    return (scenario_chart,)
 
 
 @app.cell
